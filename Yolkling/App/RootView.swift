@@ -64,6 +64,11 @@ struct RootView: View {
                 ColorPreview()
             } else if ProcessInfo.processInfo.environment["YOLK_PLUS"] != nil {
                 PlusView(store: SubscriptionStore(), vibe: .matcha)
+            } else if ProcessInfo.processInfo.environment["YOLK_ONB"] != nil {
+                // Screenshot seam: render the real onboarding flow even when a
+                // saved player exists. OnboardingView's own onAppear reads
+                // YOLK_ONB and jumps to the requested step.
+                OnboardingView { _ in }
             } else if screenshotMode {
                 HomeView()
             } else if let player = players.first {
