@@ -94,13 +94,19 @@ private struct CustomizeView: View {
                     .frame(height: 200)
 
                 sectionLabel("pick a look")
-                HStack(spacing: YolkSpace.sm) {
-                    ForEach(CreatureStyle.allCases) { style in
-                        StyleButton(style: style, color: model.vibe.body, selected: model.style == style) {
-                            Haptics.shared.select()
-                            withAnimation(.bouncy(duration: 0.5, extraBounce: 0.3)) { model.selectStyle(style) }
+                // The eight base looks are wider than a phone row. Give them their own
+                // horizontal scroll context so the row's intrinsic width is bounded to
+                // the viewport and can never poison the colour grid + labels below it.
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: YolkSpace.sm) {
+                        ForEach(CreatureStyle.allCases) { style in
+                            StyleButton(style: style, color: model.vibe.body, selected: model.style == style) {
+                                Haptics.shared.select()
+                                withAnimation(.bouncy(duration: 0.5, extraBounce: 0.3)) { model.selectStyle(style) }
+                            }
                         }
                     }
+                    .padding(.horizontal, 2)
                 }
 
                 sectionLabel("pick a color")
@@ -144,7 +150,7 @@ private struct StyleButton: View {
         Button(action: action) {
             YolklingView(vibe: Vibe(id: style.id, name: style.label, body: color, deep: color, style: style),
                          expression: .content, size: 44)
-                .frame(width: 72, height: 84)
+                .frame(width: 64, height: 84)
                 .background(selected ? YolkColor.shell2 : .clear, in: RoundedRectangle(cornerRadius: 16))
                 .overlay(RoundedRectangle(cornerRadius: 16).stroke(YolkColor.ink, lineWidth: selected ? 2.5 : 0))
         }
