@@ -1,0 +1,45 @@
+{
+  "identifier" : "YOLKPLUS1",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21000000",
+      "localizationConfigurations" : [],
+      "name" : "Yolkling Plus",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "21000001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Keep Yolkling alive and unlock supporter perks.",
+              "displayName" : "Yolkling Plus",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.Sankritya.Yolkling.plus.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Yolkling Plus Monthly",
+          "subscriptionGroupID" : "21000000",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

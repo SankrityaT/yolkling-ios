@@ -1,0 +1,1152 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0364CA692D518EF8AAF0F8B0 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271C78981C0D5681EF94171E /* Haptics.swift */; };
+		03B787A52BC86AF96B68F016 /* FocusSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */; };
+		06CFCBF306F3A0FDCAFD2653 /* SpeciesGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D92FE830A5B71AC26B90E21 /* SpeciesGalleryView.swift */; };
+		086B1B692A28EC7108795144 /* RoomDecorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */; };
+		08D9901B447473F63656E17A /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E710CBEC1093FE73775F1BE /* QRScannerView.swift */; };
+		0A9560FE0207E256601BA0C4 /* YolklingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95E3508A252E211E684703D /* YolklingView.swift */; };
+		100A76148307BBACD333D950 /* YolkExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */; };
+		115C413B6DCAC129F76CCDB3 /* WhileYouWereAwayStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */; };
+		1174E2755C3353C39FD9A5F5 /* VisitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10352955EC8A724ED2AEAC4 /* VisitView.swift */; };
+		133217ABEDB1716D78A4C392 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454CD38CF659BCE1CAF57AB5 /* RootView.swift */; };
+		133CACDDE3224416D9DE9BDB /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD20DDA9932DC37F8B2B837F /* FeedbackView.swift */; };
+		15071DFB35BFB0D5E456F908 /* TrustStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822B58776D67B8C7AC5DB908 /* TrustStage.swift */; };
+		18776CC0F5C8239A1AB75CFD /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = D071416EBE1A5EEBC6B0564E /* Player.swift */; };
+		1917B3C4E339BE94E5D6898F /* GrowFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C049B150140A0C2342A398A /* GrowFriendsView.swift */; };
+		1FF4A7075EFF898A013EC2D9 /* PostcardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571CDDC06280096B10794E7C /* PostcardViews.swift */; };
+		2104EC3B551DC384D0C848E9 /* CareEngines.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38FB1D1C79AAE4A5CC2E1CE /* CareEngines.swift */; };
+		231D03F805E66B6978F7EBDA /* SpeciesSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4374987F9853748A1166C1BA /* SpeciesSet.swift */; };
+		23B68D582EA550BE1B5B2088 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E7AFB40028E43F26BD38206 /* OnboardingView.swift */; };
+		2457FC8BE922B4C6358E0241 /* WidgetHowToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45701349448C8131182AD13C /* WidgetHowToView.swift */; };
+		2CAAC08C69E1616E53A9DE93 /* SpeciesSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4374987F9853748A1166C1BA /* SpeciesSet.swift */; };
+		2DD5ED2695A90EFCD302A043 /* WidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DC24772B748D797777AB22 /* WidgetPublisher.swift */; };
+		2E5A1E21EB4608C0ED24796B /* CreatureStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8223D82853775F0621924C5 /* CreatureStyle.swift */; };
+		2E8A4379E8AC57C0E654C849 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC6AD7229641595F1324223 /* ProfileView.swift */; };
+		2FAAB31039B25DC9582412FC /* Species+Ocean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */; };
+		301A7CC3CC8CED5A339A5398 /* BrandFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D460297B8B82462A61ED36 /* BrandFonts.swift */; };
+		339169F8EB3C2F3BEAB56081 /* MoodCheckInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE358D6CD83AA87EA6358B2 /* MoodCheckInView.swift */; };
+		3395E08E88EBF6AF2686CB1A /* YolkSegmented.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F403602C69613F256AC4FD /* YolkSegmented.swift */; };
+		36C7C22D0128007F01EAD514 /* RoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A696350A3A3F96048352A62 /* RoomView.swift */; };
+		36DE543C57BBE8E69AD40D7B /* Species+Cozy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096CDDB0222B5437F850166C /* Species+Cozy.swift */; };
+		370441F2076020435ED5FD7C /* SocialModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B3C10F5C7A1D79618B0B35 /* SocialModels.swift */; };
+		3B1559031499A54AAAF1AD2A /* CosmeticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */; };
+		3C010459CE49815CAD71620B /* CreatureParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7831C9E0C1B95A7B333E3D4 /* CreatureParts.swift */; };
+		3C10AFB207D45F251C97C0D5 /* CustomizeOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28194194B325C85B2FB43038 /* CustomizeOptions.swift */; };
+		3D8D81A66570893FDA60562E /* EggView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8CF8FD294F1454E5591F21 /* EggView.swift */; };
+		441D18B460CB0DBC2B7D832C /* YolklingWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA2EE3D862627BDDB70A446 /* YolklingWidgetBundle.swift */; };
+		4702ED8BB128D89E453FFCF6 /* YolklingWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 77B3DF45A83DE92F2CDBBAA4 /* YolklingWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		474D87224A811FFD99C64FC4 /* YolkExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */; };
+		493B4B1BAEB403ED5AC5FC32 /* YolkSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */; };
+		4ADF5DECBAE24ABD3C448D5D /* FocusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E3DAFC3357CF16EDB765B2 /* FocusView.swift */; };
+		4BEACA0FC5E5B4E77845EF9C /* YolkDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC859F6086205595CCA3548F /* YolkDialog.swift */; };
+		4E8A216CF386BC0CBD5C0C1E /* Species.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A81F4FB5B6B4FE7DC31F059 /* Species.swift */; };
+		51E42375AA5DE76C791EA2F5 /* FoundingFlair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FCBBEBD1D5464C4A735893 /* FoundingFlair.swift */; };
+		52AAB71891CABF5B96820C3F /* Vibe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF366FD2F7B0531883B229D /* Vibe.swift */; };
+		56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3023148FA25E063CED922DF /* SyncClient.swift */; };
+		59DE5860CD52D0A5C2A9961F /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */; };
+		5E54299634A29368115B507F /* ScreenTimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C460FAA85BB2A5D657CBE3 /* ScreenTimeService.swift */; };
+		5FD85F1FB9F1B41CA3D88428 /* DMSans-VF.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C79354CB80CA860721463727 /* DMSans-VF.ttf */; };
+		62D7FC75B888F2739AA05C96 /* RoomZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7558E421CB8F49D94D63FD7 /* RoomZone.swift */; };
+		62EBBA87B5CC8CC8247CDCA8 /* YolkColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCE5524395404EDA669648 /* YolkColors.swift */; };
+		62F892518BC4B84224E78C5D /* ReferralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7409FEFD12957C004BB91D /* ReferralView.swift */; };
+		63353718CB8C13BD6142B08E /* YolkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370AC2BE38C8F35E8C59C790 /* YolkType.swift */; };
+		63F47CB7F9AAE58E8F9E4208 /* Vibe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF366FD2F7B0531883B229D /* Vibe.swift */; };
+		661AD66CBC76712E89119F7E /* FocusLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE7AD43C334266A4F352AB8 /* FocusLiveActivity.swift */; };
+		6A5F07B799F0E18D074604F6 /* CareEngines.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38FB1D1C79AAE4A5CC2E1CE /* CareEngines.swift */; };
+		774E938C4B98B2F1E3959A7E /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
+		7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */; };
+		7D316A3F6CA5988E2356DA7C /* PackRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C490033D514C40A0067B7 /* PackRevealView.swift */; };
+		7EA6532D5CD522ED5E3EB65F /* YolklingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95E3508A252E211E684703D /* YolklingView.swift */; };
+		823C10E6893487A0027EA9EB /* BrandFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D460297B8B82462A61ED36 /* BrandFonts.swift */; };
+		84E321BD0A5CB442877C103B /* FoundingRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */; };
+		8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E45824D017316F04EAB9F /* YolkRoomWidget.swift */; };
+		8A16161AA593A990544C3CD7 /* Rewards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4BB5586801A2B60F7F7A7 /* Rewards.swift */; };
+		8B9D92868991771D4FADBDC1 /* CreatureParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7831C9E0C1B95A7B333E3D4 /* CreatureParts.swift */; };
+		8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689CB056088DED814BB7D8E5 /* TypewriterText.swift */; };
+		8CFEA4E65FD7AA9F81025A05 /* Mood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E67B727AE71BD4028C618FB /* Mood.swift */; };
+		91BA909DB55DA72B013072D0 /* Cosmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */; };
+		934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */; };
+		957754945CDFC6FAA6B3E153 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
+		984F2FF722D79E95EDC451AB /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7271B792C6CDA97F073DDC10 /* QRCodeView.swift */; };
+		990CEEC0D3390B9E529A469A /* ColorShop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E4757EC5D4372E5784BF025 /* ColorShop.swift */; };
+		9B08F7A18C857012CD227CCE /* YolkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370AC2BE38C8F35E8C59C790 /* YolkType.swift */; };
+		9C4AEC9956A058F4B06869BD /* Species.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A81F4FB5B6B4FE7DC31F059 /* Species.swift */; };
+		A15536C1FB51C9CA06D2A02E /* Species+Ocean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */; };
+		A2DA17A39B665DFB2F01E51B /* YolkSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */; };
+		A3456E748BB01E749F4C4FD9 /* RoomDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */; };
+		A7014539ACA074D72F2EE1A7 /* Onest-VF.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 062DF25F0B107A6A708BE8E2 /* Onest-VF.ttf */; };
+		A8432871D410E7E800903F8F /* SocialModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B3C10F5C7A1D79618B0B35 /* SocialModels.swift */; };
+		ABA9885E8F8594EE01C4A444 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */; };
+		B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9E562134085B1FEF2F1E4F /* FriendsView.swift */; };
+		B272ABAEB76D8F68D7565E90 /* ColorShop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E4757EC5D4372E5784BF025 /* ColorShop.swift */; };
+		B3140FD6A3D1EB7B1A6E617C /* RoomDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */; };
+		B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC859F6086205595CCA3548F /* YolkDialog.swift */; };
+		B4E3FDCDEF5E47C4461202BA /* BodyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */; };
+		B6F1A002A4884531D733EF46 /* SocialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4799EF90AC77C8C84A3D581B /* SocialStore.swift */; };
+		BA925A3A4FA9DD75958F5189 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6242A91695E361503D3DAA6 /* AppEnvironment.swift */; };
+		BB04580D3125794B8DB6BD99 /* YolklingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE819215FD090FE423F75193 /* YolklingApp.swift */; };
+		BB7652868F1A1B518E9EB1F4 /* PlusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */; };
+		BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCE5524395404EDA669648 /* YolkColors.swift */; };
+		BD284E721748D9A0590066F4 /* ShopHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */; };
+		C12C0259ED876B5BA58FE8C2 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
+		C1DED04D454F150D89F0A062 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */; };
+		C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */; };
+		C5670AB65ECB4D8B04B5808C /* RoomZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7558E421CB8F49D94D63FD7 /* RoomZone.swift */; };
+		C6C49BBE9D1EFD446E11DFEB /* CosmeticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */; };
+		C7461608412DBBB8EB030FA8 /* CreatureStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8223D82853775F0621924C5 /* CreatureStyle.swift */; };
+		CA9F4D5D2F5BE5C80C7FFDE4 /* CosmeticPreviewGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */; };
+		CB5428C1CCDDEDEEA036D244 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 974C6D0127079C7B7DCD5F95 /* Wallet.swift */; };
+		CD3BDC853E4D567D4ECD735D /* DecorateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCBEF321B406CD08787A8AD /* DecorateView.swift */; };
+		CD940F0368D4571EF8B4583E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30CB0A1116928879DE203401 /* Assets.xcassets */; };
+		CF37128F7CA33BB9DE42746D /* TrustStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822B58776D67B8C7AC5DB908 /* TrustStage.swift */; };
+		D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
+		DC6715049B14E1C73DC19A60 /* DMMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C7A696ACFBC053E0809E12F /* DMMono-Regular.ttf */; };
+		DC93A5811E3A4E2B08CD8B49 /* CustomizeOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28194194B325C85B2FB43038 /* CustomizeOptions.swift */; };
+		E261AFCE62FB64987CEDB149 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2878B46B9482D667951C103B /* HomeView.swift */; };
+		E3FB760D2CB53242FC1E4C8E /* RoomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */; };
+		E6AD6071FF213AC002F4DCAE /* WidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DC24772B748D797777AB22 /* WidgetPublisher.swift */; };
+		E7F706F6C64BFA3E0175609C /* Species+Cozy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096CDDB0222B5437F850166C /* Species+Cozy.swift */; };
+		E7FEADC4EC542107262901AD /* FriendRoomCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DB14FC98098997269CFE94 /* FriendRoomCard.swift */; };
+		E8D0C3C3964CD981CBFACC61 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF65067E79FAEAB6D81D2EF4 /* HealthService.swift */; };
+		EAB5803EDCB8DCC6C88906B5 /* Mood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E67B727AE71BD4028C618FB /* Mood.swift */; };
+		EB5206DA5E4CA7790D03C424 /* Cosmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */; };
+		ED4C25AD7489535A06F7DC2F /* FoundingFlair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FCBBEBD1D5464C4A735893 /* FoundingFlair.swift */; };
+		ED4E74BB4114F9EA58A24D8C /* HatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */; };
+		EE8ECFF9FECF524B0766A792 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */; };
+		F0CD39EDFF070A9DF531E05A /* RoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A696350A3A3F96048352A62 /* RoomView.swift */; };
+		F0D956D4138C84573620C1A5 /* RoomDecorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */; };
+		F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F554785860AE53390D69233E /* SupabaseClient.swift */; };
+		F2C5878F99269B2EDA41761C /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FC884495811BB1821AF2CB /* CollectionView.swift */; };
+		F881D46D850C51D7C10D8613 /* DMMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */; };
+		F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */; };
+		FBEE7B6C3B94CF8C263C8033 /* RoomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */; };
+		FBFF303FA92AE2EEBC97B37A /* YolkNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E4A5383B84FED32116786EF /* YolkNotifications.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6D8C5801A27962C254385393 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69E0AAA1430A6FD73A3A4C78 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D11C675502367D0547EDF59C;
+			remoteInfo = YolklingWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D285FE252D89964D5FA5EABC /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4702ED8BB128D89E453FFCF6 /* YolklingWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		022E45824D017316F04EAB9F /* YolkRoomWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkRoomWidget.swift; sourceTree = "<group>"; };
+		02B3C10F5C7A1D79618B0B35 /* SocialModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialModels.swift; sourceTree = "<group>"; };
+		062DF25F0B107A6A708BE8E2 /* Onest-VF.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Onest-VF.ttf"; sourceTree = "<group>"; };
+		096CDDB0222B5437F850166C /* Species+Cozy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Cozy.swift"; sourceTree = "<group>"; };
+		0A7C0703029E40E6699C7F53 /* Yolkling.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Yolkling.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Garden.swift"; sourceTree = "<group>"; };
+		0FA2EE3D862627BDDB70A446 /* YolklingWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingWidgetBundle.swift; sourceTree = "<group>"; };
+		10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTutorial.swift; sourceTree = "<group>"; };
+		14C460FAA85BB2A5D657CBE3 /* ScreenTimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeService.swift; sourceTree = "<group>"; };
+		14FCBBEBD1D5464C4A735893 /* FoundingFlair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundingFlair.swift; sourceTree = "<group>"; };
+		1A696350A3A3F96048352A62 /* RoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomView.swift; sourceTree = "<group>"; };
+		1DCBEF321B406CD08787A8AD /* DecorateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecorateView.swift; sourceTree = "<group>"; };
+		1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkExpression.swift; sourceTree = "<group>"; };
+		22DB14FC98098997269CFE94 /* FriendRoomCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRoomCard.swift; sourceTree = "<group>"; };
+		245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomTheme.swift; sourceTree = "<group>"; };
+		271C78981C0D5681EF94171E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		28194194B325C85B2FB43038 /* CustomizeOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizeOptions.swift; sourceTree = "<group>"; };
+		2878B46B9482D667951C103B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		28D460297B8B82462A61ED36 /* BrandFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandFonts.swift; sourceTree = "<group>"; };
+		2CFCE5524395404EDA669648 /* YolkColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkColors.swift; sourceTree = "<group>"; };
+		30CB0A1116928879DE203401 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		36DC24772B748D797777AB22 /* WidgetPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPublisher.swift; sourceTree = "<group>"; };
+		370AC2BE38C8F35E8C59C790 /* YolkType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkType.swift; sourceTree = "<group>"; };
+		3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomDecor.swift; sourceTree = "<group>"; };
+		3A81F4FB5B6B4FE7DC31F059 /* Species.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Species.swift; sourceTree = "<group>"; };
+		3C7A696ACFBC053E0809E12F /* DMMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMMono-Regular.ttf"; sourceTree = "<group>"; };
+		3C8CF8FD294F1454E5591F21 /* EggView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EggView.swift; sourceTree = "<group>"; };
+		3E710CBEC1093FE73775F1BE /* QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
+		3EE358D6CD83AA87EA6358B2 /* MoodCheckInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodCheckInView.swift; sourceTree = "<group>"; };
+		3F69CA2DFF74B06646EE1D12 /* Yolkling.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yolkling.entitlements; sourceTree = "<group>"; };
+		41F403602C69613F256AC4FD /* YolkSegmented.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkSegmented.swift; sourceTree = "<group>"; };
+		4374987F9853748A1166C1BA /* SpeciesSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeciesSet.swift; sourceTree = "<group>"; };
+		454CD38CF659BCE1CAF57AB5 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		45701349448C8131182AD13C /* WidgetHowToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetHowToView.swift; sourceTree = "<group>"; };
+		4799EF90AC77C8C84A3D581B /* SocialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialStore.swift; sourceTree = "<group>"; };
+		47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCoin.swift; sourceTree = "<group>"; };
+		4E4A5383B84FED32116786EF /* YolkNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkNotifications.swift; sourceTree = "<group>"; };
+		4E67B727AE71BD4028C618FB /* Mood.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mood.swift; sourceTree = "<group>"; };
+		4FF366FD2F7B0531883B229D /* Vibe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vibe.swift; sourceTree = "<group>"; };
+		571CDDC06280096B10794E7C /* PostcardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardViews.swift; sourceTree = "<group>"; };
+		5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HatchModel.swift; sourceTree = "<group>"; };
+		5C049B150140A0C2342A398A /* GrowFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowFriendsView.swift; sourceTree = "<group>"; };
+		6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhileYouWereAwayStrip.swift; sourceTree = "<group>"; };
+		689CB056088DED814BB7D8E5 /* TypewriterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterText.swift; sourceTree = "<group>"; };
+		6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticView.swift; sourceTree = "<group>"; };
+		6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cosmetic.swift; sourceTree = "<group>"; };
+		7271B792C6CDA97F073DDC10 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
+		77B3DF45A83DE92F2CDBBAA4 /* YolklingWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = YolklingWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A1C490033D514C40A0067B7 /* PackRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackRevealView.swift; sourceTree = "<group>"; };
+		7D7409FEFD12957C004BB91D /* ReferralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralView.swift; sourceTree = "<group>"; };
+		7D92FE830A5B71AC26B90E21 /* SpeciesGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeciesGalleryView.swift; sourceTree = "<group>"; };
+		7E4757EC5D4372E5784BF025 /* ColorShop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorShop.swift; sourceTree = "<group>"; };
+		7E7AFB40028E43F26BD38206 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		7E9E562134085B1FEF2F1E4F /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
+		822B58776D67B8C7AC5DB908 /* TrustStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustStage.swift; sourceTree = "<group>"; };
+		8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Ocean.swift"; sourceTree = "<group>"; };
+		974C6D0127079C7B7DCD5F95 /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
+		9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMMono-Medium.ttf"; sourceTree = "<group>"; };
+		A7558E421CB8F49D94D63FD7 /* RoomZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomZone.swift; sourceTree = "<group>"; };
+		A999B3ECF4F6D60AF1777E91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomDecorView.swift; sourceTree = "<group>"; };
+		AF4187DA7A92439863DAF815 /* YolklingWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YolklingWidgets.entitlements; sourceTree = "<group>"; };
+		B10352955EC8A724ED2AEAC4 /* VisitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitView.swift; sourceTree = "<group>"; };
+		B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundingRevealView.swift; sourceTree = "<group>"; };
+		B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopHomeView.swift; sourceTree = "<group>"; };
+		B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
+		B95E3508A252E211E684703D /* YolklingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingView.swift; sourceTree = "<group>"; };
+		BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusActivityAttributes.swift; sourceTree = "<group>"; };
+		BC859F6086205595CCA3548F /* YolkDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkDialog.swift; sourceTree = "<group>"; };
+		BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshot.swift; sourceTree = "<group>"; };
+		BEE7AD43C334266A4F352AB8 /* FocusLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusLiveActivity.swift; sourceTree = "<group>"; };
+		C38FB1D1C79AAE4A5CC2E1CE /* CareEngines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareEngines.swift; sourceTree = "<group>"; };
+		C3E4BB5586801A2B60F7F7A7 /* Rewards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rewards.swift; sourceTree = "<group>"; };
+		C6242A91695E361503D3DAA6 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		C7831C9E0C1B95A7B333E3D4 /* CreatureParts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatureParts.swift; sourceTree = "<group>"; };
+		C79354CB80CA860721463727 /* DMSans-VF.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSans-VF.ttf"; sourceTree = "<group>"; };
+		D071416EBE1A5EEBC6B0564E /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		D3023148FA25E063CED922DF /* SyncClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncClient.swift; sourceTree = "<group>"; };
+		D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticPreviewGrid.swift; sourceTree = "<group>"; };
+		D4FC884495811BB1821AF2CB /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
+		DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeStore.swift; sourceTree = "<group>"; };
+		E3E3DAFC3357CF16EDB765B2 /* FocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusView.swift; sourceTree = "<group>"; };
+		E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkSpacing.swift; sourceTree = "<group>"; };
+		E8223D82853775F0621924C5 /* CreatureStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatureStyle.swift; sourceTree = "<group>"; };
+		EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
+		EFC6AD7229641595F1324223 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		F554785860AE53390D69233E /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
+		F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPattern.swift; sourceTree = "<group>"; };
+		FD20DDA9932DC37F8B2B837F /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
+		FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusView.swift; sourceTree = "<group>"; };
+		FE819215FD090FE423F75193 /* YolklingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingApp.swift; sourceTree = "<group>"; };
+		FF65067E79FAEAB6D81D2EF4 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		01A9187FA967B88D238EE123 /* Widget */ = {
+			isa = PBXGroup;
+			children = (
+				36DC24772B748D797777AB22 /* WidgetPublisher.swift */,
+				BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */,
+			);
+			path = Widget;
+			sourceTree = "<group>";
+		};
+		0B166213DBFCD7C33ACDCACB /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				41F403602C69613F256AC4FD /* YolkSegmented.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		14AADFC0457FCD77853ED3EB /* YolklingWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				BEE7AD43C334266A4F352AB8 /* FocusLiveActivity.swift */,
+				A999B3ECF4F6D60AF1777E91 /* Info.plist */,
+				0FA2EE3D862627BDDB70A446 /* YolklingWidgetBundle.swift */,
+				AF4187DA7A92439863DAF815 /* YolklingWidgets.entitlements */,
+				022E45824D017316F04EAB9F /* YolkRoomWidget.swift */,
+			);
+			path = YolklingWidgets;
+			sourceTree = "<group>";
+		};
+		163BDE909C2DADE067A232D6 /* CheckIn */ = {
+			isa = PBXGroup;
+			children = (
+				3EE358D6CD83AA87EA6358B2 /* MoodCheckInView.swift */,
+			);
+			path = CheckIn;
+			sourceTree = "<group>";
+		};
+		186243131E83953742F60418 /* Focus */ = {
+			isa = PBXGroup;
+			children = (
+				EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */,
+				E3E3DAFC3357CF16EDB765B2 /* FocusView.swift */,
+			);
+			path = Focus;
+			sourceTree = "<group>";
+		};
+		2388AF86FB38DDACEBD2C246 /* Haptics */ = {
+			isa = PBXGroup;
+			children = (
+				271C78981C0D5681EF94171E /* Haptics.swift */,
+			);
+			path = Haptics;
+			sourceTree = "<group>";
+		};
+		394018C170D352E4CE8BBA3C /* Referral */ = {
+			isa = PBXGroup;
+			children = (
+				B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */,
+				7D7409FEFD12957C004BB91D /* ReferralView.swift */,
+			);
+			path = Referral;
+			sourceTree = "<group>";
+		};
+		3EAAA2F47A1CBBB2BB67BB0D /* Widget */ = {
+			isa = PBXGroup;
+			children = (
+				45701349448C8131182AD13C /* WidgetHowToView.swift */,
+			);
+			path = Widget;
+			sourceTree = "<group>";
+		};
+		403973D1884A840E90EF3031 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				163BDE909C2DADE067A232D6 /* CheckIn */,
+				810CFBAA53A52F4CB671CA1D /* Feedback */,
+				186243131E83953742F60418 /* Focus */,
+				D96D42D771AE9DCAA8692A51 /* Home */,
+				AB1C09C715E1EE28739CC0A7 /* Onboarding */,
+				512C0E940DBDAF76ABE74008 /* Profile */,
+				394018C170D352E4CE8BBA3C /* Referral */,
+				6DCA0E333DB17D7FA149DE53 /* Room */,
+				A8DA43B78DD80FDC98AD433F /* Shop */,
+				631EAC4AF7D1E66CC20EF77B /* Social */,
+				B3C1AF9241FAA90A167E8CC6 /* Species */,
+				4809214EA95A54CEA9966665 /* Subscription */,
+				57AAE09BD0A352C11682654D /* Wardrobe */,
+				3EAAA2F47A1CBBB2BB67BB0D /* Widget */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		4809214EA95A54CEA9966665 /* Subscription */ = {
+			isa = PBXGroup;
+			children = (
+				FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */,
+			);
+			path = Subscription;
+			sourceTree = "<group>";
+		};
+		4846EE911EBDB76ADA46BC5C /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				C6242A91695E361503D3DAA6 /* AppEnvironment.swift */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		512C0E940DBDAF76ABE74008 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				EFC6AD7229641595F1324223 /* ProfileView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		57AAE09BD0A352C11682654D /* Wardrobe */ = {
+			isa = PBXGroup;
+			children = (
+				D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */,
+				974C6D0127079C7B7DCD5F95 /* Wallet.swift */,
+				DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */,
+			);
+			path = Wardrobe;
+			sourceTree = "<group>";
+		};
+		619ECA6D3E8E4951D510C960 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				0B166213DBFCD7C33ACDCACB /* Components */,
+				4846EE911EBDB76ADA46BC5C /* Configuration */,
+				6F8DCD02D9BD39A89E74A1D2 /* Cosmetics */,
+				689F1B87E8636A71765807C9 /* Creature */,
+				F133806DEFF3EED5217B0482 /* DesignSystem */,
+				8215FF7FD07AC4B81B86DC0C /* Economy */,
+				CA3F4309FAE99414E373CB46 /* Focus */,
+				2388AF86FB38DDACEBD2C246 /* Haptics */,
+				86DFC5E8904B1AD373D47733 /* Health */,
+				684BB008FD7E864BC109F25D /* Networking */,
+				782262E60D0F3A4685DFFBB4 /* Notifications */,
+				FC69B27DD46E2C14C2CBC993 /* Persistence */,
+				D585A12FC3A99236DF3122DC /* Rooms */,
+				BC916C89D3535EFCD0979C44 /* Subscription */,
+				F1C4B86FEF05D30824A5CF2F /* Sync */,
+				01A9187FA967B88D238EE123 /* Widget */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		62A421C17E74A75D43F7978E /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */,
+				3C7A696ACFBC053E0809E12F /* DMMono-Regular.ttf */,
+				C79354CB80CA860721463727 /* DMSans-VF.ttf */,
+				062DF25F0B107A6A708BE8E2 /* Onest-VF.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		631EAC4AF7D1E66CC20EF77B /* Social */ = {
+			isa = PBXGroup;
+			children = (
+				22DB14FC98098997269CFE94 /* FriendRoomCard.swift */,
+				7E9E562134085B1FEF2F1E4F /* FriendsView.swift */,
+				5C049B150140A0C2342A398A /* GrowFriendsView.swift */,
+				571CDDC06280096B10794E7C /* PostcardViews.swift */,
+				7271B792C6CDA97F073DDC10 /* QRCodeView.swift */,
+				3E710CBEC1093FE73775F1BE /* QRScannerView.swift */,
+				4799EF90AC77C8C84A3D581B /* SocialStore.swift */,
+				B10352955EC8A724ED2AEAC4 /* VisitView.swift */,
+				6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */,
+			);
+			path = Social;
+			sourceTree = "<group>";
+		};
+		684BB008FD7E864BC109F25D /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				02B3C10F5C7A1D79618B0B35 /* SocialModels.swift */,
+				F554785860AE53390D69233E /* SupabaseClient.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		689F1B87E8636A71765807C9 /* Creature */ = {
+			isa = PBXGroup;
+			children = (
+				F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */,
+				C38FB1D1C79AAE4A5CC2E1CE /* CareEngines.swift */,
+				C7831C9E0C1B95A7B333E3D4 /* CreatureParts.swift */,
+				E8223D82853775F0621924C5 /* CreatureStyle.swift */,
+				14FCBBEBD1D5464C4A735893 /* FoundingFlair.swift */,
+				4E67B727AE71BD4028C618FB /* Mood.swift */,
+				3A81F4FB5B6B4FE7DC31F059 /* Species.swift */,
+				096CDDB0222B5437F850166C /* Species+Cozy.swift */,
+				0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */,
+				8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */,
+				4374987F9853748A1166C1BA /* SpeciesSet.swift */,
+				822B58776D67B8C7AC5DB908 /* TrustStage.swift */,
+				4FF366FD2F7B0531883B229D /* Vibe.swift */,
+				1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */,
+				B95E3508A252E211E684703D /* YolklingView.swift */,
+			);
+			path = Creature;
+			sourceTree = "<group>";
+		};
+		6DCA0E333DB17D7FA149DE53 /* Room */ = {
+			isa = PBXGroup;
+			children = (
+				1DCBEF321B406CD08787A8AD /* DecorateView.swift */,
+				1A696350A3A3F96048352A62 /* RoomView.swift */,
+			);
+			path = Room;
+			sourceTree = "<group>";
+		};
+		6F72BC9517B3FCBF837ECA6D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				62A421C17E74A75D43F7978E /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		6F8DCD02D9BD39A89E74A1D2 /* Cosmetics */ = {
+			isa = PBXGroup;
+			children = (
+				7E4757EC5D4372E5784BF025 /* ColorShop.swift */,
+				6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */,
+				6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */,
+			);
+			path = Cosmetics;
+			sourceTree = "<group>";
+		};
+		71BD2BB879E5513CE7EE95EC /* Yolkling */ = {
+			isa = PBXGroup;
+			children = (
+				30CB0A1116928879DE203401 /* Assets.xcassets */,
+				3F69CA2DFF74B06646EE1D12 /* Yolkling.entitlements */,
+				B4443624412C791213A0873A /* App */,
+				619ECA6D3E8E4951D510C960 /* Core */,
+				403973D1884A840E90EF3031 /* Features */,
+				6F72BC9517B3FCBF837ECA6D /* Resources */,
+			);
+			path = Yolkling;
+			sourceTree = "<group>";
+		};
+		782262E60D0F3A4685DFFBB4 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				4E4A5383B84FED32116786EF /* YolkNotifications.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		810CFBAA53A52F4CB671CA1D /* Feedback */ = {
+			isa = PBXGroup;
+			children = (
+				FD20DDA9932DC37F8B2B837F /* FeedbackView.swift */,
+			);
+			path = Feedback;
+			sourceTree = "<group>";
+		};
+		8215FF7FD07AC4B81B86DC0C /* Economy */ = {
+			isa = PBXGroup;
+			children = (
+				C3E4BB5586801A2B60F7F7A7 /* Rewards.swift */,
+			);
+			path = Economy;
+			sourceTree = "<group>";
+		};
+		86DFC5E8904B1AD373D47733 /* Health */ = {
+			isa = PBXGroup;
+			children = (
+				FF65067E79FAEAB6D81D2EF4 /* HealthService.swift */,
+				14C460FAA85BB2A5D657CBE3 /* ScreenTimeService.swift */,
+			);
+			path = Health;
+			sourceTree = "<group>";
+		};
+		A8DA43B78DD80FDC98AD433F /* Shop */ = {
+			isa = PBXGroup;
+			children = (
+				B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */,
+			);
+			path = Shop;
+			sourceTree = "<group>";
+		};
+		AB1C09C715E1EE28739CC0A7 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				28194194B325C85B2FB43038 /* CustomizeOptions.swift */,
+				3C8CF8FD294F1454E5591F21 /* EggView.swift */,
+				5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */,
+				7E7AFB40028E43F26BD38206 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		B3C1AF9241FAA90A167E8CC6 /* Species */ = {
+			isa = PBXGroup;
+			children = (
+				D4FC884495811BB1821AF2CB /* CollectionView.swift */,
+				7A1C490033D514C40A0067B7 /* PackRevealView.swift */,
+				7D92FE830A5B71AC26B90E21 /* SpeciesGalleryView.swift */,
+			);
+			path = Species;
+			sourceTree = "<group>";
+		};
+		B4443624412C791213A0873A /* App */ = {
+			isa = PBXGroup;
+			children = (
+				454CD38CF659BCE1CAF57AB5 /* RootView.swift */,
+				FE819215FD090FE423F75193 /* YolklingApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		BC916C89D3535EFCD0979C44 /* Subscription */ = {
+			isa = PBXGroup;
+			children = (
+				B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */,
+			);
+			path = Subscription;
+			sourceTree = "<group>";
+		};
+		CA3F4309FAE99414E373CB46 /* Focus */ = {
+			isa = PBXGroup;
+			children = (
+				BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */,
+			);
+			path = Focus;
+			sourceTree = "<group>";
+		};
+		D585A12FC3A99236DF3122DC /* Rooms */ = {
+			isa = PBXGroup;
+			children = (
+				3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */,
+				AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */,
+				245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */,
+				A7558E421CB8F49D94D63FD7 /* RoomZone.swift */,
+			);
+			path = Rooms;
+			sourceTree = "<group>";
+		};
+		D96D42D771AE9DCAA8692A51 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */,
+				2878B46B9482D667951C103B /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		E2A10A56A4F49FDAB00AB42E = {
+			isa = PBXGroup;
+			children = (
+				71BD2BB879E5513CE7EE95EC /* Yolkling */,
+				14AADFC0457FCD77853ED3EB /* YolklingWidgets */,
+				E2AED7EF6ACD21CCF5BA9184 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E2AED7EF6ACD21CCF5BA9184 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0A7C0703029E40E6699C7F53 /* Yolkling.app */,
+				77B3DF45A83DE92F2CDBBAA4 /* YolklingWidgets.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F133806DEFF3EED5217B0482 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				28D460297B8B82462A61ED36 /* BrandFonts.swift */,
+				689CB056088DED814BB7D8E5 /* TypewriterText.swift */,
+				47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */,
+				2CFCE5524395404EDA669648 /* YolkColors.swift */,
+				BC859F6086205595CCA3548F /* YolkDialog.swift */,
+				E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */,
+				370AC2BE38C8F35E8C59C790 /* YolkType.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		F1C4B86FEF05D30824A5CF2F /* Sync */ = {
+			isa = PBXGroup;
+			children = (
+				D3023148FA25E063CED922DF /* SyncClient.swift */,
+			);
+			path = Sync;
+			sourceTree = "<group>";
+		};
+		FC69B27DD46E2C14C2CBC993 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				D071416EBE1A5EEBC6B0564E /* Player.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D11C675502367D0547EDF59C /* YolklingWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D0C1D97F44D2F7B28655C540 /* Build configuration list for PBXNativeTarget "YolklingWidgets" */;
+			buildPhases = (
+				6DFABFAA97D8B59750326437 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = YolklingWidgets;
+			packageProductDependencies = (
+			);
+			productName = YolklingWidgets;
+			productReference = 77B3DF45A83DE92F2CDBBAA4 /* YolklingWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		DD2770B84A509DAFA8B6AA33 /* Yolkling */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 74FF487326B59BE998E85338 /* Build configuration list for PBXNativeTarget "Yolkling" */;
+			buildPhases = (
+				B9DF030F9B48471D706190B8 /* Sources */,
+				04FDBD6A1787203A56F5088A /* Resources */,
+				D285FE252D89964D5FA5EABC /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2C679BC68071E4BE4B526EB1 /* PBXTargetDependency */,
+			);
+			name = Yolkling;
+			packageProductDependencies = (
+			);
+			productName = Yolkling;
+			productReference = 0A7C0703029E40E6699C7F53 /* Yolkling.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		69E0AAA1430A6FD73A3A4C78 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					D11C675502367D0547EDF59C = {
+						ProvisioningStyle = Automatic;
+					};
+					DD2770B84A509DAFA8B6AA33 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2B1766693E09F30E5ABA8970 /* Build configuration list for PBXProject "Yolkling" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = E2A10A56A4F49FDAB00AB42E;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E2AED7EF6ACD21CCF5BA9184 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DD2770B84A509DAFA8B6AA33 /* Yolkling */,
+				D11C675502367D0547EDF59C /* YolklingWidgets */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		04FDBD6A1787203A56F5088A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD940F0368D4571EF8B4583E /* Assets.xcassets in Resources */,
+				F881D46D850C51D7C10D8613 /* DMMono-Medium.ttf in Resources */,
+				DC6715049B14E1C73DC19A60 /* DMMono-Regular.ttf in Resources */,
+				5FD85F1FB9F1B41CA3D88428 /* DMSans-VF.ttf in Resources */,
+				A7014539ACA074D72F2EE1A7 /* Onest-VF.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6DFABFAA97D8B59750326437 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4E3FDCDEF5E47C4461202BA /* BodyPattern.swift in Sources */,
+				301A7CC3CC8CED5A339A5398 /* BrandFonts.swift in Sources */,
+				2104EC3B551DC384D0C848E9 /* CareEngines.swift in Sources */,
+				990CEEC0D3390B9E529A469A /* ColorShop.swift in Sources */,
+				91BA909DB55DA72B013072D0 /* Cosmetic.swift in Sources */,
+				3B1559031499A54AAAF1AD2A /* CosmeticView.swift in Sources */,
+				3C010459CE49815CAD71620B /* CreatureParts.swift in Sources */,
+				2E5A1E21EB4608C0ED24796B /* CreatureStyle.swift in Sources */,
+				3C10AFB207D45F251C97C0D5 /* CustomizeOptions.swift in Sources */,
+				EE8ECFF9FECF524B0766A792 /* FocusActivityAttributes.swift in Sources */,
+				661AD66CBC76712E89119F7E /* FocusLiveActivity.swift in Sources */,
+				ED4C25AD7489535A06F7DC2F /* FoundingFlair.swift in Sources */,
+				EAB5803EDCB8DCC6C88906B5 /* Mood.swift in Sources */,
+				B3140FD6A3D1EB7B1A6E617C /* RoomDecor.swift in Sources */,
+				F0D956D4138C84573620C1A5 /* RoomDecorView.swift in Sources */,
+				E3FB760D2CB53242FC1E4C8E /* RoomTheme.swift in Sources */,
+				F0CD39EDFF070A9DF531E05A /* RoomView.swift in Sources */,
+				62D7FC75B888F2739AA05C96 /* RoomZone.swift in Sources */,
+				A8432871D410E7E800903F8F /* SocialModels.swift in Sources */,
+				36DE543C57BBE8E69AD40D7B /* Species+Cozy.swift in Sources */,
+				957754945CDFC6FAA6B3E153 /* Species+Garden.swift in Sources */,
+				2FAAB31039B25DC9582412FC /* Species+Ocean.swift in Sources */,
+				9C4AEC9956A058F4B06869BD /* Species.swift in Sources */,
+				231D03F805E66B6978F7EBDA /* SpeciesSet.swift in Sources */,
+				15071DFB35BFB0D5E456F908 /* TrustStage.swift in Sources */,
+				63F47CB7F9AAE58E8F9E4208 /* Vibe.swift in Sources */,
+				2DD5ED2695A90EFCD302A043 /* WidgetPublisher.swift in Sources */,
+				ABA9885E8F8594EE01C4A444 /* WidgetSnapshot.swift in Sources */,
+				774E938C4B98B2F1E3959A7E /* YolkCoin.swift in Sources */,
+				62EBBA87B5CC8CC8247CDCA8 /* YolkColors.swift in Sources */,
+				4BEACA0FC5E5B4E77845EF9C /* YolkDialog.swift in Sources */,
+				100A76148307BBACD333D950 /* YolkExpression.swift in Sources */,
+				8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */,
+				493B4B1BAEB403ED5AC5FC32 /* YolkSpacing.swift in Sources */,
+				9B08F7A18C857012CD227CCE /* YolkType.swift in Sources */,
+				7EA6532D5CD522ED5E3EB65F /* YolklingView.swift in Sources */,
+				441D18B460CB0DBC2B7D832C /* YolklingWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B9DF030F9B48471D706190B8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA925A3A4FA9DD75958F5189 /* AppEnvironment.swift in Sources */,
+				C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */,
+				823C10E6893487A0027EA9EB /* BrandFonts.swift in Sources */,
+				6A5F07B799F0E18D074604F6 /* CareEngines.swift in Sources */,
+				F2C5878F99269B2EDA41761C /* CollectionView.swift in Sources */,
+				B272ABAEB76D8F68D7565E90 /* ColorShop.swift in Sources */,
+				EB5206DA5E4CA7790D03C424 /* Cosmetic.swift in Sources */,
+				CA9F4D5D2F5BE5C80C7FFDE4 /* CosmeticPreviewGrid.swift in Sources */,
+				C6C49BBE9D1EFD446E11DFEB /* CosmeticView.swift in Sources */,
+				8B9D92868991771D4FADBDC1 /* CreatureParts.swift in Sources */,
+				C7461608412DBBB8EB030FA8 /* CreatureStyle.swift in Sources */,
+				DC93A5811E3A4E2B08CD8B49 /* CustomizeOptions.swift in Sources */,
+				CD3BDC853E4D567D4ECD735D /* DecorateView.swift in Sources */,
+				3D8D81A66570893FDA60562E /* EggView.swift in Sources */,
+				133CACDDE3224416D9DE9BDB /* FeedbackView.swift in Sources */,
+				934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */,
+				03B787A52BC86AF96B68F016 /* FocusSessionStore.swift in Sources */,
+				4ADF5DECBAE24ABD3C448D5D /* FocusView.swift in Sources */,
+				51E42375AA5DE76C791EA2F5 /* FoundingFlair.swift in Sources */,
+				84E321BD0A5CB442877C103B /* FoundingRevealView.swift in Sources */,
+				E7FEADC4EC542107262901AD /* FriendRoomCard.swift in Sources */,
+				B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */,
+				1917B3C4E339BE94E5D6898F /* GrowFriendsView.swift in Sources */,
+				0364CA692D518EF8AAF0F8B0 /* Haptics.swift in Sources */,
+				ED4E74BB4114F9EA58A24D8C /* HatchModel.swift in Sources */,
+				E8D0C3C3964CD981CBFACC61 /* HealthService.swift in Sources */,
+				F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */,
+				E261AFCE62FB64987CEDB149 /* HomeView.swift in Sources */,
+				8CFEA4E65FD7AA9F81025A05 /* Mood.swift in Sources */,
+				339169F8EB3C2F3BEAB56081 /* MoodCheckInView.swift in Sources */,
+				23B68D582EA550BE1B5B2088 /* OnboardingView.swift in Sources */,
+				7D316A3F6CA5988E2356DA7C /* PackRevealView.swift in Sources */,
+				18776CC0F5C8239A1AB75CFD /* Player.swift in Sources */,
+				BB7652868F1A1B518E9EB1F4 /* PlusView.swift in Sources */,
+				1FF4A7075EFF898A013EC2D9 /* PostcardViews.swift in Sources */,
+				2E8A4379E8AC57C0E654C849 /* ProfileView.swift in Sources */,
+				984F2FF722D79E95EDC451AB /* QRCodeView.swift in Sources */,
+				08D9901B447473F63656E17A /* QRScannerView.swift in Sources */,
+				62F892518BC4B84224E78C5D /* ReferralView.swift in Sources */,
+				8A16161AA593A990544C3CD7 /* Rewards.swift in Sources */,
+				A3456E748BB01E749F4C4FD9 /* RoomDecor.swift in Sources */,
+				086B1B692A28EC7108795144 /* RoomDecorView.swift in Sources */,
+				FBEE7B6C3B94CF8C263C8033 /* RoomTheme.swift in Sources */,
+				36C7C22D0128007F01EAD514 /* RoomView.swift in Sources */,
+				C5670AB65ECB4D8B04B5808C /* RoomZone.swift in Sources */,
+				133217ABEDB1716D78A4C392 /* RootView.swift in Sources */,
+				5E54299634A29368115B507F /* ScreenTimeService.swift in Sources */,
+				BD284E721748D9A0590066F4 /* ShopHomeView.swift in Sources */,
+				370441F2076020435ED5FD7C /* SocialModels.swift in Sources */,
+				B6F1A002A4884531D733EF46 /* SocialStore.swift in Sources */,
+				E7F706F6C64BFA3E0175609C /* Species+Cozy.swift in Sources */,
+				C12C0259ED876B5BA58FE8C2 /* Species+Garden.swift in Sources */,
+				A15536C1FB51C9CA06D2A02E /* Species+Ocean.swift in Sources */,
+				4E8A216CF386BC0CBD5C0C1E /* Species.swift in Sources */,
+				06CFCBF306F3A0FDCAFD2653 /* SpeciesGalleryView.swift in Sources */,
+				2CAAC08C69E1616E53A9DE93 /* SpeciesSet.swift in Sources */,
+				59DE5860CD52D0A5C2A9961F /* SubscriptionStore.swift in Sources */,
+				F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */,
+				56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */,
+				CF37128F7CA33BB9DE42746D /* TrustStage.swift in Sources */,
+				8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */,
+				52AAB71891CABF5B96820C3F /* Vibe.swift in Sources */,
+				1174E2755C3353C39FD9A5F5 /* VisitView.swift in Sources */,
+				CB5428C1CCDDEDEEA036D244 /* Wallet.swift in Sources */,
+				7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */,
+				115C413B6DCAC129F76CCDB3 /* WhileYouWereAwayStrip.swift in Sources */,
+				2457FC8BE922B4C6358E0241 /* WidgetHowToView.swift in Sources */,
+				E6AD6071FF213AC002F4DCAE /* WidgetPublisher.swift in Sources */,
+				C1DED04D454F150D89F0A062 /* WidgetSnapshot.swift in Sources */,
+				D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */,
+				BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */,
+				B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */,
+				474D87224A811FFD99C64FC4 /* YolkExpression.swift in Sources */,
+				FBFF303FA92AE2EEBC97B37A /* YolkNotifications.swift in Sources */,
+				3395E08E88EBF6AF2686CB1A /* YolkSegmented.swift in Sources */,
+				A2DA17A39B665DFB2F01E51B /* YolkSpacing.swift in Sources */,
+				63353718CB8C13BD6142B08E /* YolkType.swift in Sources */,
+				BB04580D3125794B8DB6BD99 /* YolklingApp.swift in Sources */,
+				0A9560FE0207E256601BA0C4 /* YolklingView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2C679BC68071E4BE4B526EB1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D11C675502367D0547EDF59C /* YolklingWidgets */;
+			targetProxy = 6D8C5801A27962C254385393 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		08D2D5A97AEE44BCEDCD5C5F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = YolklingWidgets/YolklingWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = YolklingWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.Widgets;
+				PRODUCT_NAME = YolklingWidgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		1488F273D20DD34F06685725 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = YolklingWidgets/YolklingWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = YolklingWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.Widgets;
+				PRODUCT_NAME = YolklingWidgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		272FDCD660F855A3ED7A3CCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		756902862714012E8ECFEB00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Yolkling/Yolkling.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Yolkling;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Scan a friend's code to add them.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Yolkling can add a little sample activity while you try out grow-by-living.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling;
+				PRODUCT_NAME = Yolkling;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		EAA45D37683B9CF1B066F621 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Yolkling/Yolkling.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Yolkling;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Scan a friend's code to add them.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Yolkling can add a little sample activity while you try out grow-by-living.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling;
+				PRODUCT_NAME = Yolkling;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		ED60A69065F6085F1D7E75F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2B1766693E09F30E5ABA8970 /* Build configuration list for PBXProject "Yolkling" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				272FDCD660F855A3ED7A3CCB /* Debug */,
+				ED60A69065F6085F1D7E75F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		74FF487326B59BE998E85338 /* Build configuration list for PBXNativeTarget "Yolkling" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				756902862714012E8ECFEB00 /* Debug */,
+				EAA45D37683B9CF1B066F621 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D0C1D97F44D2F7B28655C540 /* Build configuration list for PBXNativeTarget "YolklingWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1488F273D20DD34F06685725 /* Debug */,
+				08D2D5A97AEE44BCEDCD5C5F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 69E0AAA1430A6FD73A3A4C78 /* Project object */;
+}

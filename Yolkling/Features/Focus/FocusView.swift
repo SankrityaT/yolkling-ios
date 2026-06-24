@@ -1,0 +1,201 @@
+import SwiftUI
+import UIKit
+
+/// The focus session screen. Pick a duration, then your yolkling rests and glows
+/// while you put the phone down. Finish it and earn Yolks. Leaving for another app
+/// ends it gently (no guilt). See docs/FOCUS.md.
+struct FocusView: View {
+    let vibe: Vibe
+    let name: String
+    var colorHex: Int = 0xFFC23B
+    var onComplete: (Int) -> Void
+
+    @State private var store = FocusSessionStore()
+    @State private var showCustom = false
+    @State private var customMinutes = 30
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
+
+    private let durations = [15, 25, 45]
+
+    var body: some View {
+        ZStack {
+            YolkColor.shell.ignoresSafeArea()
+            content
+                .padding(.horizontal, YolkSpace.lg)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { store.sceneBecameActive() }
+            else if phase == .background { store.sceneBackgrounded() }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.protectedDataWillBecomeUnavailableNotification)) { _ in
+            store.setLocked(true)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.protectedDataDidBecomeAvailableNotification)) { _ in
+            store.setLocked(false)
+        }
+    }
+
+    @ViewBuilder private var content: some View {
+        switch store.phase {
+        case .idle:      setup
+        case .running:   running
+        case .completed: completed
+        case .ended:     ended
+        }
+    }
+
+    // MARK: Setup
+
+    private var setup: some View {
+        VStack(spacing: YolkSpace.lg) {
+            Spacer()
+            YolklingView(vibe: vibe, expression: .calm, size: 165).frame(height: 205)
+            Text("focus session")
+                .font(YolkType.heading).foregroundStyle(YolkColor.ink)
+            Text("put your phone down. \(name) rests and glows while you're away, and you earn Yolks.")
+                .font(YolkType.body).foregroundStyle(YolkColor.muted).multilineTextAlignment(.center)
+            HStack(spacing: YolkSpace.sm) {
+                ForEach(durations, id: \.self) { m in
+                    chip("\(m)m", selected: !showCustom && store.durationMinutes == m) {
+                        showCustom = false
+                        store.durationMinutes = m
+                    }
+                }
+                chip("custom", selected: showCustom) {
+                    showCustom = true
+                    store.durationMinutes = customMinutes
+                }
+            }
+            if showCustom {
+                Picker("", selection: $customMinutes) {
+                    ForEach(Array(stride(from: 5, through: 120, by: 5)), id: \.self) { m in
+                        Text("\(m) min").tag(m)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(height: 120)
+                .onChange(of: customMinutes) { _, m in store.durationMinutes = m }
+            }
+            Spacer()
+            primary("start") {
+                store.creatureName = name
+                store.creatureColorHex = colorHex
+                store.start(store.durationMinutes)
+            }
+        }
+    }
+
+    // MARK: Running
+
+    private var running: some View {
+        VStack(spacing: YolkSpace.lg) {
+            Spacer()
+            ZStack {
+                Circle().fill(vibe.body).blur(radius: 45).opacity(0.4).frame(width: 230, height: 230)
+                YolklingView(vibe: vibe, expression: .sleepy, size: 185)
+            }
+            .frame(height: 250)
+            TimelineView(.periodic(from: .now, by: 1)) { ctx in
+                Text(timeString(store.remaining(at: ctx.date)))
+                    .font(.system(size: 54, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(YolkColor.ink)
+            }
+            Text("stay off your phone")
+                .font(YolkType.body).foregroundStyle(YolkColor.muted)
+            Spacer()
+            secondary("end session") { store.cancel() }
+        }
+        .task(id: store.endDate) {
+            guard store.phase == .running, let end = store.endDate else { return }
+            let wait = end.timeIntervalSinceNow
+            if wait > 0 { try? await Task.sleep(for: .seconds(wait)) }
+            store.complete()
+        }
+    }
+
+    // MARK: Completed
+
+    private var completed: some View {
+        VStack(spacing: YolkSpace.lg) {
+            Spacer()
+            YolklingView(vibe: vibe, expression: .proud, size: 185).frame(height: 240)
+            Text("nice focus")
+                .font(YolkType.heading).foregroundStyle(YolkColor.ink)
+            Text("you focused for \(store.durationMinutes) minutes. \(name) rested the whole time.")
+                .font(YolkType.body).foregroundStyle(YolkColor.muted).multilineTextAlignment(.center)
+            HStack(spacing: 6) {
+                YolkCoin(size: 22)
+                Text("+\(store.durationMinutes) \(Currency.name)")
+                    .font(YolkType.title).foregroundStyle(YolkColor.ink)
+            }
+            Spacer()
+            primary("collect") {
+                onComplete(store.durationMinutes)
+                dismiss()
+            }
+        }
+    }
+
+    // MARK: Ended (gentle)
+
+    private var ended: some View {
+        VStack(spacing: YolkSpace.lg) {
+            Spacer()
+            YolklingView(vibe: vibe, expression: .content, size: 165).frame(height: 205)
+            Text("session ended")
+                .font(YolkType.heading).foregroundStyle(YolkColor.ink)
+            Text("looks like you left the app. no worries and no guilt. try again whenever you're ready.")
+                .font(YolkType.body).foregroundStyle(YolkColor.muted).multilineTextAlignment(.center)
+            Spacer()
+            VStack(spacing: YolkSpace.sm) {
+                primary("try again") { store.reset() }
+                secondary("close") { dismiss() }
+            }
+        }
+    }
+
+    // MARK: Pieces
+
+    private func timeString(_ seconds: TimeInterval) -> String {
+        let s = Int(seconds.rounded(.up))
+        return String(format: "%02d:%02d", s / 60, s % 60)
+    }
+
+    private func chip(_ label: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(label)
+                .font(YolkType.body.weight(.semibold))
+                .foregroundStyle(selected ? YolkColor.shell : YolkColor.ink)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(selected ? YolkColor.ink : YolkColor.shell2, in: Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func primary(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(YolkType.body.weight(.semibold))
+                .foregroundStyle(YolkColor.shell)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 17)
+                .background(YolkColor.ink, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .padding(.bottom, YolkSpace.lg)
+    }
+
+    private func secondary(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(YolkType.body)
+                .foregroundStyle(YolkColor.muted)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+        }
+        .buttonStyle(.plain)
+    }
+}

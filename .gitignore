@@ -1,0 +1,38 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Xcode build output / derived data
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Swift Package Manager (user-specific state; Package.resolved is kept)
+.build/
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+
+# CocoaPods / Carthage (not used here, kept defensively)
+Pods/
+Carthage/Build/
+
+# fastlane
+fastlane/report.xml
+fastlane/screenshots/
+fastlane/test_output/
+
+# Secrets — none are committed; this is belt-and-suspenders.
+# The Supabase anon key in AppEnvironment.swift is publishable and safe to ship.
+# The account PAT lives only in yolkling-app/.env.local and is never in this repo.
+*.p8
+*.p12
+*.mobileprovision
+*.cer
+.env
+.env.*
+secrets.json

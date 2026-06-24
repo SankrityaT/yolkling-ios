@@ -1,0 +1,115 @@
+import SwiftUI
+
+/// The publishable look of a player's creature + room, shared so a friend can VISIT
+/// (see your "pet house"). Opaque jsonb on the server; the client owns the shape.
+/// Mirrors the fields RootView uses to reconstruct a creature from a Player.
+struct RoomSnapshot: Codable, Sendable {
+    var colorHex: Int
+    var styleRaw: String
+    var accentHex: Int?
+    var patternRaw: String
+    var activeFoundingID: String?
+    var moodRaw: String
+    var themeID: String
+    var decorIDs: [String]
+    var outfitIDs: [String]
+    var streak: Int?
+    var hour: Int?
+
+    init(colorHex: Int, styleRaw: String, accentHex: Int?, patternRaw: String,
+         activeFoundingID: String?, moodRaw: String, themeID: String,
+         decorIDs: [String], outfitIDs: [String], streak: Int? = nil, hour: Int? = nil) {
+        self.colorHex = colorHex; self.styleRaw = styleRaw; self.accentHex = accentHex
+        self.patternRaw = patternRaw; self.activeFoundingID = activeFoundingID
+        self.moodRaw = moodRaw; self.themeID = themeID
+        self.decorIDs = decorIDs; self.outfitIDs = outfitIDs
+        self.streak = streak; self.hour = hour
+    }
+}
+
+extension RoomSnapshot {
+    /// Lenient decode: a friend who never published (or an empty `{}`) still yields a
+    /// sensible default yolk in a cozy room instead of failing the whole list.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        colorHex = try c.decodeIfPresent(Int.self, forKey: .colorHex) ?? 0xFFC23B
+        styleRaw = try c.decodeIfPresent(String.self, forKey: .styleRaw) ?? "classic"
+        accentHex = try c.decodeIfPresent(Int.self, forKey: .accentHex)
+        patternRaw = try c.decodeIfPresent(String.self, forKey: .patternRaw) ?? "none"
+        activeFoundingID = try c.decodeIfPresent(String.self, forKey: .activeFoundingID)
+        moodRaw = try c.decodeIfPresent(String.self, forKey: .moodRaw) ?? "happy"
+        themeID = try c.decodeIfPresent(String.self, forKey: .themeID) ?? "room-cozy"
+        decorIDs = try c.decodeIfPresent([String].self, forKey: .decorIDs) ?? []
+        outfitIDs = try c.decodeIfPresent([String].self, forKey: .outfitIDs) ?? []
+        streak = try c.decodeIfPresent(Int.self, forKey: .streak)
+        hour = try c.decodeIfPresent(Int.self, forKey: .hour)
+    }
+
+    var theme: RoomTheme { RoomThemes.all.first { $0.id == themeID } ?? RoomThemes.cozy }
+    var decor: [RoomDecor] { decorIDs.compactMap { RoomDecorCatalog.byID($0) } }
+    var outfit: [Cosmetic] { outfitIDs.compactMap { id in CosmeticCatalog.all.first { $0.id == id } } }
+    var expression: YolkExpression { (Mood(rawValue: moodRaw) ?? .happy).expression }
+
+    /// Rebuild the friend's renderable creature (mirrors RootView.creature).
+    func makeVibe(name: String) -> Vibe {
+        if let fid = activeFoundingID, let sp = SpeciesCatalog.founding(id: fid) { return sp.vibe }
+        let hex = UInt(colorHex)
+        return Vibe(id: "friend", name: name, body: Color(hex: hex),
+                    deep: Color(hex: CreaturePalette.darker(hex)),
+                    style: CreatureStyle(rawValue: styleRaw) ?? .classic,
+                    accent: accentHex.map { Color(hex: UInt($0)) },
+                    pattern: BodyPattern(rawValue: patternRaw) ?? .none,
+                    bodyStops: ColorShop.bodyStops(forBody: hex))
+    }
+}
+
+/// A friend + their latest published room snapshot (from get_friends).
+struct Friend: Codable, Sendable, Identifiable {
+    let user_id: String
+    let name: String?
+    let snapshot: RoomSnapshot?
+    var updated_at: String? = nil
+    var id: String { user_id }
+    var displayName: String { (name?.isEmpty == false ? name : nil) ?? "a friend" }
+    var updatedDate: Date? {
+        guard let s = updated_at else { return nil }
+        return ISO8601DateFormatter().date(from: s)
+    }
+}
+
+/// A received kind note (from get_postcards).
+struct Postcard: Codable, Sendable, Identifiable {
+    let id: Int
+    let from_id: String
+    let from_name: String?
+    let message: String
+    let created_at: String
+    let read: Bool
+    var senderName: String { (from_name?.isEmpty == false ? from_name : nil) ?? "a friend" }
+}
+
+/// Result of redeeming a friend code.
+struct AddFriendResult: Sendable {
+    let ok: Bool
+    let friendID: String?
+    let name: String?
+    let reason: String?
+}
+
+/// A wave received from a friend (from get_waves). Marked seen on fetch.
+struct Wave: Codable, Sendable, Identifiable {
+    let from_id: String
+    let name: String?
+    let created_at: String
+    var id: String { from_id }
+    var senderName: String { (name?.isEmpty == false ? name : nil) ?? "a friend" }
+}
+
+/// A recent visit to your room (from get_recent_visits).
+struct Visit: Codable, Sendable, Identifiable {
+    let visitor_id: String
+    let name: String?
+    let created_at: String
+    var id: String { visitor_id }
+    var visitorName: String { (name?.isEmpty == false ? name : nil) ?? "a friend" }
+}

@@ -1,0 +1,75 @@
+name: Yolkling
+options:
+  bundleIdPrefix: com.Sankritya
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "6.0"
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+targets:
+  Yolkling:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - Yolkling
+    dependencies:
+      - target: YolklingWidgets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling
+        PRODUCT_NAME: Yolkling
+        CODE_SIGN_ENTITLEMENTS: Yolkling/Yolkling.entitlements
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSHealthShareUsageDescription: "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life."
+        INFOPLIST_KEY_NSHealthUpdateUsageDescription: "Yolkling can add a little sample activity while you try out grow-by-living."
+        INFOPLIST_KEY_CFBundleDisplayName: Yolkling
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
+        INFOPLIST_KEY_NSCameraUsageDescription: "Scan a friend's code to add them."
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+  YolklingWidgets:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - YolklingWidgets
+      - path: Yolkling/Core/Focus/FocusActivityAttributes.swift
+      - path: Yolkling/Core/DesignSystem
+        excludes:
+          - TypewriterText.swift
+      - Yolkling/Core/Creature
+      - Yolkling/Core/Cosmetics
+      - Yolkling/Core/Rooms
+      - Yolkling/Core/Widget
+      - path: Yolkling/Core/Networking/SocialModels.swift
+      - path: Yolkling/Features/Onboarding/CustomizeOptions.swift
+      - path: Yolkling/Features/Room/RoomView.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling.Widgets
+        PRODUCT_NAME: YolklingWidgets
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: YolklingWidgets/Info.plist
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: YolklingWidgets/YolklingWidgets.entitlements
+        SKIP_INSTALL: YES
+schemes:
+  Yolkling:
+    build:
+      targets:
+        Yolkling: all
+    run:
+      config: Debug
+      storeKitConfiguration: Yolkling.storekit
