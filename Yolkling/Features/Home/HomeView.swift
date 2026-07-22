@@ -95,10 +95,19 @@ struct HomeView: View {
     private var currentHour: Int { demoHour ?? Calendar.current.component(.hour, from: Date()) }
     private var dayPhase: YolkExpression.DayPhase { YolkExpression.phase(forHour: currentHour) }
 
+    /// Liveliness fed by real life: Health (steps + sleep) and, additively, time off
+    /// the phone. Screen Time can only RAISE vitality, never lower it, so a heavy
+    /// screen day never reads as "sick" (WELLBEING.md: sleepy, never sick).
+    private var livingVitality: Double {
+        var v = health.authorized ? health.vitality : 0.5
+        if screenTime.available { v = min(1, v + 0.15 * screenTime.offScreenProgress) }
+        return v
+    }
+
     private var shownExpression: YolkExpression {
         if reacting { return .affectionate }
         var e = baseMood.expression
-        if health.authorized { e = e.energized(by: health.vitality) }
+        if health.authorized || screenTime.available { e = e.energized(by: livingVitality) }
         e = e.warmed(by: trust)
         return e.atPhase(dayPhase, sleptWell: health.authorized && health.sleepHours >= 7)
     }
@@ -121,6 +130,11 @@ struct HomeView: View {
             bottomNav
         }
         .background(YolkColor.shell.ignoresSafeArea())
+        .background {
+            // Hidden host: mounting it runs the DeviceActivityReport extension, which
+            // writes today's off-phone figure to the App Group for us to read back.
+            if screenTime.status == .approved { ScreenTimeReportHost() }
+        }
         .sheet(isPresented: $showWardrobe) {
             ShopHomeView(vibe: vibe, store: wardrobe, wallet: wallet,
                          originalBodyHex: originalBodyHex, originalAccentHex: player?.accentHex,
@@ -179,7 +193,7 @@ struct HomeView: View {
             }
         }
         .yolkDialog($dialog)
-        .onAppear { applyScreenshotSeams(); applyTrustDecay(); restoreHealth(); pushWalletToServer(); helloWaveIfTrusted(); maybeShowTutorial(); migratePlacedDecorIfNeeded(); maybeShowWidgetNudge() }
+        .onAppear { applyScreenshotSeams(); applyTrustDecay(); restoreHealth(); restoreScreenTime(); pushWalletToServer(); helloWaveIfTrusted(); maybeShowTutorial(); migratePlacedDecorIfNeeded(); maybeShowWidgetNudge() }
         .onChange(of: wallet.coins) { _, _ in persist() }
         .onChange(of: wallet.owned) { _, _ in persist() }
         .onChange(of: wardrobe.equipped) { _, _ in persist() }
@@ -553,7 +567,8 @@ struct HomeView: View {
                     if screenTime.available, let off = screenTime.offScreenHours {
                         livingStat(icon: "iphone", value: String(format: "%.0fh", off), label: "off phone", hit: screenTime.hitGoal)
                     } else {
-                        livingStatSoon(icon: "iphone", label: "off phone")
+                        Button { connectScreenTime() } label: { livingStatSoon(icon: "iphone", label: "off phone") }
+                            .buttonStyle(.plain)
                     }
                 }
                 if livingHasReward {
@@ -625,6 +640,20 @@ struct HomeView: View {
             } else {
                 dialog = YolkDialog(icon: .creature(vibe, .curious), title: "hmm",
                                     message: "couldn't reach Health. you can connect it later from here.", primaryTitle: "okay")
+            }
+        }
+    }
+
+    private func connectScreenTime() {
+        Task {
+            let ok = await screenTime.connect()
+            if ok {
+                player?.screenTimeConnected = true
+                persist()
+                screenTime.refresh()
+            } else {
+                dialog = YolkDialog(icon: .creature(vibe, .curious), title: "not yet",
+                                    message: "time off your phone needs Screen Time access, and a real device. you can turn it on later from here.", primaryTitle: "okay")
             }
         }
     }
@@ -852,6 +881,7 @@ struct HomeView: View {
         if env["YOLK_FRIENDS"] != nil { showFriends = true }
         #if DEBUG
         if let h = env["YOLK_HEALTH"] { health.mock(high: h != "low") }
+        if let s = env["YOLK_SCREENTIME"] { screenTime.mock(offHours: s == "low" ? 8 : 21) }
         if env["YOLK_TRUST"] != nil { demoTrust = 1; Task { try? await Task.sleep(for: .seconds(0.5)); waveToken += 1 } }
         if let h = env["YOLK_HOUR"], let hr = Int(h) { demoHour = hr }
         if env["YOLK_TUTORIAL"] != nil { Task { try? await Task.sleep(for: .seconds(0.6)); withAnimation { showTutorial = true } } }
@@ -861,6 +891,11 @@ struct HomeView: View {
     /// Re-enable Health reads for a player who connected on a previous launch.
     private func restoreHealth() {
         if player?.healthConnected == true { Task { await health.resume() } }
+    }
+
+    /// Re-read Screen Time status + the latest off-phone figure without prompting.
+    private func restoreScreenTime() {
+        if player?.screenTimeConnected == true { screenTime.resume() }
     }
 }
 

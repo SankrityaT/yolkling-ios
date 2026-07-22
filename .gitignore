@@ -36,3 +36,6 @@ fastlane/test_output/
 .env
 .env.*
 secrets.json
+
+# screenshot compositor deps
+AppStore/screenshots/node_modules/

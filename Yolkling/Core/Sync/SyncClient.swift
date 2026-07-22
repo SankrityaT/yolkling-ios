@@ -43,5 +43,6 @@ struct LocalOnlySyncClient: SyncClient {
 // yolkling Supabase project access + the Sign in with Apple identity. It maps
 // PlayerSnapshot to the `app_users` / `inventory` rows (see docs/sql/rewards.sql)
 // over the Supabase client, keyed by appleUserID. Reconciliation: last-write-wins
-// by updatedAt, with the server authoritative for friendship + IAP state. E2E:
-// content is encrypted client-side before it leaves the device (Core/Crypto).
+// by updatedAt, with the server authoritative for friendship state. Privacy: raw
+// wellness signals stay on-device; only creature/economy state syncs. (A future
+// Core/Crypto layer could E2E-encrypt synced content; not claimed until it ships.)

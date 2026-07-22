@@ -12,11 +12,12 @@ struct ProfileView: View {
 
     @Environment(\.modelContext) private var context
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) private var dismiss
     @State private var signInError: String?
     @State private var showFeedback = false
-    @State private var showPlus = false
     @State private var showHowTo = false
-    @State private var subs = SubscriptionStore()
+    @State private var showDeleteConfirm = false
+    @State private var deleting = false
     @State private var notifyOn = YolkNotifications.isEnabled
     @State private var notifyTime = Calendar.current.date(
         from: DateComponents(hour: YolkNotifications.hour, minute: YolkNotifications.minute)) ?? Date()
@@ -53,7 +54,7 @@ struct ProfileView: View {
                     .frame(height: 50)
                     .clipShape(Capsule())
 
-                    Text("end to end encrypted. even we can't read your data.")
+                    Text("we only keep a private sign-in id. no name, no email.")
                         .font(YolkType.bodySmall)
                         .foregroundStyle(YolkColor.muted)
                 }
@@ -68,8 +69,6 @@ struct ProfileView: View {
                     .padding(.horizontal, YolkSpace.lg)
             }
 
-            plusRow
-
             widgetRow
 
             dailyHello
@@ -81,16 +80,26 @@ struct ProfileView: View {
                     .font(YolkType.body).foregroundStyle(YolkColor.inkSoft)
             }
             .buttonStyle(.plain)
+
+            Button(role: .destructive) { showDeleteConfirm = true } label: {
+                Text(deleting ? "deleting..." : "delete my account")
+                    .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+            }
+            .buttonStyle(.plain)
+            .disabled(deleting)
             .padding(.bottom, YolkSpace.lg)
+        }
+        .alert("delete your account?", isPresented: $showDeleteConfirm) {
+            Button("cancel", role: .cancel) {}
+            Button("delete", role: .destructive) { deleteAccount() }
+        } message: {
+            Text("this erases \(name), your collection, your friends, and everything you've saved, on this device and our server. it can't be undone.")
         }
         .frame(maxWidth: .infinity)
         .background(YolkColor.shell)
         .sheet(isPresented: $showFeedback) {
             FeedbackView(vibe: vibe, userID: player?.backendUserID ?? InstallID.current)
                 .presentationDetents([.medium, .large])
-        }
-        .sheet(isPresented: $showPlus) {
-            PlusView(store: subs, vibe: vibe).presentationDetents([.large])
         }
         .sheet(isPresented: $showHowTo) {
             WidgetHowToView().presentationDetents([.medium])
@@ -106,27 +115,6 @@ struct ProfileView: View {
                     Text("home screen widget")
                         .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                     Text("put your yolk right on your home screen")
-                        .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
-                }
-                Spacer()
-                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(YolkColor.muted)
-            }
-            .padding(YolkSpace.md)
-            .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
-            .padding(.horizontal, YolkSpace.lg)
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var plusRow: some View {
-        Button { showPlus = true } label: {
-            HStack(spacing: YolkSpace.md) {
-                Image(systemName: subs.isPlus ? "heart.fill" : "sparkles")
-                    .font(.title3).foregroundStyle(YolkColor.yolkDeep).frame(width: 28)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(subs.isPlus ? "you're a supporter ♥" : "yolkling+")
-                        .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
-                    Text(subs.isPlus ? "thank you for keeping us alive" : "keep the lights on, only if you love it")
                         .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                 }
                 Spacer()
@@ -171,6 +159,21 @@ struct ProfileView: View {
             } else {
                 YolkNotifications.disable()
             }
+        }
+    }
+
+    /// Full account deletion (App Store 5.1.1(v)): erase the server rows, then wipe
+    /// the local creature so the app returns to a clean onboarding.
+    private func deleteAccount() {
+        guard !deleting else { return }
+        deleting = true
+        let backendID = player?.backendUserID ?? InstallID.current
+        Task {
+            _ = await SupabaseClient.shared.deleteAccount(userID: backendID)
+            if let player { context.delete(player) }
+            try? context.save()
+            deleting = false
+            dismiss()
         }
     }
 

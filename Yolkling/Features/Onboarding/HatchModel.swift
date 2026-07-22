@@ -8,7 +8,7 @@ import Observation
 @Observable
 final class HatchModel {
 
-    enum Step: Equatable { case welcome, customize, hatching, naming, gift, health, focus, intro }
+    enum Step: Equatable { case welcome, customize, hatching, naming, gift, health, focus, screenTime, intro }
 
     private(set) var step: Step = .welcome
     private(set) var finalCreature: HatchedCreature?
@@ -36,6 +36,7 @@ final class HatchModel {
     func backToCustomize() { step = .customize }
     func goToHealth() { step = .health }
     func goToFocus() { step = .focus }
+    func goToScreenTime() { step = .screenTime }
 
     /// Name the creature → advance to the welcome gift. Returns whether it took.
     @discardableResult
@@ -66,6 +67,7 @@ final class HatchModel {
         case "gift":     finalCreature = makeCreature(named: "Pip"); step = .gift
         case "health":   finalCreature = makeCreature(named: "Pip"); step = .health
         case "focus":    finalCreature = makeCreature(named: "Pip"); step = .focus
+        case "screentime": finalCreature = makeCreature(named: "Pip"); step = .screenTime
         case "intro":    finalCreature = makeCreature(named: "Pip"); step = .intro
         case "welcome":  step = .welcome
         default:         step = .customize

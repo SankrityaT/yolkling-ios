@@ -57,6 +57,12 @@ struct OnboardingView: View {
 
                 case .focus:
                     FocusPrimingView(vibe: model.vibe) {
+                        withAnimation(.easeInOut(duration: 0.4)) { model.goToScreenTime() }
+                    }
+                    .transition(.opacity)
+
+                case .screenTime:
+                    ScreenTimePrimingView(vibe: model.vibe) {
                         withAnimation(.easeInOut(duration: 0.4)) { model.goToIntro() }
                     }
                     .transition(.opacity)
@@ -454,7 +460,7 @@ private struct HealthPrimingView: View {
             YolklingView(vibe: vibe, expression: .happy, size: 150)
                 .frame(height: 185)
             TypewriterText(text: "your real life earns their trust", font: YolkType.heading, color: YolkColor.ink)
-            TypewriterText(text: "your steps and sleep are how your yolkling learns to trust you. connect Health so it can feel your day and grow with you. your data stays private, end to end encrypted, even we can't read it.",
+            TypewriterText(text: "your steps and sleep are how your yolkling learns to trust you. connect Health so it can feel your day and grow with you. your steps and sleep stay on your device. we never send them anywhere.",
                            color: YolkColor.muted, startDelay: 0.8)
             Spacer()
         }
@@ -481,6 +487,32 @@ private struct FocusPrimingView: View {
                 .frame(height: 185)
             TypewriterText(text: "off your phone, on with life", font: YolkType.heading, color: YolkColor.ink)
             TypewriterText(text: "start a focus session and your yolkling rests and glows while you're away. the less you scroll, the more they thrive. miss a day and they just wait for you, never guilt.",
+                           color: YolkColor.muted, startDelay: 0.85)
+            Spacer()
+        }
+        .padding(.horizontal, YolkSpace.lg)
+        .safeAreaInset(edge: .bottom) {
+            BottomBar {
+                VStack(spacing: YolkSpace.xs) {
+                    HatchButton("sounds good", action: onContinue)
+                    SecondaryButton("maybe later", action: onContinue)
+                }
+            }
+        }
+    }
+}
+
+private struct ScreenTimePrimingView: View {
+    let vibe: Vibe
+    var onContinue: () -> Void
+
+    var body: some View {
+        VStack(spacing: YolkSpace.lg) {
+            Spacer()
+            YolklingView(vibe: vibe, expression: .content, size: 150)
+                .frame(height: 185)
+            TypewriterText(text: "time away is time well spent", font: YolkType.heading, color: YolkColor.ink)
+            TypewriterText(text: "let your yolkling feel the hours you spend off your phone, and it grows a little livelier. it only ever sees how long, never what you were doing. turn it on now or later, from home.",
                            color: YolkColor.muted, startDelay: 0.85)
             Spacer()
         }

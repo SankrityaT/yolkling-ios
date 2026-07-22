@@ -132,6 +132,37 @@ struct SupabaseClient {
         return (obj["ok"] as? Bool ?? false, obj["coins"] as? Int, obj["reason"] as? String)
     }
 
+    // MARK: Moderation + account (App Store 1.2 UGC + 5.1.1(v)). See docs/sql/moderation.sql.
+
+    /// Block a user: hides their content from you and yours from them, both ways.
+    @discardableResult
+    func blockUser(userID: String, blocked: String) async -> Bool {
+        guard let data = await postJSON("block_user", ["p_user": userID, "p_blocked": blocked]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return obj["ok"] as? Bool ?? false
+    }
+
+    /// Report an objectionable postcard for review (recorded server-side).
+    @discardableResult
+    func reportPostcard(userID: String, postcardID: Int, reason: String) async -> Bool {
+        guard let data = await postJSON("report_content",
+                                        ["p_user": userID, "p_postcard": postcardID, "p_reason": reason]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return obj["ok"] as? Bool ?? false
+    }
+
+    /// Permanently delete the account and all its rows (friendships, rooms,
+    /// postcards, inventory, redemptions). Required by App Store 5.1.1(v).
+    @discardableResult
+    func deleteAccount(userID: String) async -> Bool {
+        guard let data = await postJSON("delete_user", ["p_user": userID]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return obj["ok"] as? Bool ?? false
+    }
+
     // MARK: Wallet (#11) — durable + cross-device, keyed to Apple id. See docs/sql/wallet.sql.
 
     /// The server's current view of the player's wallet.

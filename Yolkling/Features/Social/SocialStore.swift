@@ -56,6 +56,25 @@ final class SocialStore {
         await load()
     }
 
+    // MARK: Moderation (App Store 1.2 — required for user-generated postcards).
+
+    /// Block a sender: removes the friendship both ways and hides their notes.
+    /// Optimistically drops their content locally, then refreshes from the server.
+    @discardableResult
+    func block(_ otherID: String) async -> Bool {
+        inbox.removeAll { $0.from_id == otherID }
+        friends.removeAll { $0.user_id == otherID }
+        let ok = await client.blockUser(userID: userID, blocked: otherID)
+        await load()
+        return ok
+    }
+
+    /// Report an objectionable postcard for review.
+    @discardableResult
+    func report(_ card: Postcard, reason: String = "objectionable") async -> Bool {
+        await client.reportPostcard(userID: userID, postcardID: card.id, reason: reason)
+    }
+
     // MARK: Living Friends tab - waves, visits, gifts, lastVisited tracking.
 
     func sendWave(to: String) async {

@@ -80,6 +80,7 @@ struct PostcardCompose: View {
 /// The received kind notes. Marked read on open.
 struct PostcardInbox: View {
     @State var store: SocialStore
+    @State private var toast: String?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -108,6 +109,21 @@ struct PostcardInbox: View {
             }
         }
         .background(YolkColor.shell)
+        .overlay(alignment: .bottom) {
+            if let toast {
+                Text(toast)
+                    .font(YolkType.bodySmall).foregroundStyle(YolkColor.shell)
+                    .padding(.horizontal, YolkSpace.md).padding(.vertical, 10)
+                    .background(YolkColor.ink, in: Capsule())
+                    .padding(.bottom, YolkSpace.lg)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .task {
+                        try? await Task.sleep(for: .seconds(2.4))
+                        withAnimation { self.toast = nil }
+                    }
+            }
+        }
+        .animation(.easeInOut, value: toast)
         .task { await store.markInboxRead() }
     }
 
@@ -117,6 +133,19 @@ struct PostcardInbox: View {
                 Text(card.senderName).font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                 Spacer()
                 if !card.read { Circle().fill(YolkColor.pink).frame(width: 8, height: 8) }
+                Menu {
+                    Button(role: .destructive) {
+                        Task { await store.report(card) }
+                        toast = "thanks. we'll take a look."
+                    } label: { Label("report this note", systemImage: "flag") }
+                    Button(role: .destructive) {
+                        Task { await store.block(card.from_id) }
+                        toast = "blocked. you won't hear from them again."
+                    } label: { Label("block \(card.senderName)", systemImage: "hand.raised") }
+                } label: {
+                    Image(systemName: "ellipsis").font(.footnote.weight(.semibold))
+                        .foregroundStyle(YolkColor.muted).frame(width: 28, height: 20)
+                }
             }
             Text(card.message).font(YolkType.body).foregroundStyle(YolkColor.inkSoft)
         }
