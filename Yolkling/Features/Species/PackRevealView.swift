@@ -9,6 +9,7 @@ struct PackRevealView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var revealed = false
     @State private var wiggle = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -54,7 +55,9 @@ struct PackRevealView: View {
             }
         }
         .onAppear {
-            withAnimation(.easeInOut(duration: 0.55).repeatForever(autoreverses: true)) { wiggle = true }
+            if !reduceMotion {
+                withAnimation(.easeInOut(duration: 0.55).repeatForever(autoreverses: true)) { wiggle = true }
+            }
             if ProcessInfo.processInfo.environment["YOLK_PACK_OPEN"] != nil { open() }
         }
     }

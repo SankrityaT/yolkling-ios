@@ -12,6 +12,7 @@ struct TypewriterText: View {
     var startDelay: Double = 0.12
 
     @State private var shown = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -23,6 +24,9 @@ struct TypewriterText: View {
         .multilineTextAlignment(alignment)
         .frame(maxWidth: .infinity)
         .task(id: text) {
+            // Reduce Motion: show the whole line at once. Onboarding copy is information,
+            // so it must still arrive — just without the reveal.
+            guard !reduceMotion else { shown = text.count; return }
             shown = 0
             try? await Task.sleep(for: .seconds(startDelay))
             for i in 1...max(text.count, 1) {

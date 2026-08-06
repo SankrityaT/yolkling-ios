@@ -11,6 +11,13 @@ enum InstallID {
         UserDefaults.standard.set(id, forKey: key)
         return id
     }
+
+    /// Forget this install's identity so the next `current` mints a fresh one.
+    /// Used by account deletion — otherwise a "deleted" player would come straight
+    /// back as the same anonymous backend user.
+    nonisolated static func reset() {
+        UserDefaults.standard.removeObject(forKey: key)
+    }
 }
 
 /// The persisted player: their creature's identity + economy. Stored locally

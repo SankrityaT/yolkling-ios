@@ -11,7 +11,6 @@ struct HomeView: View {
     @State private var vibeIndex: Int
     @State private var moodIndex: Int
     @State private var reacting = false
-    @State private var bounce = false
     @State private var wardrobe: WardrobeStore
     @State private var wallet: Wallet
     @State private var showWardrobe = false
@@ -40,6 +39,7 @@ struct HomeView: View {
     @State private var screenTime = ScreenTimeService()
     @State private var waveToken = 0
     @State private var celebrateToken = 0
+    @State private var petToken = 0
     @State private var showTutorial = false
     @State private var demoTrust: Double? = nil   // screenshot seam override
     @State private var demoHour: Int? = nil       // screenshot seam override for time-of-day
@@ -441,9 +441,9 @@ struct HomeView: View {
                 GeometryReader { geo in
                     YolklingView(vibe: vibe, expression: shownExpression,
                                  size: geo.size.height * RoomView.creatureSpot.size,
-                                 outfit: wardrobe.outfit, waveToken: waveToken, celebrateToken: celebrateToken)
+                                 outfit: wardrobe.outfit, waveToken: waveToken,
+                                 celebrateToken: celebrateToken, petToken: petToken)
                         .contentShape(Rectangle())
-                        .scaleEffect(bounce ? 1.05 : 1.0)
                         .position(x: geo.size.width * RoomView.creatureSpot.x,
                                   y: geo.size.height * RoomView.creatureSpot.y)
                         .onTapGesture { pet() }
@@ -793,15 +793,15 @@ struct HomeView: View {
 
     private func pet() {
         Haptics.shared.pet()
-        withAnimation(.bouncy(duration: 0.4, extraBounce: 0.5)) {
-            reacting = true
-            bounce = true
-        }
+        // The squash runs on the creature's own clock rather than an external
+        // `withAnimation` scaleEffect, which used to fight the idle loop. `reacting`
+        // only shifts the POSE; YolklingView tweens that internally, so no animation
+        // wrapper is needed here either.
+        petToken += 1
+        reacting = true
         Task {
-            try? await Task.sleep(for: .seconds(0.3))
-            withAnimation(.spring) { bounce = false }
-            try? await Task.sleep(for: .seconds(1.3))
-            withAnimation(.easeInOut(duration: 0.5)) { reacting = false }
+            try? await Task.sleep(for: .seconds(1.6))
+            reacting = false
         }
     }
 

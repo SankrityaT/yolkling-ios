@@ -35,6 +35,7 @@ private struct YolkDialogHost: View {
     let dialog: YolkDialog
     var dismiss: () -> Void
     @State private var shown = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -43,12 +44,14 @@ private struct YolkDialogHost: View {
                 .onTapGesture { close(dialog.secondaryAction) }
 
             card
-                .scaleEffect(shown ? 1 : 0.85)
+                // Reduce Motion: fade in place, no scale travel.
+                .scaleEffect(shown || reduceMotion ? 1 : 0.85)
                 .opacity(shown ? 1 : 0)
                 .padding(YolkSpace.xl)
         }
         .onAppear {
-            withAnimation(.bouncy(duration: 0.45, extraBounce: 0.3)) { shown = true }
+            withAnimation(reduceMotion ? .easeOut(duration: 0.2)
+                                       : .bouncy(duration: 0.45, extraBounce: 0.3)) { shown = true }
         }
     }
 

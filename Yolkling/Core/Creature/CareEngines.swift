@@ -30,7 +30,9 @@ enum StreakEngine {
 /// during the season fills its clock, without ever guaranteeing it.
 enum DiscoveryEngine {
     static func pickNext(discovered: Set<String>) -> String? {
-        let seasonal = SpeciesSets.all.first { $0.isSeasonal && ($0.seasonDaysLeft ?? 0) > 0 }
+        let seasonal = SpeciesSets.all.first {
+            ($0.seasonDaysLeft(window: SeasonWindows.window(for: $0.id)) ?? 0) > 0
+        }
         let seasonalPool = (seasonal?.speciesIDs ?? []).filter { !discovered.contains($0) }
         if !seasonalPool.isEmpty, Int.random(in: 0..<100) < 65 {
             return seasonalPool.randomElement()

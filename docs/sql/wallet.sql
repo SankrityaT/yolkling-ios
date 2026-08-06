@@ -23,7 +23,14 @@ create or replace function push_wallet(p_user text, p_coins int, p_owned jsonb)
 returns jsonb language plpgsql security definer as $$
 begin
   perform ensure_app_user(p_user);
-  update public.app_users set coins = greatest(0, p_coins) where apple_user_id = p_user;
+  -- Take the HIGHER of server and client rather than blindly adopting the client's
+  -- number. gift_yolks (social-living.sql) also writes this column server-side, and
+  -- the client pushes on every wallet/outfit change — so a blind overwrite silently
+  -- destroyed Yolks a friend had just gifted you. This matches the client's own merge
+  -- semantics in HomeView.adoptServerWallet().
+  update public.app_users
+     set coins = greatest(coins, greatest(0, p_coins))
+   where apple_user_id = p_user;
   insert into public.inventory(user_id, item_id, source)
     select p_user, x.value, 'sync'
     from jsonb_array_elements_text(coalesce(p_owned, '[]'::jsonb)) as x(value)

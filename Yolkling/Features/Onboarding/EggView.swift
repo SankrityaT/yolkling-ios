@@ -9,6 +9,7 @@ struct EggView: View {
 
     @State private var breathe = false
     @State private var shiver = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -31,10 +32,13 @@ struct EggView: View {
         }
         .frame(width: size, height: size * 1.15)
         .onAppear {
+            guard !reduceMotion else { return }
             withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) { breathe = true }
         }
         .onChange(of: gathering) { _, on in
-            if on {
+            // A 0.12s oscillation repeating forever is the single worst thing here for
+            // motion sensitivity, so it's suppressed outright rather than damped.
+            if on, !reduceMotion {
                 withAnimation(.easeInOut(duration: 0.12).repeatForever(autoreverses: true)) { shiver = true }
             }
         }

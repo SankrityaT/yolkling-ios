@@ -17,75 +17,68 @@ struct YolklingView: View {
     var waveToken: Int = 0
     /// Bump this to make the yolk celebrate (both arms up + a hop), ~1.2s.
     var celebrateToken: Int = 0
+    /// Bump this when the user pets the yolk: anticipation, then a stretch that rings
+    /// down, ~0.6s. Runs on the creature's own clock rather than an external
+    /// `withAnimation`, so it can't fight the idle loop.
+    var petToken: Int = 0
+    /// When set, render ONE deterministic frame at this time (seconds on the creature's
+    /// clock) instead of running the live loop.
+    ///
+    /// `ImageRenderer` renders outside the view hierarchy and cannot capture
+    /// `TimelineView(.animation)`, so the share card, WidgetKit (which can't animate at
+    /// all), snapshot tests, and Reduce Motion all render through this seam. The pose is
+    /// taken straight from `expression` — no in-flight tween, no wave, no celebrate — so
+    /// the same inputs always produce the same pixels.
+    ///
+    /// Use ``posedT`` unless you need a specific moment.
+    var frozenAt: Double? = nil
+
+    /// A good `frozenAt` for a still: mid-breath, and clear of the blink window
+    /// (blinks occupy the first 0.16s of each 3.6s cycle, so eyes are open here).
+    static let posedT: Double = 1.2
 
     // Pose transition state: we ease from `from` to `to` over `duration`.
     @State private var from: YolkExpression
     @State private var to: YolkExpression
     @State private var transitionStart = Date()
-    @State private var epoch = Date()          // view-relative clock: small `t` = smooth, precise phases
-    @State private var waveStart: Date? = nil  // when the current wave began
-    @State private var celebrateStart: Date? = nil
+    @State private var epoch = Date()             // view-relative clock: small `t` = smooth, precise phases
+    @State private var waveStartT: Double? = nil  // when the current wave began, on that clock
+    @State private var celebrateStartT: Double? = nil
+    @State private var petStartT: Double? = nil
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let duration: TimeInterval = 0.55
 
-    init(vibe: Vibe = .yolk, expression: YolkExpression = .content, size: CGFloat = 220, outfit: [Cosmetic] = [], waveToken: Int = 0, celebrateToken: Int = 0) {
+    init(vibe: Vibe = .yolk, expression: YolkExpression = .content, size: CGFloat = 220, outfit: [Cosmetic] = [], waveToken: Int = 0, celebrateToken: Int = 0, petToken: Int = 0, frozenAt: Double? = nil) {
         self.vibe = vibe
         self.expression = expression
         self.size = size
         self.outfit = outfit
         self.waveToken = waveToken
         self.celebrateToken = celebrateToken
+        self.petToken = petToken
+        self.frozenAt = frozenAt
         _from = State(initialValue: expression)
         _to = State(initialValue: expression)
     }
 
     var body: some View {
-        TimelineView(.animation) { ctx in
-            let now = ctx.date
-            let pose = YolkExpression.lerp(from, to, smoothstep(progress(now)))
-            let t = now.timeIntervalSince(epoch)
-            // Constant breath frequency so a mood change never jumps the phase.
-            // Energy/liveliness lives in amplitude + bounce (which interpolate smoothly).
-            let breath = sin(2 * .pi * 0.3 * t)   // -1...1
-            let e = blinking(pose, t: t)
-            let waveAmt = waveAmount(now)
-            let waveWig = waveWiggle(now)
-            let celebrateAmt = celebrateAmount(now)
-
-            ZStack {
-                if let flair = vibe.flair {
-                    FoundingAura(flair: flair, size: size, t: t)
-                }
-                groundShadow(e: e)
-
-                ZStack {
-                    if let flair = vibe.flair {
-                        FoundingHalo(flair: flair, size: size)
-                    }
-                    arm(flip: false)
-                    arm(flip: true)
-                    foot(side: -1)
-                    foot(side: 1)
-                    topFeature()
-                    if let flair = vibe.flair {
-                        FoundingCrest(flair: flair, size: size)
-                    }
-                    behindOutfitLayer
-                    bodyCircle(e: e, breath: breath)
-                    outfitLayer
-                    if waveAmt > 0.02 { wavingArm(amt: waveAmt, wig: waveWig) }
-                    if celebrateAmt > 0.02 {
-                        celebrateArm(side: -1, amt: celebrateAmt)
-                        celebrateArm(side: 1, amt: celebrateAmt)
-                    }
-                }
-                .rotationEffect(.degrees(e.headTilt + e.bodyLean * 6), anchor: .bottom)
-                .offset(y: -size * 0.14 * e.bounce * (0.5 + 0.5 * breath) - size * 0.16 * celebrateAmt)
-
-                ParticleLayer(particle: e.particle, t: t, size: size)
-                    .offset(y: -size * 0.42)
-
-                if let flair = vibe.flair {
-                    FoundingShimmer(flair: flair, size: size, t: t)
+        Group {
+            if let frozenAt {
+                // One still frame. Pose comes from `expression` directly rather than the
+                // `from`/`to` tween, which may never have settled in an offscreen render,
+                // and one-shots are suppressed so a still is always the resting creature.
+                creature(t: frozenAt, pose: expression,
+                         waveStartT: nil, celebrateStartT: nil, petStartT: nil)
+            } else {
+                TimelineView(.animation) { ctx in
+                    let now = ctx.date
+                    creature(
+                        t: now.timeIntervalSince(epoch),
+                        pose: YolkExpression.lerp(from, to, smoothstep(progress(now))),
+                        waveStartT: waveStartT,
+                        celebrateStartT: celebrateStartT,
+                        petStartT: petStartT
+                    )
                 }
             }
         }
@@ -96,8 +89,66 @@ struct YolklingView: View {
             to = newValue
             transitionStart = now
         }
-        .onChange(of: waveToken) { _, _ in waveStart = Date() }
-        .onChange(of: celebrateToken) { _, _ in celebrateStart = Date() }
+        .onChange(of: waveToken) { _, _ in waveStartT = Date().timeIntervalSince(epoch) }
+        .onChange(of: celebrateToken) { _, _ in celebrateStartT = Date().timeIntervalSince(epoch) }
+        .onChange(of: petToken) { _, _ in petStartT = Date().timeIntervalSince(epoch) }
+    }
+
+    /// One frame of the creature, fully determined by `t` (seconds on the view-relative
+    /// clock) and the already-resolved pose. Same inputs → same pixels, which is what
+    /// makes `frozenAt`, the widget, and snapshot tests possible.
+    private func creature(t: Double, pose: YolkExpression,
+                          waveStartT: Double?, celebrateStartT: Double?, petStartT: Double?) -> some View {
+        let motion = YolkMotion.at(t: t, bounce: pose.bounce,
+                                   waveStartT: waveStartT, celebrateStartT: celebrateStartT,
+                                   petStartT: petStartT, reduceMotion: reduceMotion)
+        let e = pose
+        let breath = motion.breath
+        let celebrateAmt = motion.celebrate
+        // Body travel normalised for the shadow: 0.10 of `size` reads as fully airborne,
+        // so an idle breath barely moves it and a celebrate hop moves it a lot.
+        let rise = min(1, motion.bodyRise / 0.10)
+
+        return ZStack {
+            if let flair = vibe.flair {
+                FoundingAura(flair: flair, size: size, t: t)
+            }
+            groundShadow(rise: rise)
+
+            ZStack {
+                if let flair = vibe.flair {
+                    FoundingHalo(flair: flair, size: size)
+                }
+                // Everything that isn't the body trails it slightly and settles past it.
+                // The body itself is the reference, so it gets no offset.
+                arm(flip: false).offset(y: size * motion.trail(lag: YolkMotion.Lag.arm))
+                arm(flip: true).offset(y: size * motion.trail(lag: YolkMotion.Lag.arm))
+                foot(side: -1).offset(y: size * motion.trail(lag: YolkMotion.Lag.foot))
+                foot(side: 1).offset(y: size * motion.trail(lag: YolkMotion.Lag.foot))
+                topFeature().offset(y: size * motion.trail(lag: YolkMotion.Lag.hat))
+                if let flair = vibe.flair {
+                    FoundingCrest(flair: flair, size: size)
+                        .offset(y: size * motion.trail(lag: YolkMotion.Lag.hat))
+                }
+                behindOutfitLayer(motion: motion)
+                bodyCircle(e: e, breath: breath, blink: motion.blink, pet: motion.pet)
+                outfitLayer(motion: motion)
+                if motion.wave > 0.02 { wavingArm(amt: motion.wave, wig: motion.waveWiggle) }
+                if celebrateAmt > 0.02 {
+                    celebrateArm(side: -1, amt: celebrateAmt)
+                    celebrateArm(side: 1, amt: celebrateAmt)
+                }
+            }
+            .rotationEffect(.degrees(e.headTilt + e.bodyLean * 6), anchor: .bottom)
+            .offset(y: -size * 0.14 * e.bounce * (0.5 + 0.5 * breath) - size * 0.16 * celebrateAmt)
+
+            ParticleLayer(particle: e.particle, t: t, size: size)
+                .offset(y: -size * 0.42)
+
+            if let flair = vibe.flair {
+                FoundingShimmer(flair: flair, size: size, t: t)
+            }
+        }
     }
 
     // MARK: Transition helpers
@@ -108,25 +159,15 @@ struct YolklingView: View {
 
     private func smoothstep(_ x: Double) -> Double { x * x * (3 - 2 * x) }
 
-    /// Fold the idle blink into eye openness (round eyes only; arc/lid eyes are
-    /// already closed and don't blink).
-    private func blinking(_ pose: YolkExpression, t: Double) -> YolkExpression {
-        guard pose.eyeShape == .round else { return pose }
-        let cycle = 3.6                                        // constant: avoids phase jumps in blink timing
-        let phase = t.truncatingRemainder(dividingBy: cycle)
-        let window = 0.16
-        let pulse = phase < window ? sin(.pi * phase / window) : 0     // 0 -> 1 -> 0
-        var e = pose
-        e.eyeOpenness *= (1 - 0.85 * pulse)
-        return e
-    }
-
     // MARK: Body
 
-    private func bodyCircle(e: YolkExpression, breath: Double) -> some View {
+    private func bodyCircle(e: YolkExpression, breath: Double, blink: Double, pet: Double) -> some View {
         let amp = 0.02 + 0.03 * e.energy
-        let sx = (1 - 0.10 * e.squashStretch) * (1 - 0.5 * amp * breath)
-        let sy = (1 + 0.12 * e.squashStretch) * (1 + amp * breath)
+        // The pet response rides on the same squash channel as the pose, so a pet during
+        // an already-proud pose compounds rather than fighting it.
+        let squash = e.squashStretch + 0.8 * pet
+        let sx = (1 - 0.10 * squash) * (1 - 0.5 * amp * breath)
+        let sy = (1 + 0.12 * squash) * (1 + amp * breath)
         return Circle()
             .fill(
                 RadialGradient(
@@ -142,35 +183,62 @@ struct YolklingView: View {
                                 accent: vibe.accentColor, size: size)
                     .clipShape(Circle())
             )
-            .overlay(face(e: e))
+            .overlay(face(e: e, blink: blink))
             .scaleEffect(x: sx, y: sy, anchor: .bottom)
             .shadow(color: vibe.deep.opacity(0.3), radius: size * 0.08, y: size * 0.05)
     }
 
-    private func face(e: YolkExpression) -> some View {
+    private func face(e: YolkExpression, blink: Double) -> some View {
         ZStack {
             blush(side: -1, e: e)
             blush(side: 1, e: e)
-            eye(side: -1, e: e)
-            eye(side: 1, e: e)
+            brow(side: -1, e: e)
+            brow(side: 1, e: e)
+            eye(side: -1, e: e, blink: blink)
+            eye(side: 1, e: e, blink: blink)
             mouth(e: e).offset(y: size * 0.14)
+        }
+    }
+
+    // MARK: Brows
+
+    /// `browAngle` has been a declared, lerped, preset-populated channel that drew
+    /// nothing. Rendering it is what stops `low`, `tired`, `unwell` and `curious`
+    /// reading as the same face.
+    ///
+    /// Every preset uses NEGATIVE values (−0.05 … −0.4), i.e. inner-end-up worry, so
+    /// the multiplier is deliberately generous — at −0.4 this is a clear 16° tilt, at
+    /// −0.05 it's a barely-there hint that fades in with opacity.
+    @ViewBuilder
+    private func brow(side: CGFloat, e: YolkExpression) -> some View {
+        if abs(e.browAngle) > 0.03 {
+            Capsule()
+                .fill(YolkColor.ink)
+                .frame(width: size * 0.13, height: size * 0.021)
+                // Negative lifts the inner end (worry); positive drops it (scowl).
+                .rotationEffect(.degrees(-Double(side) * e.browAngle * 40))
+                .offset(x: side * size * 0.2, y: -size * 0.21)
+                .opacity(min(1, abs(e.browAngle) * 3))
         }
     }
 
     // MARK: Eyes
 
+    /// Every eye shape blinks, but each one differently: round eyes shorten, lid eyes
+    /// flatten toward a line. Symbol eyes (heart/sparkle) deliberately don't — they read
+    /// as an effect rather than an eyeball, and blinking them looks like a glitch.
     @ViewBuilder
-    private func eye(side: CGFloat, e: YolkExpression) -> some View {
+    private func eye(side: CGFloat, e: YolkExpression, blink: Double) -> some View {
         Group {
             switch e.eyeShape {
             case .round:
-                roundEye(e: e)
+                roundEye(e: e, blink: blink)
             case .happyArc:
-                LidEye(lift: 1.0)
+                LidEye(lift: 1.0 * blink)
                     .stroke(YolkColor.ink, style: StrokeStyle(lineWidth: size * 0.026, lineCap: .round))
                     .frame(width: size * 0.2, height: size * 0.12)
             case .sleepy:
-                LidEye(lift: 0.22)   // shallow, heavy-lidded droop, not a tall happy peak
+                LidEye(lift: 0.22 * blink)   // shallow, heavy-lidded droop, not a tall happy peak
                     .stroke(YolkColor.ink, style: StrokeStyle(lineWidth: size * 0.026, lineCap: .round))
                     .frame(width: size * 0.2, height: size * 0.1)
             case .heart:
@@ -186,8 +254,8 @@ struct YolklingView: View {
         .offset(x: side * size * 0.2, y: -size * 0.08)
     }
 
-    private func roundEye(e: YolkExpression) -> some View {
-        let openness = max(0.1, e.eyeOpenness)
+    private func roundEye(e: YolkExpression, blink: Double) -> some View {
+        let openness = max(0.1, e.eyeOpenness * blink)
         return ZStack {
             Capsule()
                 .fill(.white)
@@ -262,29 +330,6 @@ struct YolklingView: View {
             .opacity(min(1, amt * 2.5))
     }
 
-    /// The wave envelope (0 rest ... ~1 fully up) for `now`, ramping in and out over ~1.7s.
-    private func waveAmount(_ now: Date) -> Double {
-        #if DEBUG
-        if ProcessInfo.processInfo.environment["YOLK_WAVE_FREEZE"] != nil { return 0.92 }
-        #endif
-        guard let ws = waveStart else { return 0 }
-        let el = now.timeIntervalSince(ws)
-        guard el >= 0, el <= 1.7 else { return 0 }
-        let up = min(1, el / 0.22)
-        let down = min(1, max(0, (1.7 - el) / 0.32))
-        return up * down
-    }
-
-    /// The signed side-to-side wiggle (-1..1) of the wave for `now`.
-    private func waveWiggle(_ now: Date) -> Double {
-        #if DEBUG
-        if ProcessInfo.processInfo.environment["YOLK_WAVE_FREEZE"] != nil { return 0.6 }
-        #endif
-        guard let ws = waveStart else { return 0 }
-        let el = now.timeIntervalSince(ws)
-        return sin(2 * .pi * 2.7 * el)
-    }
-
     /// One raised arm for a both-arms-up celebration, drawn in front, angled outward.
     private func celebrateArm(side: CGFloat, amt: Double) -> some View {
         Capsule()
@@ -296,19 +341,6 @@ struct YolklingView: View {
             .opacity(min(1, amt * 2.5))
     }
 
-    /// The celebrate envelope (0 rest ... ~1 arms up + mid-hop) over ~1.2s.
-    private func celebrateAmount(_ now: Date) -> Double {
-        #if DEBUG
-        if ProcessInfo.processInfo.environment["YOLK_CELEBRATE_FREEZE"] != nil { return 0.95 }
-        #endif
-        guard let cs = celebrateStart else { return 0 }
-        let el = now.timeIntervalSince(cs)
-        guard el >= 0, el <= 1.2 else { return 0 }
-        let up = min(1, el / 0.18)
-        let down = min(1, max(0, (1.2 - el) / 0.3))
-        return up * down
-    }
-
     private func foot(side: CGFloat) -> some View {
         Ellipse()
             .fill(vibe.deep)
@@ -318,18 +350,29 @@ struct YolklingView: View {
 
     // MARK: Worn cosmetics (the outfit layer), drawn in front at each slot anchor
 
-    private var outfitLayer: some View {
+    private func outfitLayer(motion: YolkMotion) -> some View {
         ForEach(outfit.filter { !$0.kind.rendersBehindBody }) { cosmetic in
             CosmeticView(kind: cosmetic.kind, size: size)
-                .offset(y: cosmetic.slot.anchorY * size)
+                .offset(y: cosmetic.slot.anchorY * size + size * motion.trail(lag: lag(for: cosmetic.slot)))
         }
     }
 
     /// Cosmetics that drape behind the body (capes), drawn before the body circle.
-    private var behindOutfitLayer: some View {
+    private func behindOutfitLayer(motion: YolkMotion) -> some View {
         ForEach(outfit.filter { $0.kind.rendersBehindBody }) { cosmetic in
             CosmeticView(kind: cosmetic.kind, size: size)
-                .offset(y: cosmetic.slot.anchorY * size)
+                .offset(y: cosmetic.slot.anchorY * size + size * motion.trail(lag: lag(for: cosmetic.slot)))
+        }
+    }
+
+    /// Per-slot trailing lag. Note this applies OUTSIDE `CosmeticView`, so all ~80
+    /// cosmetics gain secondary motion without a single line changing in its 1,484-line
+    /// switch — the renderer stays a dumb, pure function of `kind`.
+    private func lag(for slot: CosmeticSlot) -> Double {
+        switch slot {
+        case .hat:  YolkMotion.Lag.hat
+        case .neck: YolkMotion.Lag.neck
+        case .eyes: YolkMotion.Lag.face
         }
     }
 
@@ -340,12 +383,16 @@ struct YolklingView: View {
                        accent: vibe.accentColor, size: size)
     }
 
-    private func groundShadow(e: YolkExpression) -> some View {
-        Ellipse()
-            .fill(YolkColor.ink.opacity(0.12))
-            .frame(width: size * 0.66, height: size * 0.1)
+    /// The shadow reads weight: as the body rises it tightens, lightens and softens.
+    /// Cheapest possible cue that the creature has mass and is leaving the ground —
+    /// a shadow that stays put makes any bounce look like a sticker sliding around.
+    private func groundShadow(rise: Double) -> some View {
+        let r = min(1, max(0, rise))
+        return Ellipse()
+            .fill(YolkColor.ink.opacity(0.12 * (1 - 0.35 * r)))
+            .frame(width: size * 0.66 * (1 - 0.25 * r), height: size * 0.1)
             .offset(y: size * 0.58)
-            .blur(radius: 5)
+            .blur(radius: 5 + r * 3)
     }
 }
 
@@ -446,10 +493,22 @@ private struct ParticleLayer: View {
     }
 }
 
-#Preview {
+#Preview("live") {
     VStack(spacing: 40) {
         YolklingView(vibe: .yolk, expression: .happy, size: 180)
         YolklingView(vibe: .bubble, expression: .sleepy, size: 180)
+    }
+    .padding(60)
+    .background(YolkColor.shell)
+}
+
+/// The `frozenAt` seam: still frames, no live clock. These are what the share card
+/// and the widget render, and what snapshot tests compare against — so if the two
+/// previews ever disagree on pose, the seam has drifted.
+#Preview("frozen") {
+    VStack(spacing: 40) {
+        YolklingView(vibe: .yolk, expression: .happy, size: 180, frozenAt: YolklingView.posedT)
+        YolklingView(vibe: .bubble, expression: .sleepy, size: 180, frozenAt: YolklingView.posedT)
     }
     .padding(60)
     .background(YolkColor.shell)

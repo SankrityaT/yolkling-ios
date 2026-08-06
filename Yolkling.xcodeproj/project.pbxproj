@@ -52,6 +52,7 @@
 		52AAB71891CABF5B96820C3F /* Vibe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF366FD2F7B0531883B229D /* Vibe.swift */; };
 		56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3023148FA25E063CED922DF /* SyncClient.swift */; };
 		59DE5860CD52D0A5C2A9961F /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */; };
+		5E20E43EF1B2BE7935FF881B /* PostcardVocabulary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A388843295E23F423C6D05DE /* PostcardVocabulary.swift */; };
 		5E54299634A29368115B507F /* ScreenTimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C460FAA85BB2A5D657CBE3 /* ScreenTimeService.swift */; };
 		5FD85F1FB9F1B41CA3D88428 /* DMSans-VF.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C79354CB80CA860721463727 /* DMSans-VF.ttf */; };
 		62D7FC75B888F2739AA05C96 /* RoomZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7558E421CB8F49D94D63FD7 /* RoomZone.swift */; };
@@ -72,6 +73,7 @@
 		8B9D92868991771D4FADBDC1 /* CreatureParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7831C9E0C1B95A7B333E3D4 /* CreatureParts.swift */; };
 		8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689CB056088DED814BB7D8E5 /* TypewriterText.swift */; };
 		8CFEA4E65FD7AA9F81025A05 /* Mood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E67B727AE71BD4028C618FB /* Mood.swift */; };
+		8E04A92EF50B352275AF88DE /* YolkMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */; };
 		91BA909DB55DA72B013072D0 /* Cosmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */; };
 		934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */; };
 		957754945CDFC6FAA6B3E153 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
@@ -98,6 +100,7 @@
 		BD284E721748D9A0590066F4 /* ShopHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */; };
 		C12C0259ED876B5BA58FE8C2 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
 		C1DED04D454F150D89F0A062 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */; };
+		C2BC5F4B1FA45DC677D46D34 /* YolkMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */; };
 		C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */; };
 		C5670AB65ECB4D8B04B5808C /* RoomZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7558E421CB8F49D94D63FD7 /* RoomZone.swift */; };
 		C6C49BBE9D1EFD446E11DFEB /* CosmeticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */; };
@@ -214,6 +217,7 @@
 		8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Ocean.swift"; sourceTree = "<group>"; };
 		974C6D0127079C7B7DCD5F95 /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMMono-Medium.ttf"; sourceTree = "<group>"; };
+		A388843295E23F423C6D05DE /* PostcardVocabulary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardVocabulary.swift; sourceTree = "<group>"; };
 		A7558E421CB8F49D94D63FD7 /* RoomZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomZone.swift; sourceTree = "<group>"; };
 		A999B3ECF4F6D60AF1777E91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomDecorView.swift; sourceTree = "<group>"; };
@@ -237,6 +241,7 @@
 		D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticPreviewGrid.swift; sourceTree = "<group>"; };
 		D4FC884495811BB1821AF2CB /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
 		DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeStore.swift; sourceTree = "<group>"; };
+		DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkMotion.swift; sourceTree = "<group>"; };
 		E3E3DAFC3357CF16EDB765B2 /* FocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusView.swift; sourceTree = "<group>"; };
 		E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkSpacing.swift; sourceTree = "<group>"; };
 		E8223D82853775F0621924C5 /* CreatureStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatureStyle.swift; sourceTree = "<group>"; };
@@ -393,6 +398,7 @@
 				782262E60D0F3A4685DFFBB4 /* Notifications */,
 				FC69B27DD46E2C14C2CBC993 /* Persistence */,
 				D585A12FC3A99236DF3122DC /* Rooms */,
+				FF0BE94A516969245B4B0FB1 /* Social */,
 				BC916C89D3535EFCD0979C44 /* Subscription */,
 				F1C4B86FEF05D30824A5CF2F /* Sync */,
 				01A9187FA967B88D238EE123 /* Widget */,
@@ -454,6 +460,7 @@
 				4FF366FD2F7B0531883B229D /* Vibe.swift */,
 				1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */,
 				B95E3508A252E211E684703D /* YolklingView.swift */,
+				DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */,
 			);
 			path = Creature;
 			sourceTree = "<group>";
@@ -653,6 +660,14 @@
 			path = Persistence;
 			sourceTree = "<group>";
 		};
+		FF0BE94A516969245B4B0FB1 /* Social */ = {
+			isa = PBXGroup;
+			children = (
+				A388843295E23F423C6D05DE /* PostcardVocabulary.swift */,
+			);
+			path = Social;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -703,9 +718,11 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					D11C675502367D0547EDF59C = {
+						DevelopmentTeam = J94T84BVCP;
 						ProvisioningStyle = Automatic;
 					};
 					DD2770B84A509DAFA8B6AA33 = {
+						DevelopmentTeam = J94T84BVCP;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -782,6 +799,7 @@
 				62EBBA87B5CC8CC8247CDCA8 /* YolkColors.swift in Sources */,
 				4BEACA0FC5E5B4E77845EF9C /* YolkDialog.swift in Sources */,
 				100A76148307BBACD333D950 /* YolkExpression.swift in Sources */,
+				8E04A92EF50B352275AF88DE /* YolkMotion.swift in Sources */,
 				8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */,
 				493B4B1BAEB403ED5AC5FC32 /* YolkSpacing.swift in Sources */,
 				9B08F7A18C857012CD227CCE /* YolkType.swift in Sources */,
@@ -829,6 +847,7 @@
 				18776CC0F5C8239A1AB75CFD /* Player.swift in Sources */,
 				BB7652868F1A1B518E9EB1F4 /* PlusView.swift in Sources */,
 				1FF4A7075EFF898A013EC2D9 /* PostcardViews.swift in Sources */,
+				5E20E43EF1B2BE7935FF881B /* PostcardVocabulary.swift in Sources */,
 				2E8A4379E8AC57C0E654C849 /* ProfileView.swift in Sources */,
 				984F2FF722D79E95EDC451AB /* QRCodeView.swift in Sources */,
 				08D9901B447473F63656E17A /* QRScannerView.swift in Sources */,
@@ -867,6 +886,7 @@
 				BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */,
 				B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */,
 				474D87224A811FFD99C64FC4 /* YolkExpression.swift in Sources */,
+				C2BC5F4B1FA45DC677D46D34 /* YolkMotion.swift in Sources */,
 				FBFF303FA92AE2EEBC97B37A /* YolkNotifications.swift in Sources */,
 				3395E08E88EBF6AF2686CB1A /* YolkSegmented.swift in Sources */,
 				A2DA17A39B665DFB2F01E51B /* YolkSpacing.swift in Sources */,
@@ -965,6 +985,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = J94T84BVCP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -982,6 +1003,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -989,6 +1011,10 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -1091,6 +1117,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = J94T84BVCP;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1102,12 +1129,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;

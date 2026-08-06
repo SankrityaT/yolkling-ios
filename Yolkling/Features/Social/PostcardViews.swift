@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// Compose a kind note to a friend. A few warm presets to tap, or write your own.
+/// Compose a kind note to a friend by PICKING what your yolkling says — there is no
+/// free-text field, by design. See `PostcardVocabulary` for the reasoning.
 /// The reward (if any) is small, sender-only and server-capped (docs/REWARDS.md).
 struct PostcardCompose: View {
     let friend: Friend
@@ -10,28 +11,39 @@ struct PostcardCompose: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var text = ""
+    @State private var category: PostcardVocabulary.Category = .warmth
     @State private var sending = false
     @State private var dialog: YolkDialog?
-
-    private let presets = [
-        "thinking of you",
-        "your room looks so cozy",
-        "hope your day is gentle",
-        "you've got this",
-        "sending a little sunshine",
-    ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: YolkSpace.md) {
             Text("a kind note to \(friend.displayName)")
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
 
-            FlowChips(items: presets) { text = $0; Haptics.shared.tick() }
+            Picker("tone", selection: $category) {
+                ForEach(PostcardVocabulary.Category.allCases) { c in
+                    Text(c.title).tag(c)
+                }
+            }
+            .pickerStyle(.segmented)
+            .onChange(of: category) { _, _ in Haptics.shared.tick() }
 
-            TextField("write something warm…", text: $text, axis: .vertical)
-                .font(YolkType.body).foregroundStyle(YolkColor.ink)
+            ScrollView(.vertical, showsIndicators: false) {
+                FlowChips(items: PostcardVocabulary.phrases(in: category).map(\.text)) {
+                    text = $0
+                    Haptics.shared.tick()
+                }
+            }
+            .frame(maxHeight: 200)
+
+            // What's actually going to be sent. Read-only on purpose.
+            Text(text.isEmpty ? "pick something to say…" : text)
+                .font(YolkType.body)
+                .foregroundStyle(text.isEmpty ? YolkColor.muted : YolkColor.ink)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .lineLimit(3, reservesSpace: true)
-                .padding(14).background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
+                .padding(14)
+                .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
 
             Button { send() } label: {
                 Text(sending ? "sending…" : "send note")
@@ -51,11 +63,14 @@ struct PostcardCompose: View {
         .yolkDialog($dialog)
     }
 
-    private var canSend: Bool { !text.trimmingCharacters(in: .whitespaces).isEmpty }
+    /// Only a phrase from the vocabulary can be sent. Belt-and-braces: the UI can't
+    /// produce anything else, but asserting it here means a future edit that
+    /// reintroduces free entry fails closed rather than silently shipping.
+    private var canSend: Bool { PostcardVocabulary.isValid(text) }
 
     private func send() {
-        let msg = text.trimmingCharacters(in: .whitespaces)
-        guard !msg.isEmpty else { return }
+        let msg = text
+        guard PostcardVocabulary.isValid(msg) else { return }
         sending = true
         Task {
             let r = await store.sendPostcard(to: friend.user_id, message: msg)

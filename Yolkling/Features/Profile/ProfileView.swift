@@ -12,7 +12,10 @@ struct ProfileView: View {
 
     @Environment(\.modelContext) private var context
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) private var dismiss
     @State private var signInError: String?
+    @State private var showDeleteConfirm = false
+    @State private var deleting = false
     @State private var showFeedback = false
     @State private var showPlus = false
     @State private var showHowTo = false
@@ -53,7 +56,10 @@ struct ProfileView: View {
                     .frame(height: 50)
                     .clipShape(Capsule())
 
-                    Text("end to end encrypted. even we can't read your data.")
+                    // Was "end to end encrypted. even we can't read your data." — the
+                    // crypto layer isn't built yet (docs/CLAIMS.md), so that was a false
+                    // security claim. This says only what's actually true today.
+                    Text("your journal stays on your device. we never ask for your name or email.")
                         .font(YolkType.bodySmall)
                         .foregroundStyle(YolkColor.muted)
                 }
@@ -81,7 +87,23 @@ struct ProfileView: View {
                     .font(YolkType.body).foregroundStyle(YolkColor.inkSoft)
             }
             .buttonStyle(.plain)
+
+            // App Store Guideline 5.1.1(v): an app that lets you create an account must
+            // let you delete it in-app. Its absence is a rejection.
+            Button(role: .destructive) { showDeleteConfirm = true } label: {
+                Text(deleting ? "deleting…" : "delete my account")
+                    .font(YolkType.bodySmall)
+                    .foregroundStyle(Color(hex: 0xE05A6E))
+            }
+            .buttonStyle(.plain)
+            .disabled(deleting)
             .padding(.bottom, YolkSpace.lg)
+        }
+        .confirmationDialog("delete your account?", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
+            Button("delete everything", role: .destructive) { deleteAccount() }
+            Button("keep \(name)", role: .cancel) { }
+        } message: {
+            Text("this removes \(name), your collection, your Yolks and your friends, on this device and on our server. it can't be undone.")
         }
         .frame(maxWidth: .infinity)
         .background(YolkColor.shell)
@@ -160,6 +182,28 @@ struct ProfileView: View {
         .padding(.horizontal, YolkSpace.lg)
         .onChange(of: notifyOn) { _, on in handleNotify(on: on) }
         .onChange(of: notifyTime) { _, _ in if notifyOn { handleNotify(on: true) } }
+    }
+
+    /// Delete the account server-side, then wipe everything local.
+    ///
+    /// The local wipe happens even if the server call fails: the user asked to be gone,
+    /// and a flaky network must not trap them in an account they've asked to delete.
+    /// The server row is idempotently deletable, so a retry costs nothing.
+    private func deleteAccount() {
+        deleting = true
+        Task {
+            let uid = player?.backendUserID ?? InstallID.current
+            _ = await SupabaseClient.shared.deleteAccount(userID: uid)
+
+            YolkNotifications.disable()
+            if let player { context.delete(player) }
+            try? context.save()
+            InstallID.reset()   // otherwise the "deleted" player returns as the same user
+
+            deleting = false
+            Haptics.shared.warn()
+            dismiss()
+        }
     }
 
     private func handleNotify(on: Bool) {

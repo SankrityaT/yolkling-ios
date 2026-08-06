@@ -9,6 +9,7 @@ struct YolkCoin: View {
 
     @State private var glint = false
     @State private var pulse = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -50,7 +51,8 @@ struct YolkCoin: View {
         .overlay(Circle().strokeBorder(YolkColor.ink.opacity(0.1), lineWidth: max(1, size * 0.04)))
         .scaleEffect(animated && pulse ? 1.05 : 1.0)
         .onAppear {
-            guard animated else { return }
+            // Two `repeatForever` loops that never end — exactly what Reduce Motion is for.
+            guard animated, !reduceMotion else { return }
             withAnimation(.easeInOut(duration: 2.8).repeatForever(autoreverses: false)) { glint = true }
             withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) { pulse = true }
         }

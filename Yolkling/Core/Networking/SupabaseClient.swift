@@ -52,6 +52,15 @@ struct SupabaseClient {
         return obj["ok"] as? Bool ?? false
     }
 
+    /// Permanently delete the player's account and everything associated with it.
+    /// Required by App Store Guideline 5.1.1(v). See docs/sql/account.sql.
+    func deleteAccount(userID: String) async -> Bool {
+        guard let data = await post("delete_account", ["p_user": userID]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return obj["ok"] as? Bool ?? false
+    }
+
     // MARK: Social (#17) — friends, pet houses, postcards. See docs/sql/social.sql.
 
     /// Become mutual friends by redeeming a friend's code (their referral code).

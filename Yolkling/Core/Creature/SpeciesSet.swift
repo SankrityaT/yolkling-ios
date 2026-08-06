@@ -21,13 +21,26 @@ struct SpeciesSet: Identifiable {
 
     var species: [Species] { speciesIDs.compactMap { id in SpeciesCatalog.all.first { $0.id == id } } }
 
-    /// Days left in a seasonal window (this calendar month). nil for evergreen sets.
-    var seasonDaysLeft: Int? {
-        guard isSeasonal else { return nil }
-        let cal = Calendar.current
-        guard let interval = cal.dateInterval(of: .month, for: Date()) else { return nil }
-        return cal.dateComponents([.day], from: Date(), to: interval.end).day
+    /// Days left in this set's seasonal window, or nil if the set isn't seasonal or no
+    /// window is currently running.
+    ///
+    /// This previously returned days-left-in-the-current-calendar-month *unconditionally*,
+    /// so `spring-bloom` read as "in season" in November — and `DiscoveryEngine.pickNext`
+    /// applied its 65% seasonal bias all year round. A season is a real, bounded window
+    /// or it isn't a season.
+    func seasonDaysLeft(window: DateInterval?, now: Date = Date()) -> Int? {
+        guard isSeasonal, let window, window.contains(now) else { return nil }
+        return Calendar.current.dateComponents([.day], from: now, to: window.end).day
     }
+}
+
+/// Where a season's live window comes from.
+///
+/// Seasons are server-driven so a new one can open without shipping a build. Until the
+/// events table lands, nothing is running — which is the honest answer, and strictly
+/// better than pretending a season is always on. This is the single seam to replace.
+enum SeasonWindows {
+    static func window(for setID: String) -> DateInterval? { nil }
 }
 
 enum SpeciesSets {

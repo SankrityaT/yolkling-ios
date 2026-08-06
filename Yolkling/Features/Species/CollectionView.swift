@@ -54,7 +54,7 @@ struct CollectionView: View {
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("\(found)/\(total)").font(.system(.subheadline, design: .rounded).weight(.bold)).foregroundStyle(YolkColor.inkSoft)
-                    if let days = set.seasonDaysLeft {
+                    if let days = set.seasonDaysLeft(window: SeasonWindows.window(for: set.id)) {
                         Text(days <= 0 ? "ending" : "ends in \(days)d")
                             .font(.caption2.weight(.semibold)).foregroundStyle(Color(hex: 0xE0915E))
                     }
