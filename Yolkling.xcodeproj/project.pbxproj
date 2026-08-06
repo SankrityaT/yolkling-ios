@@ -52,6 +52,7 @@
 		52AAB71891CABF5B96820C3F /* Vibe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF366FD2F7B0531883B229D /* Vibe.swift */; };
 		56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3023148FA25E063CED922DF /* SyncClient.swift */; };
 		59DE5860CD52D0A5C2A9961F /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */; };
+		5CC7F04849CB7739D0AB77C1 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 7105AA21C4F6E3A47890C83D /* RevenueCat */; };
 		5E20E43EF1B2BE7935FF881B /* PostcardVocabulary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A388843295E23F423C6D05DE /* PostcardVocabulary.swift */; };
 		5E54299634A29368115B507F /* ScreenTimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14C460FAA85BB2A5D657CBE3 /* ScreenTimeService.swift */; };
 		5FD85F1FB9F1B41CA3D88428 /* DMSans-VF.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C79354CB80CA860721463727 /* DMSans-VF.ttf */; };
@@ -113,6 +114,7 @@
 		D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
 		DC6715049B14E1C73DC19A60 /* DMMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C7A696ACFBC053E0809E12F /* DMMono-Regular.ttf */; };
 		DC93A5811E3A4E2B08CD8B49 /* CustomizeOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28194194B325C85B2FB43038 /* CustomizeOptions.swift */; };
+		DC94E6FABC5A521DD0D848EF /* Entitlements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FF8FE4B124490B3815CD5B /* Entitlements.swift */; };
 		E261AFCE62FB64987CEDB149 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2878B46B9482D667951C103B /* HomeView.swift */; };
 		E3FB760D2CB53242FC1E4C8E /* RoomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */; };
 		E6AD6071FF213AC002F4DCAE /* WidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DC24772B748D797777AB22 /* WidgetPublisher.swift */; };
@@ -191,6 +193,7 @@
 		3F69CA2DFF74B06646EE1D12 /* Yolkling.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yolkling.entitlements; sourceTree = "<group>"; };
 		41F403602C69613F256AC4FD /* YolkSegmented.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkSegmented.swift; sourceTree = "<group>"; };
 		4374987F9853748A1166C1BA /* SpeciesSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeciesSet.swift; sourceTree = "<group>"; };
+		43FF8FE4B124490B3815CD5B /* Entitlements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entitlements.swift; sourceTree = "<group>"; };
 		454CD38CF659BCE1CAF57AB5 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		45701349448C8131182AD13C /* WidgetHowToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetHowToView.swift; sourceTree = "<group>"; };
 		4799EF90AC77C8C84A3D581B /* SocialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialStore.swift; sourceTree = "<group>"; };
@@ -254,6 +257,17 @@
 		FE819215FD090FE423F75193 /* YolklingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingApp.swift; sourceTree = "<group>"; };
 		FF65067E79FAEAB6D81D2EF4 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		60E9DA8CF82AEBC5335EE2C6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5CC7F04849CB7739D0AB77C1 /* RevenueCat in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		01A9187FA967B88D238EE123 /* Widget */ = {
@@ -579,6 +593,7 @@
 		BC916C89D3535EFCD0979C44 /* Subscription */ = {
 			isa = PBXGroup;
 			children = (
+				43FF8FE4B124490B3815CD5B /* Entitlements.swift */,
 				B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */,
 			);
 			path = Subscription;
@@ -694,6 +709,7 @@
 			buildPhases = (
 				B9DF030F9B48471D706190B8 /* Sources */,
 				04FDBD6A1787203A56F5088A /* Resources */,
+				60E9DA8CF82AEBC5335EE2C6 /* Frameworks */,
 				D285FE252D89964D5FA5EABC /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -703,6 +719,7 @@
 			);
 			name = Yolkling;
 			packageProductDependencies = (
+				7105AA21C4F6E3A47890C83D /* RevenueCat */,
 			);
 			productName = Yolkling;
 			productReference = 0A7C0703029E40E6699C7F53 /* Yolkling.app */;
@@ -736,6 +753,9 @@
 			);
 			mainGroup = E2A10A56A4F49FDAB00AB42E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				920E5094235B5AC36AF73228 /* XCRemoteSwiftPackageReference "purchases-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E2AED7EF6ACD21CCF5BA9184 /* Products */;
 			projectDirPath = "";
@@ -826,6 +846,7 @@
 				DC93A5811E3A4E2B08CD8B49 /* CustomizeOptions.swift in Sources */,
 				CD3BDC853E4D567D4ECD735D /* DecorateView.swift in Sources */,
 				3D8D81A66570893FDA60562E /* EggView.swift in Sources */,
+				DC94E6FABC5A521DD0D848EF /* Entitlements.swift in Sources */,
 				133CACDDE3224416D9DE9BDB /* FeedbackView.swift in Sources */,
 				934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */,
 				03B787A52BC86AF96B68F016 /* FocusSessionStore.swift in Sources */,
@@ -1179,6 +1200,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		920E5094235B5AC36AF73228 /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7105AA21C4F6E3A47890C83D /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 920E5094235B5AC36AF73228 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 69E0AAA1430A6FD73A3A4C78 /* Project object */;
 }

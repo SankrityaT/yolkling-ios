@@ -19,7 +19,7 @@ struct ProfileView: View {
     @State private var showFeedback = false
     @State private var showPlus = false
     @State private var showHowTo = false
-    @State private var subs = SubscriptionStore()
+    private var subs: SubscriptionStore { .shared }
     @State private var notifyOn = YolkNotifications.isEnabled
     @State private var notifyTime = Calendar.current.date(
         from: DateComponents(hour: YolkNotifications.hour, minute: YolkNotifications.minute)) ?? Date()

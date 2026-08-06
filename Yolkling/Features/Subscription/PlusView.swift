@@ -10,12 +10,17 @@ struct PlusView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var dialog: YolkDialog?
 
+    /// Only things that actually ship.
+    ///
+    /// This list previously advertised five features, **none of which were built** —
+    /// cloud backup, a supporter glow, seasonal species, multiple creatures. Selling
+    /// unimplemented functionality is an App Store Guideline 3.1.2 rejection, and it's a
+    /// straightforward lie to the person paying. Anything added back here has to exist
+    /// first. See docs/CLAIMS.md.
     private let perks: [(String, String)] = [
-        ("icloud.fill",        "cloud backup, so your yolk can never truly die"),
-        ("sparkles",           "a supporter glow only you and other supporters have"),
-        ("leaf.fill",          "every season's limited species and looks"),
-        ("circle.grid.2x2.fill", "raise extra creatures, a whole little flock"),
-        ("heart.fill",         "you keep this whole thing alive. no ads, ever"),
+        ("sparkles",   "a supporter glow on your yolk, so it's visibly yours"),
+        ("leaf.fill",  "a monthly handful of Yolks, on the house"),
+        ("heart.fill", "you keep this whole thing alive. no ads, ever"),
     ]
 
     var body: some View {
@@ -24,6 +29,18 @@ struct PlusView: View {
             ScrollView {
                 VStack(spacing: YolkSpace.lg) {
                     YolklingView(vibe: vibe, expression: .happy, size: 120).frame(height: 150)
+                    // The real guard against shipping a Test Store key: it shows up in
+                    // TestFlight and in App Review, where a human will see it. An
+                    // `assert` cannot do this job — it's compiled out in release.
+                    if RevenueCatConfig.isTestStore {
+                        Text("TEST STORE — purchases here are simulated, not real")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Color(hex: 0xE05A6E), in: RoundedRectangle(cornerRadius: 10))
+                    }
+
                     VStack(spacing: 6) {
                         Text("yolkling+").font(YolkType.title).foregroundStyle(YolkColor.ink)
                         Text("free to hatch, always. this is just for when you love it.")

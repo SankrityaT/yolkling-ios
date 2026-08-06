@@ -21,6 +21,10 @@ settings:
     SUPPORTS_MACCATALYST: NO
     SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
     SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+packages:
+  RevenueCat:
+    url: https://github.com/RevenueCat/purchases-ios
+    from: "5.0.0"
 targets:
   Yolkling:
     type: application
@@ -30,6 +34,11 @@ targets:
       - Yolkling
     dependencies:
       - target: YolklingWidgets
+      # App target ONLY. YolklingWidgets cherry-picks sources out of Yolkling/, so
+      # anything in Core/Creature, Core/Cosmetics, Core/Rooms, Core/Widget,
+      # Core/DesignSystem or SocialModels.swift compiles into the widget too — and the
+      # widget must never see RevenueCat. Keep all SDK use inside Core/Subscription/.
+      - package: RevenueCat
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling

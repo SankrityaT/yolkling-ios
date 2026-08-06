@@ -184,7 +184,11 @@ struct HomeView: View {
         .onChange(of: wallet.owned) { _, _ in persist() }
         .onChange(of: wardrobe.equipped) { _, _ in persist() }
         .onChange(of: player?.appleUserID) { _, newID in
-            if newID != nil { adoptServerWallet() }   // just signed in → restore + sync
+            guard let newID else { return }
+            adoptServerWallet()   // just signed in → restore + sync
+            // Alias RevenueCat's anonymous user onto the Apple id in the SAME place, so
+            // exactly one seam knows about the signed-out → signed-in transition.
+            Task { await SubscriptionStore.shared.identify(newID) }
         }
         .overlay {
             if showTutorial { HomeTutorial(name: heading, onDone: finishTutorial) }

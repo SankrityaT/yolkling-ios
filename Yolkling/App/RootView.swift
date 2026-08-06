@@ -63,7 +63,7 @@ struct RootView: View {
             } else if ProcessInfo.processInfo.environment["YOLK_COLORS"] != nil {
                 ColorPreview()
             } else if ProcessInfo.processInfo.environment["YOLK_PLUS"] != nil {
-                PlusView(store: SubscriptionStore(), vibe: .matcha)
+                PlusView(store: .shared, vibe: .matcha)
             } else if ProcessInfo.processInfo.environment["YOLK_ONB"] != nil {
                 // Screenshot seam: render the real onboarding flow even when a
                 // saved player exists. OnboardingView's own onAppear reads
