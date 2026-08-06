@@ -62,6 +62,13 @@ struct RootView: View {
                 InboxPreview()
             } else if ProcessInfo.processInfo.environment["YOLK_COLORS"] != nil {
                 ColorPreview()
+            // Accepts a launch ARGUMENT as well as an env var: `SIMCTL_CHILD_*` env
+            // vars propagate unreliably through `simctl launch`, whereas `--args` always
+            // arrives. Worth copying to the other seams when the screenshot pipeline
+            // gets built.
+            } else if ProcessInfo.processInfo.environment["YOLK_CARD"] != nil
+                        || CommandLine.arguments.contains("YOLK_CARD") {
+                SharePreview()
             } else if ProcessInfo.processInfo.environment["YOLK_PLUS"] != nil {
                 PlusView(store: .shared, vibe: .matcha)
             } else if ProcessInfo.processInfo.environment["YOLK_ONB"] != nil {
