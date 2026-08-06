@@ -8,10 +8,23 @@ struct GrowFriendsView: View {
     let vibe: Vibe
     let onAdded: () -> Void
 
+    @Environment(Router.self) private var router
     @State private var addCode = ""
     @State private var dialog: YolkDialog?
     @State private var showQR = false
     @State private var showScanner = false
+
+    /// Redeem a code that arrived via a tapped invite link.
+    ///
+    /// Redemption lives here rather than in HomeView so there's exactly one code path
+    /// for "become friends" — typed, scanned, or linked all land on `store.addFriend`
+    /// and the same result dialog.
+    private func redeemPendingLink() async {
+        guard case .addFriend(let code) = router.pending else { return }
+        router.consume()   // consume first: a failed redeem must not replay forever
+        let r = await store.addFriend(code: code)
+        handleResult(r, clearCode: false)
+    }
 
     private var inviteURL: URL {
         URL(string: "https://yolkling.com/add/\(myCode)")!
@@ -84,6 +97,7 @@ struct GrowFriendsView: View {
             .ignoresSafeArea()
             .presentationDetents([.large])
         }
+        .task { await redeemPendingLink() }
     }
 
     // MARK: - Subviews

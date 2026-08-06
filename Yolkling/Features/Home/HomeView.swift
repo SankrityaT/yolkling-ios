@@ -33,6 +33,7 @@ struct HomeView: View {
     @State private var discoveryReveal: Species?
     @State private var colorVibe: Vibe?
     @State private var showRoom = false
+    @Environment(Router.self) private var router
     @State private var showFriends = false
     @State private var placedByZone: [String: String]? = nil
     @State private var health = HealthService()
@@ -190,6 +191,11 @@ struct HomeView: View {
             // exactly one seam knows about the signed-out → signed-in transition.
             Task { await SubscriptionStore.shared.identify(newID) }
         }
+        // A tapped invite link. `.task` covers the cold-start case (the link was
+        // buffered before a Player existed and Router restored it at init, so no
+        // change ever fires); `.onChange` covers a link arriving while running.
+        .task { if router.pending != nil { showFriends = true } }
+        .onChange(of: router.pending) { _, link in if link != nil { showFriends = true } }
         .overlay {
             if showTutorial { HomeTutorial(name: heading, onDone: finishTutorial) }
         }

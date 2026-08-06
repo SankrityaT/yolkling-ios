@@ -20,9 +20,13 @@ struct YolklingApp: App {
         Purchases.configure(withAPIKey: RevenueCatConfig.apiKey)
     }
 
+    @State private var router = Router()
+
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environment(router)
+                .onOpenURL { router.open($0) }
         }
         .modelContainer(for: Player.self)
     }
