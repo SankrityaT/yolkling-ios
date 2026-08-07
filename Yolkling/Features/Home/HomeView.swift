@@ -968,13 +968,19 @@ struct HomeView: View {
                 }
             }
         }
-        if env["YOLK_WARDROBE"] != nil { showWardrobe = true }
-        if env["YOLK_PROFILE"] != nil { showProfile = true }
-        if env["YOLK_CHECKIN"] != nil { showCheckIn = true }
-        if env["YOLK_FOCUS"] != nil { showFocus = true }
-        if env["YOLK_REFERRAL"] != nil { showReferral = true }
-        if env["YOLK_COLLECTION"] != nil { showCollection = true }
-        if env["YOLK_ROOM_SHEET"] != nil { showRoom = true }
+        // Accept a launch ARGUMENT as well as an env var: SIMCTL_CHILD_* env vars
+        // propagate unreliably through `simctl launch`, while --args always arrives.
+        // The screenshot pipeline needs a deterministic way onto each screen.
+        func seam(_ key: String) -> Bool {
+            env[key] != nil || CommandLine.arguments.contains(key)
+        }
+        if seam("YOLK_WARDROBE") { showWardrobe = true }
+        if seam("YOLK_PROFILE") { showProfile = true }
+        if seam("YOLK_CHECKIN") { showCheckIn = true }
+        if seam("YOLK_FOCUS") { showFocus = true }
+        if seam("YOLK_REFERRAL") { showReferral = true }
+        if seam("YOLK_COLLECTION") { showCollection = true }
+        if seam("YOLK_ROOM_SHEET") { showRoom = true }
         if env["YOLK_FRIENDS"] != nil { showFriends = true }
         #if DEBUG
         if let h = env["YOLK_HEALTH"] { health.mock(high: h != "low") }

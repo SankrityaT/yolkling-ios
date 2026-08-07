@@ -11,7 +11,8 @@ struct FocusView: View {
     var onComplete: (Int) -> Void
 
     @State private var store = FocusSessionStore()
-    @State private var showCustom = false
+    /// Screenshot seam: `YOLK_FOCUS_CUSTOM` opens straight onto the custom stepper.
+    @State private var showCustom = CommandLine.arguments.contains("YOLK_FOCUS_CUSTOM")
     @State private var customMinutes = 30
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
@@ -23,6 +24,23 @@ struct FocusView: View {
             YolkColor.shell.ignoresSafeArea()
             content
                 .padding(.horizontal, YolkSpace.lg)
+        }
+        // This is a fullScreenCover, so there is no swipe-to-dismiss and no nav bar. The
+        // setup screen had no exit at all — tapping "focus" trapped you until you either
+        // started a session or force-quit the app. Every other phase has its own way out
+        // ("end session" / "close"), so the escape hatch is only needed here.
+        .overlay(alignment: .topTrailing) {
+            if store.phase == .idle {
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark").font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(YolkColor.inkSoft)
+                        .padding(10).background(YolkColor.shell2, in: Circle())
+                }
+                .buttonStyle(.plain)
+                .padding(.top, YolkSpace.sm)
+                .padding(.trailing, YolkSpace.lg)
+                .accessibilityLabel("close")
+            }
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { store.sceneBecameActive() }
@@ -53,7 +71,7 @@ struct FocusView: View {
             YolklingView(vibe: vibe, expression: .calm, size: 165).frame(height: 205)
             Text("focus session")
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
-            Text("put your phone down. \(name) rests and glows while you're away, and you earn Yolks.")
+            Text("put your phone down. \(name) rests and glows while you're away.")
                 .font(YolkType.body).foregroundStyle(YolkColor.muted).multilineTextAlignment(.center)
             HStack(spacing: YolkSpace.sm) {
                 ForEach(durations, id: \.self) { m in
@@ -67,16 +85,7 @@ struct FocusView: View {
                     store.durationMinutes = customMinutes
                 }
             }
-            if showCustom {
-                Picker("", selection: $customMinutes) {
-                    ForEach(Array(stride(from: 5, through: 120, by: 5)), id: \.self) { m in
-                        Text("\(m) min").tag(m)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(height: 120)
-                .onChange(of: customMinutes) { _, m in store.durationMinutes = m }
-            }
+            if showCustom { customStepper }
             Spacer()
             primary("start") {
                 store.creatureName = name
@@ -84,6 +93,52 @@ struct FocusView: View {
                 store.start(store.durationMinutes)
             }
         }
+    }
+
+    /// Custom duration, in the same capsule idiom as the preset chips.
+    ///
+    /// This was a `.wheel` Picker — a heavy system control with its own chrome, dropped
+    /// into an app that has no other system controls anywhere. It didn't read as a field
+    /// so much as a visitor from another app, which is why it wasn't obvious it was even
+    /// the input. A stepper is also just faster: two taps to adjust rather than a scroll.
+    private var customStepper: some View {
+        HStack(spacing: YolkSpace.md) {
+            stepButton("minus", enabled: customMinutes > 5) { setCustom(customMinutes - 5) }
+
+            VStack(spacing: 0) {
+                Text("\(customMinutes)")
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+                    .foregroundStyle(YolkColor.ink)
+                Text("minutes").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+            }
+            .frame(minWidth: 96)
+
+            stepButton("plus", enabled: customMinutes < 120) { setCustom(customMinutes + 5) }
+        }
+        .padding(.vertical, YolkSpace.sm).padding(.horizontal, YolkSpace.lg)
+        .background(YolkColor.shell2, in: Capsule())
+    }
+
+    private func stepButton(_ icon: String, enabled: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(enabled ? YolkColor.ink : YolkColor.muted.opacity(0.4))
+                .frame(width: 44, height: 44)          // full 44pt touch target
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!enabled)
+    }
+
+    private func setCustom(_ m: Int) {
+        let clamped = min(120, max(5, m))
+        guard clamped != customMinutes else { return }
+        withAnimation(.snappy(duration: 0.18)) { customMinutes = clamped }
+        store.durationMinutes = clamped
+        Haptics.shared.tick()
     }
 
     // MARK: Running
