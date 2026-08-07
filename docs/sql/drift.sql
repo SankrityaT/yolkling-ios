@@ -197,3 +197,25 @@ insert into public.postcard_phrases(token, text, category) values
   ('s10', 'left a tiny mess as a gift', 'silly')
 on conflict (token) do update set text = excluded.text, category = excluded.category;
 notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- 6. publish_room gains an opt-in flag.
+--
+-- Overload rather than replace: the 3-arg form is kept so an older build in the wild
+-- keeps working, and it preserves whatever is_public already is (COALESCE on the
+-- existing row) instead of silently un-publishing a room on every sync.
+-- ---------------------------------------------------------------------------
+create or replace function publish_room(p_user text, p_name text, p_snapshot jsonb, p_public boolean)
+returns void language plpgsql security definer as $$
+begin
+  perform ensure_app_user(p_user);
+  insert into public.room_snapshots(user_id, name, snapshot, is_public, updated_at)
+    values (p_user, p_name, coalesce(p_snapshot, '{}'::jsonb), coalesce(p_public, false), now())
+  on conflict (user_id) do update
+    set name = excluded.name, snapshot = excluded.snapshot,
+        is_public = coalesce(p_public, public.room_snapshots.is_public), updated_at = now();
+end $$;
+
+grant execute on function publish_room(text, text, jsonb, boolean) to anon, authenticated;
+
+notify pgrst, 'reload schema';

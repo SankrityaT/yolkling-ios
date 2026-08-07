@@ -64,6 +64,19 @@ extension RoomSnapshot {
 }
 
 /// A friend + their latest published room snapshot (from get_friends).
+/// A stranger's room your yolkling can drift into.
+///
+/// Shaped like `Friend` on purpose — same fields, same accessors — so `VisitView` can
+/// render either without knowing which it has. The difference between them is what you
+/// are ALLOWED to do, not what gets drawn.
+struct DriftTarget: Codable, Sendable, Identifiable {
+    let user_id: String
+    let name: String?
+    let snapshot: RoomSnapshot?
+    var id: String { user_id }
+    var displayName: String { (name?.isEmpty == false ? name : nil) ?? "someone" }
+}
+
 struct Friend: Codable, Sendable, Identifiable {
     let user_id: String
     let name: String?

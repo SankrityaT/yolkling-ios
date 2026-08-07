@@ -106,6 +106,67 @@ struct SupabaseClient {
         _ = await postJSON("mark_postcards_read", ["p_user": userID])
     }
 
+    // MARK: Drift — visiting strangers. See docs/sql/drift.sql.
+
+    /// Rooms your yolkling could wander into today. Already excludes yourself, existing
+    /// friends, anyone blocked either way, and anyone you drifted to today.
+    func drift(userID: String) async -> [DriftTarget] {
+        guard let data = await post("get_drift", ["p_user": userID]) else { return [] }
+        return (try? JSONDecoder().decode([DriftTarget].self, from: data)) ?? []
+    }
+
+    /// Record that the drift happened. Server caps this at 3 landings a day, and
+    /// `sendPostcardToken` refuses to deliver to a stranger you haven't drifted to.
+    @discardableResult
+    func logDrift(from userID: String, to targetID: String) async -> Bool {
+        guard let data = await post("log_drift", ["p_user": userID, "p_target": targetID]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return obj["ok"] as? Bool ?? false
+    }
+
+    /// Send a postcard by VOCABULARY TOKEN rather than text.
+    ///
+    /// The server looks the token up and stores its own copy of the phrase, so the
+    /// message can never be anything the client made up. That's what actually keeps
+    /// this out of Guideline 1.2 territory — the picker UI alone wouldn't.
+    func sendPostcardToken(from: String, to: String, token: String) async -> (ok: Bool, reward: Int, reason: String?) {
+        guard let data = await post("send_postcard_v2", ["p_from": from, "p_to": to, "p_token": token]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return (false, 0, nil) }
+        return (obj["ok"] as? Bool ?? false, obj["reward"] as? Int ?? 0, obj["reason"] as? String)
+    }
+
+    /// Opt this room in or out of being visited by strangers.
+    func publishRoom(userID: String, name: String, snapshot: RoomSnapshot, isPublic: Bool) async {
+        let snapObj = (try? JSONEncoder().encode(snapshot))
+            .flatMap { try? JSONSerialization.jsonObject(with: $0) } ?? [:]
+        _ = await postJSON("publish_room", ["p_user": userID, "p_name": name,
+                                            "p_snapshot": snapObj, "p_public": isPublic])
+    }
+
+    // MARK: Moderation — required by Guideline 1.2 once strangers can reach you.
+
+    /// Block someone. Severs the friendship both ways and removes postcards between you.
+    @discardableResult
+    func blockUser(userID: String, blocked: String) async -> Bool {
+        guard let data = await post("block_user", ["p_user": userID, "p_blocked": blocked]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return obj["ok"] as? Bool ?? false
+    }
+
+    /// Report a postcard. The server snapshots its text so evidence survives deletion.
+    @discardableResult
+    func reportPostcard(userID: String, postcardID: Int, reason: String) async -> Bool {
+        guard let data = await postJSON("report_content", ["p_user": userID,
+                                                           "p_postcard": postcardID,
+                                                           "p_reason": reason]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return obj["ok"] as? Bool ?? false
+    }
+
     // MARK: Living Friends tab (#friends-tab-redesign) - waves, visits, gifts.
 
     /// Send a wave to a friend. Returns ok + optional reason on failure.
