@@ -93,6 +93,7 @@
 		A3456E748BB01E749F4C4FD9 /* RoomDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */; };
 		A7014539ACA074D72F2EE1A7 /* Onest-VF.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 062DF25F0B107A6A708BE8E2 /* Onest-VF.ttf */; };
 		A8432871D410E7E800903F8F /* SocialModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B3C10F5C7A1D79618B0B35 /* SocialModels.swift */; };
+		AA2F9619CCFEA5395EB5D25F /* WanderArrival.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E50093F8B5CD1A4FB50FE1 /* WanderArrival.swift */; };
 		ABA9885E8F8594EE01C4A444 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */; };
 		B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9E562134085B1FEF2F1E4F /* FriendsView.swift */; };
 		B272ABAEB76D8F68D7565E90 /* ColorShop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E4757EC5D4372E5784BF025 /* ColorShop.swift */; };
@@ -208,6 +209,7 @@
 		43FF8FE4B124490B3815CD5B /* Entitlements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entitlements.swift; sourceTree = "<group>"; };
 		454CD38CF659BCE1CAF57AB5 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		45701349448C8131182AD13C /* WidgetHowToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetHowToView.swift; sourceTree = "<group>"; };
+		46E50093F8B5CD1A4FB50FE1 /* WanderArrival.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WanderArrival.swift; sourceTree = "<group>"; };
 		4799EF90AC77C8C84A3D581B /* SocialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialStore.swift; sourceTree = "<group>"; };
 		47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCoin.swift; sourceTree = "<group>"; };
 		4E4A5383B84FED32116786EF /* YolkNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkNotifications.swift; sourceTree = "<group>"; };
@@ -478,6 +480,7 @@
 				4799EF90AC77C8C84A3D581B /* SocialStore.swift */,
 				8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */,
 				B10352955EC8A724ED2AEAC4 /* VisitView.swift */,
+				46E50093F8B5CD1A4FB50FE1 /* WanderArrival.swift */,
 				6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */,
 			);
 			path = Social;
@@ -965,6 +968,7 @@
 				D1F0716DBE1CD83F845635F5 /* VisitSubject.swift in Sources */,
 				1174E2755C3353C39FD9A5F5 /* VisitView.swift in Sources */,
 				CB5428C1CCDDEDEEA036D244 /* Wallet.swift in Sources */,
+				AA2F9619CCFEA5395EB5D25F /* WanderArrival.swift in Sources */,
 				7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */,
 				115C413B6DCAC129F76CCDB3 /* WhileYouWereAwayStrip.swift in Sources */,
 				2457FC8BE922B4C6358E0241 /* WidgetHowToView.swift in Sources */,

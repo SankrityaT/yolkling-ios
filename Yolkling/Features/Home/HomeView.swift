@@ -39,6 +39,8 @@ struct HomeView: View {
     /// Owned here rather than per-screen so one refresh populates SeasonWindows for
     /// everything that reads it — including SpeciesSet, which the widget also compiles.
     @State private var events = EventStore()
+    /// Where the yolkling got to on its own, if anywhere.
+    @State private var wandered: DriftTarget?
     @AppStorage("yolk.healthPromptDismissed") private var healthPromptDismissed = false
     @State private var placedByZone: [String: String]? = nil
     @State private var health = HealthService()
@@ -167,6 +169,13 @@ struct HomeView: View {
                         onReward: { amt in wallet.earn(amt); persist() })
                 .presentationDetents([.large])
         }
+        .sheet(item: $wandered) { target in
+            WanderArrival(target: target, vibe: vibe,
+                          store: SocialStore(userID: backendUserID, myCode: player?.referralCode ?? ""),
+                          myName: heading,
+                          onReward: { amt in wallet.earn(amt); persist() })
+                .presentationDetents([.large])
+        }
         .sheet(isPresented: $showDrift) {
             DriftSheet(store: SocialStore(userID: backendUserID, myCode: player?.referralCode ?? ""),
                        vibe: vibe, myName: heading, mySnapshot: mySnapshot(), wallet: wallet,
@@ -210,6 +219,15 @@ struct HomeView: View {
         .task {
             events.userID = backendUserID
             await events.refresh()
+
+            // Did it go anywhere on its own? Rolls once a day, on first open — which is
+            // when a surprise is worth the most and when "while you were away" is
+            // literally true. Deliberately after the season refresh so a slow network
+            // can't hold up the moment.
+            if wandered == nil {
+                let social = SocialStore(userID: backendUserID, myCode: player?.referralCode ?? "")
+                wandered = await social.wanderIfDue()
+            }
 
             // Credit any Yolks RevenueCat has granted since we last looked. Idempotent:
             // the high-water mark only moves after a successful credit, so a crash

@@ -74,6 +74,36 @@ final class SocialStore {
         await client.logDrift(from: userID, to: targetID)
     }
 
+    // MARK: Wandering off on its own
+
+    private var lastWanderKey: String { "yolk.lastWander.\(userID)" }
+
+    var hasWanderedToday: Bool {
+        guard let last = UserDefaults.standard.object(forKey: lastWanderKey) as? Date else { return false }
+        return Calendar.current.isDateInToday(last)
+    }
+
+    /// Your yolkling goes somewhere by itself.
+    ///
+    /// This is the last unmet promise on the landing page — *"it wanders off, visits
+    /// someone, brings back a postcard"* — and per RETENTION.md it's the strongest
+    /// variable reward in the whole design: a surprise you didn't ask for. Everything
+    /// else in the app happens because you tapped a button.
+    ///
+    /// It is NOT a background job; that needs a server cron. It rolls on the first open
+    /// of each day, which is honest enough — from the player's side it genuinely did
+    /// happen while they were away, because they weren't here.
+    ///
+    /// Returns the room it landed in, or nil if it stayed home.
+    func wanderIfDue() async -> DriftTarget? {
+        guard !hasWanderedToday else { return nil }
+        await loadDrift()
+        guard let target = driftTargets.randomElement() else { return nil }
+        guard await drift(to: target.user_id) else { return nil }
+        UserDefaults.standard.set(Date(), forKey: lastWanderKey)
+        return target
+    }
+
     /// Send a postcard by vocabulary token. The server stores its own copy of the
     /// phrase, so the message can never be something the client invented.
     func sendPostcardToken(to: String, token: String) async -> (ok: Bool, reward: Int, reason: String?) {

@@ -63,6 +63,9 @@ struct RootView: View {
                         || CommandLine.arguments.contains("YOLK_VISIT") {
                 VisitView(subject: .friend(SocialPreview.sunny), store: SocialPreview.store,
                           vibe: .matcha, wallet: Wallet(), onReward: { _ in })
+            } else if CommandLine.arguments.contains("YOLK_WANDER") {
+                WanderArrival(target: SocialPreview.drifter, vibe: .yolk,
+                              store: SocialPreview.store, myName: "Yolky", onReward: { _ in })
             } else if CommandLine.arguments.contains("YOLK_DRIFT") {
                 // The stranger side of the same view, for eyeballing what differs.
                 VisitView(subject: .stranger(SocialPreview.drifter), store: SocialPreview.store,

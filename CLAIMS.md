@@ -45,3 +45,34 @@ fake reviews). Status legend: ✅ done · 🟡 partial · ⬜ not built · ⚠�
 Before the App Store, walk this list and confirm every line of marketing copy maps to
 a shipped, working feature. Any claim that can't ship gets the copy softened or cut.
 The landing page and the app never disagree.
+
+---
+
+## Update — the social layer is built
+
+The four ⬜ rows above are now closed:
+
+- ✅ **"it wanders off — visits a friend's, brings back a postcard"** — `WanderArrival`. Once
+  a day, on first open, your yolkling lands in a stranger's open room by itself and brings
+  back a postcard OF that room. Honest caveat: it rolls on app open, not from a server
+  cron, so "while you were away" is true from the player's side but there is no background
+  job. **It never fabricates a note from a real person who didn't write one** — the
+  postcard is a picture of a real room your creature really visited.
+- ✅ **friend visits + postcards** — `VisitView` serves friends and strangers from one
+  snapshot-driven view; postcards are composed by SELECTION from a server-validated
+  vocabulary, never free text.
+- ✅ **"your friends' yolklings come over"** — `WhileYouWereAwayStrip` shows real waves,
+  visits and redecorations from the server.
+- ✅ **gifting** — friends 10/20/50, strangers a fixed 10 once a day, sender always pays.
+
+Still open, and stated plainly:
+
+- ⬜ **"raise it by living"** — HealthKit reads steps and sleep today; Screen Time is
+  gated on Apple's Family Controls entitlement and ships as a post-launch update.
+- ⬜ **trading** — not built.
+- ⬜ **rooms and rare/seasonal colours in the shop** — seasons ship the machinery; the
+  extra art does not exist yet.
+- ⚠️ **"three silly questions" onboarding** — the app still uses direct colour + look
+  selection. The landing page copy needs softening, or the step needs building.
+- ✅ **"end to end encrypted"** — this claim was REMOVED from the app. The crypto layer
+  isn't built, so the sign-in screen no longer says it does.
