@@ -14,10 +14,13 @@ final class EventStore {
     private(set) var loading = false
 
     private let client = SupabaseClient.shared
-    private let userID: String
 
-    init(userID: String) {
-        self.userID = userID
+    /// Set once the player exists. `@State` can't reference sibling properties at init,
+    /// and the backend id isn't known until a Player is loaded, so this is assigned in
+    /// the view's `.task` rather than passed to the initialiser.
+    var userID: String = ""
+
+    init() {
         events = Self.cached()
         SeasonWindows.publish(Self.windows(events))
     }
@@ -34,6 +37,7 @@ final class EventStore {
     }
 
     func refresh() async {
+        guard !userID.isEmpty else { return }
         loading = true
         let fresh = await client.activeEvents(userID: userID)
         loading = false

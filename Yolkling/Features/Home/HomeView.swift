@@ -36,6 +36,9 @@ struct HomeView: View {
     @Environment(Router.self) private var router
     @State private var showFriends = false
     @State private var showDrift = false
+    /// Owned here rather than per-screen so one refresh populates SeasonWindows for
+    /// everything that reads it — including SpeciesSet, which the widget also compiles.
+    @State private var events = EventStore()
     @State private var placedByZone: [String: String]? = nil
     @State private var health = HealthService()
     @State private var screenTime = ScreenTimeService()
@@ -142,7 +145,7 @@ struct HomeView: View {
             .presentationDetents([.large])
         }
         .sheet(isPresented: $showCollection) {
-            CollectionView(discovered: discovered)
+            CollectionView(discovered: discovered, events: events, vibe: vibe)
                 .presentationDetents([.large])
         }
         .fullScreenCover(item: $discoveryReveal) { sp in
@@ -201,6 +204,10 @@ struct HomeView: View {
         // A tapped invite link. `.task` covers the cold-start case (the link was
         // buffered before a Player existed and Router restored it at init, so no
         // change ever fires); `.onChange` covers a link arriving while running.
+        .task {
+            events.userID = backendUserID
+            await events.refresh()
+        }
         .task { if router.pending != nil { showFriends = true } }
         .onChange(of: router.pending) { _, link in if link != nil { showFriends = true } }
         .overlay {

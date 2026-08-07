@@ -6,6 +6,9 @@ import SwiftUI
 /// docs/MONETIZATION.md.
 struct CollectionView: View {
     let discovered: Set<String>
+    /// nil in previews and screenshot seams; the Dex renders fine without a season.
+    var events: EventStore? = nil
+    var vibe: Vibe = .yolk
 
     private var allSetIDs: [String] { Array(Set(SpeciesSets.all.flatMap { $0.speciesIDs })) }
     private var totalCount: Int { allSetIDs.count }
@@ -15,12 +18,18 @@ struct CollectionView: View {
         ScrollView {
             VStack(spacing: YolkSpace.lg) {
                 header
+                if let events, let season = events.featured {
+                    SeasonBanner(event: season, vibe: vibe) {
+                        Task { await events.join(season) }
+                    }
+                }
                 ForEach(SpeciesSets.all) { setCard($0) }
             }
             .padding(.horizontal, YolkSpace.md)
             .padding(.bottom, 40)
         }
         .background(YolkColor.shell.ignoresSafeArea())
+        .task { await events?.refresh() }
     }
 
     private var header: some View {
