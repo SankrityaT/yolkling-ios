@@ -23,6 +23,12 @@ struct OnboardingView: View {
                     }
                     .transition(.opacity)
 
+                case .quiz:
+                    VibeQuizView(model: model) {
+                        withAnimation(.easeInOut(duration: 0.4)) { model.goToCustomize() }
+                    }
+                    .transition(.opacity)
+
                 case .customize:
                     CustomizeView(model: model) {
                         withAnimation(.easeInOut(duration: 0.4)) { model.goToHatching() }
@@ -70,8 +76,11 @@ struct OnboardingView: View {
             }
         }
         .onAppear {
+            // Launch args as well as env vars — SIMCTL_CHILD_* propagates unreliably.
             if let demo = ProcessInfo.processInfo.environment["YOLK_ONB"] {
                 model.jumpForDemo(demo)
+            } else if let arg = CommandLine.arguments.first(where: { $0.hasPrefix("YOLK_ONB=") }) {
+                model.jumpForDemo(String(arg.dropFirst("YOLK_ONB=".count)))
             }
         }
     }

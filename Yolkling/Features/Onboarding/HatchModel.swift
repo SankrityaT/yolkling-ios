@@ -8,13 +8,15 @@ import Observation
 @Observable
 final class HatchModel {
 
-    enum Step: Equatable { case welcome, customize, hatching, naming, gift, health, focus, intro }
+    enum Step: Equatable { case welcome, quiz, customize, hatching, naming, gift, health, focus, intro }
 
     private(set) var step: Step = .welcome
     private(set) var finalCreature: HatchedCreature?
 
     var colorHex: UInt = CreaturePalette.colors[0]
     var style: CreatureStyle = .classic
+    /// Which mood it hatches in. The quiz sets this; direct picking leaves it happy.
+    var startingMood: Mood = .happy
 
     /// The live identity built from the current picks.
     var vibe: Vibe {
@@ -30,7 +32,10 @@ final class HatchModel {
     func selectColor(_ hex: UInt) { colorHex = hex }
     func selectStyle(_ s: CreatureStyle) { style = s }
 
-    func begin() { step = .customize }
+    /// The quiz comes first, and hands its result to the customize screen — so nobody is
+    /// forced through questions, and nobody starts on a blank grid either.
+    func begin() { step = .quiz }
+    func goToCustomize() { step = .customize }
     func goToHatching() { step = .hatching }
     func goToNaming() { step = .naming }
     func backToCustomize() { step = .customize }
@@ -51,7 +56,10 @@ final class HatchModel {
     private func makeCreature(named name: String) -> HatchedCreature? {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
-        return HatchedCreature(vibe: vibe, name: trimmed, colorHex: colorHex)
+        // startingMood carries the quiz answer through to the saved creature — without
+        // this the third question would visibly change the creature during onboarding
+        // and then silently do nothing.
+        return HatchedCreature(vibe: vibe, startingMood: startingMood, name: trimmed, colorHex: colorHex)
     }
 
     /// Three cute suggested names, themed to the chosen colour.
@@ -68,6 +76,7 @@ final class HatchModel {
         case "focus":    finalCreature = makeCreature(named: "Pip"); step = .focus
         case "intro":    finalCreature = makeCreature(named: "Pip"); step = .intro
         case "welcome":  step = .welcome
+        case "quiz":     step = .quiz
         default:         step = .customize
         }
     }

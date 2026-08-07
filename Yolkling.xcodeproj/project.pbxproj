@@ -136,6 +136,7 @@
 		EB5206DA5E4CA7790D03C424 /* Cosmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */; };
 		ED4C25AD7489535A06F7DC2F /* FoundingFlair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FCBBEBD1D5464C4A735893 /* FoundingFlair.swift */; };
 		ED4E74BB4114F9EA58A24D8C /* HatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */; };
+		EE8A541C3D503283B576EFE5 /* VibeQuiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */; };
 		EE8ECFF9FECF524B0766A792 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */; };
 		F0CD39EDFF070A9DF531E05A /* RoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A696350A3A3F96048352A62 /* RoomView.swift */; };
 		F0D956D4138C84573620C1A5 /* RoomDecorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */; };
@@ -226,6 +227,7 @@
 		6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticView.swift; sourceTree = "<group>"; };
 		6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cosmetic.swift; sourceTree = "<group>"; };
 		7271B792C6CDA97F073DDC10 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
+		74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeQuiz.swift; sourceTree = "<group>"; };
 		77B3DF45A83DE92F2CDBBAA4 /* YolklingWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = YolklingWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A1C490033D514C40A0067B7 /* PackRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackRevealView.swift; sourceTree = "<group>"; };
 		7C9EA7652B10E7A58EC9A965 /* SharePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreview.swift; sourceTree = "<group>"; };
@@ -606,6 +608,7 @@
 				3C8CF8FD294F1454E5591F21 /* EggView.swift */,
 				5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */,
 				7E7AFB40028E43F26BD38206 /* OnboardingView.swift */,
+				74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -965,6 +968,7 @@
 				CF37128F7CA33BB9DE42746D /* TrustStage.swift in Sources */,
 				8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */,
 				52AAB71891CABF5B96820C3F /* Vibe.swift in Sources */,
+				EE8A541C3D503283B576EFE5 /* VibeQuiz.swift in Sources */,
 				D1F0716DBE1CD83F845635F5 /* VisitSubject.swift in Sources */,
 				1174E2755C3353C39FD9A5F5 /* VisitView.swift in Sources */,
 				CB5428C1CCDDEDEEA036D244 /* Wallet.swift in Sources */,
