@@ -116,7 +116,9 @@ struct HomeView: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 0) {
                         Spacer(minLength: 0)
-                        creatureHero(min(330, max(232, geo.size.height * 0.46)))   // adapt to screen
+                        // More of the frame for the creature: it's the product, and the
+                        // panel below it is support, not a peer.
+                        creatureHero(min(380, max(256, geo.size.height * 0.54)))
                         Spacer(minLength: 0)
                         todayPanel
                     }
@@ -391,9 +393,17 @@ struct HomeView: View {
         HStack {
             pill {
                 Image(systemName: "flame.fill").foregroundStyle(Color(hex: 0xFF8A3D))
-                Text("\(careStreak)").font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
-                    .contentTransition(.numericText())
-                Text(careStreak == 1 ? "day" : "days").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                if careStreak == 0 {
+                    // A brand-new player used to be greeted by "0 days" — a scoreboard
+                    // opening at nil. Endowed progress (MONETIZATION.md lever 3) says
+                    // never start anyone at zero; "day one" is the same fact, told as a
+                    // beginning rather than a deficit.
+                    Text("day one").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                } else {
+                    Text("\(careStreak)").font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
+                        .contentTransition(.numericText())
+                    Text(careStreak == 1 ? "day" : "days").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                }
                 if restTokens > 0 {
                     Image(systemName: "leaf.fill").font(.caption2).foregroundStyle(Color(hex: 0x9AC77E))
                 }
@@ -500,14 +510,17 @@ struct HomeView: View {
             .frame(height: heroHeight)
             .padding(.horizontal, YolkSpace.lg)
 
-            VStack(spacing: 2) {
-                Text(baseMood.label)
-                    .font(YolkType.label).tracking(2).textCase(.uppercase)
-                    .foregroundStyle(YolkColor.muted)
-                Text(dayPhase == .night ? "getting sleepy · wind down too?" : trustStage.label)
-                    .font(.caption2)
-                    .foregroundStyle(YolkColor.muted.opacity(0.75))
-            }
+            // The creature's own line, promoted to be the thing you actually read.
+            //
+            // It used to sit in caption2 at 75% opacity BELOW a letterspaced caps mood
+            // label — so the loudest text on screen named a mood the face was already
+            // showing, and the warmest thing in the app was the faintest. The label is
+            // gone: the creature says it better than a caption can.
+            Text(dayPhase == .night ? "getting sleepy · wind down too?" : trustStage.label)
+                .font(YolkType.body)
+                .foregroundStyle(YolkColor.inkSoft)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, YolkSpace.lg)
         }
     }
 
@@ -515,8 +528,11 @@ struct HomeView: View {
 
     private var todayPanel: some View {
         VStack(alignment: .leading, spacing: YolkSpace.sm) {
+            // Sentence case, not letterspaced caps. The caps idiom read as a system
+            // label — a section header in a settings app, not something a warm creature
+            // would put above three small kindnesses.
             Text("today")
-                .font(YolkType.label).tracking(2).textCase(.uppercase)
+                .font(YolkType.bodySmall)
                 .foregroundStyle(YolkColor.muted)
                 .padding(.horizontal, YolkSpace.lg)
 
@@ -768,11 +784,6 @@ struct HomeView: View {
                 }
                 .frame(height: 6)
             }
-            HStack(spacing: 2) {
-                YolkCoin(size: 12, animated: false)
-                Text("+\(Rewards.weeklyReward)").font(YolkType.bodySmall)
-            }
-            .foregroundStyle(YolkColor.muted)
         }
         .padding(.vertical, 11).padding(.horizontal, YolkSpace.md)
         .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 16))
@@ -785,23 +796,25 @@ struct HomeView: View {
     }
 
     /// The card face, split out so a Menu can wear it too.
+    ///
+    /// The `+N Yolks` tag is deliberately gone. Every action used to carry a price at the
+    /// same visual weight as the verb, so the screen read as "four ways to earn currency"
+    /// — which trains people to optimise for Yolks, not for living well, and contradicts
+    /// MONETIZATION.md's own line that "the easy path and the healthy path are the same
+    /// path". The Yolks still arrive; they're just a consequence of caring rather than
+    /// the reason printed next to it. `reward` stays in the signature because the caller
+    /// still uses it to credit the wallet.
     private func careCardLabel(_ title: String, reward: Int, icon: String, done: Bool) -> some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             Image(systemName: done ? "checkmark.circle.fill" : icon)
                 .font(.title2)
                 .foregroundStyle(done ? Color(hex: 0x73C57A) : YolkColor.ink)
-            Text(title).font(YolkType.bodySmall).foregroundStyle(YolkColor.ink)
-            if done {
-                Text("done").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
-            } else {
-                HStack(spacing: 2) {
-                    YolkCoin(size: 11, animated: false)
-                    Text("+\(reward)").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
-                }
-            }
+            Text(done ? "done" : title)
+                .font(YolkType.bodySmall)
+                .foregroundStyle(done ? YolkColor.muted : YolkColor.ink)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
+        .padding(.vertical, 16)
         .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
     }
 
