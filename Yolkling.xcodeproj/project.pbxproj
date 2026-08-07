@@ -10,6 +10,7 @@
 		0364CA692D518EF8AAF0F8B0 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271C78981C0D5681EF94171E /* Haptics.swift */; };
 		03B787A52BC86AF96B68F016 /* FocusSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */; };
 		06CFCBF306F3A0FDCAFD2653 /* SpeciesGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D92FE830A5B71AC26B90E21 /* SpeciesGalleryView.swift */; };
+		0761A9E428F716F629E0E8A8 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9E64CF6D045ACC42F06467FE /* RevenueCatUI */; };
 		086B1B692A28EC7108795144 /* RoomDecorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */; };
 		08D9901B447473F63656E17A /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E710CBEC1093FE73775F1BE /* QRScannerView.swift */; };
 		09FE9ECC682126A937DF978F /* DriftSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6140FCDBA2426893DDB84717 /* DriftSheet.swift */; };
@@ -284,6 +285,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5CC7F04849CB7739D0AB77C1 /* RevenueCat in Frameworks */,
+				0761A9E428F716F629E0E8A8 /* RevenueCatUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -774,6 +776,7 @@
 			name = Yolkling;
 			packageProductDependencies = (
 				7105AA21C4F6E3A47890C83D /* RevenueCat */,
+				9E64CF6D045ACC42F06467FE /* RevenueCatUI */,
 			);
 			productName = Yolkling;
 			productReference = 0A7C0703029E40E6699C7F53 /* Yolkling.app */;
@@ -1281,6 +1284,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 920E5094235B5AC36AF73228 /* XCRemoteSwiftPackageReference "purchases-ios" */;
 			productName = RevenueCat;
+		};
+		9E64CF6D045ACC42F06467FE /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 920E5094235B5AC36AF73228 /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCatUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

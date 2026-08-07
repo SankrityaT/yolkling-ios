@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import AuthenticationServices
+import RevenueCatUI
 
 /// The profile sheet: your creature, and Sign in with Apple to save + sync
 /// across devices. The flow is wired and ready; it only *completes* once the
@@ -14,6 +15,7 @@ struct ProfileView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
     @State private var signInError: String?
+    @State private var showCustomerCenter = false
     @State private var showDeleteConfirm = false
     @State private var deleting = false
     @State private var showFeedback = false
@@ -76,6 +78,8 @@ struct ProfileView: View {
 
             plusRow
 
+            manageRow
+
             widgetRow
 
             dailyHello
@@ -117,6 +121,13 @@ struct ProfileView: View {
         .sheet(isPresented: $showHowTo) {
             WidgetHowToView().presentationDetents([.medium])
         }
+        // Refresh entitlement on dismiss: someone may have just cancelled in here, and
+        // the app should reflect that immediately rather than insisting they're still
+        // a supporter until the next launch.
+        .presentCustomerCenter(isPresented: $showCustomerCenter, onDismiss: {
+            showCustomerCenter = false
+            Task { await subs.refreshEntitlement() }
+        })
     }
 
     private var widgetRow: some View {
@@ -138,6 +149,38 @@ struct ProfileView: View {
             .padding(.horizontal, YolkSpace.lg)
         }
         .buttonStyle(.plain)
+    }
+
+    /// Managing a subscription, in-app, in one tap.
+    ///
+    /// `MONETIZATION.md` warns that billing dark patterns wreck a wellness brand, and
+    /// the standard dark pattern is exactly this: make subscribing one tap and cancelling
+    /// a scavenger hunt through Settings. Customer Center is the opposite — cancel,
+    /// refund, and plan change all live here, one tap from the same row you subscribed
+    /// from. It costs a little revenue on purpose. An app about not manipulating people
+    /// does not get to manipulate them at the till.
+    @ViewBuilder private var manageRow: some View {
+        if subs.isPlus {
+            Button { showCustomerCenter = true } label: {
+                HStack(spacing: YolkSpace.md) {
+                    Image(systemName: "gearshape.fill")
+                        .font(.title3).foregroundStyle(YolkColor.inkSoft).frame(width: 28)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("manage your support")
+                            .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
+                        Text("change plan, pause, or cancel — right here")
+                            .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right").font(.caption.weight(.semibold))
+                        .foregroundStyle(YolkColor.muted)
+                }
+                .padding(YolkSpace.md)
+                .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
+                .padding(.horizontal, YolkSpace.lg)
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     private var plusRow: some View {

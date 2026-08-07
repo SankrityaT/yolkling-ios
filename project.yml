@@ -39,6 +39,9 @@ targets:
       # Core/DesignSystem or SocialModels.swift compiles into the widget too — and the
       # widget must never see RevenueCat. Keep all SDK use inside Core/Subscription/.
       - package: RevenueCat
+      # Customer Center: one-tap cancel / refund / plan change, in-app.
+      - package: RevenueCat
+        product: RevenueCatUI
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling
