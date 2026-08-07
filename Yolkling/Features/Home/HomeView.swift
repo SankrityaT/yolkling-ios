@@ -39,6 +39,7 @@ struct HomeView: View {
     /// Owned here rather than per-screen so one refresh populates SeasonWindows for
     /// everything that reads it — including SpeciesSet, which the widget also compiles.
     @State private var events = EventStore()
+    @AppStorage("yolk.healthPromptDismissed") private var healthPromptDismissed = false
     @State private var placedByZone: [String: String]? = nil
     @State private var health = HealthService()
     @State private var screenTime = ScreenTimeService()
@@ -551,8 +552,15 @@ struct HomeView: View {
             }
             .padding(.horizontal, YolkSpace.lg)
 
-            if health.available { livingCard.padding(.horizontal, YolkSpace.lg) }
-            weeklyChallengeCard
+            // Three kinds of thing used to stack here as equal-weight cards: things you
+            // DO, a thing to SET UP, and passive STATUS. That flat hierarchy is what made
+            // the panel read as a dashboard. Now they're separated by kind and by weight.
+            if health.available, health.authorized {
+                livingCard.padding(.horizontal, YolkSpace.lg)   // real data, earns a card
+            } else if health.available, shouldOfferHealth {
+                healthPrompt.padding(.horizontal, YolkSpace.lg) // earned, and dismissible
+            }
+            weeklyLine
             if showWidgetNudge { widgetNudgeCard }
         }
         .padding(.bottom, YolkSpace.md)
@@ -761,6 +769,61 @@ struct HomeView: View {
         }
     }
 
+    // MARK: Health priming
+
+    /// Whether to ask for HealthKit yet.
+    ///
+    /// The old version was a permanent banner — the heaviest element on the screen,
+    /// louder than any actual action, sitting there forever until someone connected. A
+    /// permission prompt is not content. Apple's own guidance is to prime at the moment
+    /// of relevance, so this waits until someone has actually shown up a few times, and
+    /// then it can be dismissed for good (it still lives in the You tab).
+    private var shouldOfferHealth: Bool {
+        !healthPromptDismissed && careStreak >= 2
+    }
+
+    private var healthPrompt: some View {
+        HStack(spacing: YolkSpace.sm) {
+            Image(systemName: "heart.text.square.fill")
+                .font(.system(size: 20)).foregroundStyle(YolkColor.pink)
+            VStack(alignment: .leading, spacing: 2) {
+                // References what they've already done, rather than pitching cold.
+                Text("you've shown up \(careStreak) days")
+                    .font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.ink)
+                Text("want your yolk to notice your sleep too?")
+                    .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+            }
+            Spacer(minLength: 0)
+            Button { connectHealth() } label: {
+                Text("sure").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.shell)
+                    .padding(.horizontal, 14).padding(.vertical, 8)
+                    .background(YolkColor.ink, in: Capsule())
+            }
+            .buttonStyle(.plain)
+            Button { healthPromptDismissed = true } label: {
+                Image(systemName: "xmark").font(.caption2.weight(.semibold))
+                    .foregroundStyle(YolkColor.muted).padding(6)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.vertical, 10).padding(.horizontal, YolkSpace.md)
+        .background(YolkColor.shell2.opacity(0.6), in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    // MARK: This week
+
+    /// Status, not an action — so it's a line, not a card.
+    ///
+    /// Hidden entirely at zero. An empty progress bar for a challenge you haven't started
+    /// is the least motivating thing a screen can show, and it was greeting every new
+    /// player. Once there's something real to report it appears, which also makes the
+    /// first check-in reveal it.
+    @ViewBuilder private var weeklyLine: some View {
+        if weekCareDays > 0 || weeklyClaimed {
+            weeklyChallengeCard
+        }
+    }
+
     private var weeklyChallengeCard: some View {
         let target = Rewards.weeklyTarget
         let done = min(weekCareDays, target)
@@ -785,8 +848,9 @@ struct HomeView: View {
                 .frame(height: 6)
             }
         }
-        .padding(.vertical, 11).padding(.horizontal, YolkSpace.md)
-        .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 16))
+        // No card fill. Status shouldn't carry the same visual weight as an action —
+        // that flatness was half of why the panel read as a dashboard.
+        .padding(.vertical, 4)
         .padding(.horizontal, YolkSpace.lg)
     }
 

@@ -24,7 +24,10 @@ struct MoodCheckInView: View {
             Text("how are you feeling?")
                 .font(YolkType.heading)
                 .foregroundStyle(YolkColor.ink)
-            Text(alreadyToday ? "you checked in today. update it anytime." : "your yolkling feels it too. (+10 Yolks)")
+            // The "(+10 Yolks)" is deliberately gone. Asking how someone feels and
+            // pricing the answer in the same breath is the whole thing we're avoiding —
+            // the Yolks still arrive afterwards, as a consequence rather than a fee.
+            Text(alreadyToday ? "you checked in today. update it anytime." : "your yolkling feels it too.")
                 .font(YolkType.bodySmall)
                 .foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
