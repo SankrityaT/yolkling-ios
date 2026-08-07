@@ -145,6 +145,25 @@ struct SupabaseClient {
                                             "p_snapshot": snapObj, "p_public": isPublic])
     }
 
+    // MARK: Seasons. See docs/sql/events.sql.
+
+    /// Seasons running right now.
+    /// - Returns: nil if the call FAILED, [] if the server genuinely has nothing on.
+    ///   Collapsing those would let a dropped request wipe a live season off the screen.
+    func activeEvents(userID: String) async -> [SeasonalEvent]? {
+        guard let data = await post("active_events", ["p_user": userID]) else { return nil }
+        return try? JSONDecoder().decode([SeasonalEvent].self, from: data)
+    }
+
+    /// Join a running season. Returns the item ids granted (idempotent server-side).
+    func joinEvent(userID: String, eventID: String) async -> [String] {
+        guard let data = await post("join_event", ["p_user": userID, "p_event": eventID]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              obj["ok"] as? Bool == true
+        else { return [] }
+        return obj["granted"] as? [String] ?? []
+    }
+
     // MARK: Moderation — required by Guideline 1.2 once strangers can reach you.
 
     /// Block someone. Severs the friendship both ways and removes postcards between you.

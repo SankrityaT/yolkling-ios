@@ -73,6 +73,7 @@
 		823C10E6893487A0027EA9EB /* BrandFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D460297B8B82462A61ED36 /* BrandFonts.swift */; };
 		84E321BD0A5CB442877C103B /* FoundingRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */; };
 		8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E45824D017316F04EAB9F /* YolkRoomWidget.swift */; };
+		8643941FECB35114AD0E6FF0 /* EventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B11B8AC851E841F937667EF /* EventStore.swift */; };
 		8A16161AA593A990544C3CD7 /* Rewards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4BB5586801A2B60F7F7A7 /* Rewards.swift */; };
 		8B9D92868991771D4FADBDC1 /* CreatureParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7831C9E0C1B95A7B333E3D4 /* CreatureParts.swift */; };
 		8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689CB056088DED814BB7D8E5 /* TypewriterText.swift */; };
@@ -105,6 +106,7 @@
 		C12C0259ED876B5BA58FE8C2 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
 		C1DED04D454F150D89F0A062 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */; };
 		C2BC5F4B1FA45DC677D46D34 /* YolkMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */; };
+		C480FA56FCB49E46CB06330F /* SeasonalEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEEAB12F5F5DA67AF043023C /* SeasonalEvent.swift */; };
 		C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */; };
 		C5670AB65ECB4D8B04B5808C /* RoomZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7558E421CB8F49D94D63FD7 /* RoomZone.swift */; };
 		C6C49BBE9D1EFD446E11DFEB /* CosmeticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */; };
@@ -215,6 +217,7 @@
 		6140FCDBA2426893DDB84717 /* DriftSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriftSheet.swift; sourceTree = "<group>"; };
 		6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhileYouWereAwayStrip.swift; sourceTree = "<group>"; };
 		689CB056088DED814BB7D8E5 /* TypewriterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterText.swift; sourceTree = "<group>"; };
+		6B11B8AC851E841F937667EF /* EventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventStore.swift; sourceTree = "<group>"; };
 		6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticView.swift; sourceTree = "<group>"; };
 		6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cosmetic.swift; sourceTree = "<group>"; };
 		7271B792C6CDA97F073DDC10 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
@@ -236,6 +239,7 @@
 		A7558E421CB8F49D94D63FD7 /* RoomZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomZone.swift; sourceTree = "<group>"; };
 		A999B3ECF4F6D60AF1777E91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomDecorView.swift; sourceTree = "<group>"; };
+		AEEAB12F5F5DA67AF043023C /* SeasonalEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonalEvent.swift; sourceTree = "<group>"; };
 		AF4187DA7A92439863DAF815 /* YolklingWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YolklingWidgets.entitlements; sourceTree = "<group>"; };
 		B10352955EC8A724ED2AEAC4 /* VisitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitView.swift; sourceTree = "<group>"; };
 		B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundingRevealView.swift; sourceTree = "<group>"; };
@@ -428,6 +432,7 @@
 				689F1B87E8636A71765807C9 /* Creature */,
 				F133806DEFF3EED5217B0482 /* DesignSystem */,
 				8215FF7FD07AC4B81B86DC0C /* Economy */,
+				EFA23118C29585F9BD8DCBA9 /* Events */,
 				CA3F4309FAE99414E373CB46 /* Focus */,
 				2388AF86FB38DDACEBD2C246 /* Haptics */,
 				86DFC5E8904B1AD373D47733 /* Health */,
@@ -682,6 +687,15 @@
 			path = Share;
 			sourceTree = "<group>";
 		};
+		EFA23118C29585F9BD8DCBA9 /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				6B11B8AC851E841F937667EF /* EventStore.swift */,
+				AEEAB12F5F5DA67AF043023C /* SeasonalEvent.swift */,
+			);
+			path = Events;
+			sourceTree = "<group>";
+		};
 		F133806DEFF3EED5217B0482 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
@@ -886,6 +900,7 @@
 				09FE9ECC682126A937DF978F /* DriftSheet.swift in Sources */,
 				3D8D81A66570893FDA60562E /* EggView.swift in Sources */,
 				DC94E6FABC5A521DD0D848EF /* Entitlements.swift in Sources */,
+				8643941FECB35114AD0E6FF0 /* EventStore.swift in Sources */,
 				133CACDDE3224416D9DE9BDB /* FeedbackView.swift in Sources */,
 				934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */,
 				03B787A52BC86AF96B68F016 /* FocusSessionStore.swift in Sources */,
@@ -922,6 +937,7 @@
 				133217ABEDB1716D78A4C392 /* RootView.swift in Sources */,
 				0A5BCB4BBDD1B38982E023B2 /* Router.swift in Sources */,
 				5E54299634A29368115B507F /* ScreenTimeService.swift in Sources */,
+				C480FA56FCB49E46CB06330F /* SeasonalEvent.swift in Sources */,
 				E18BDFE35398DB24D678E54C /* ShareCardRenderer.swift in Sources */,
 				CC95E3840269A681FB2E0953 /* SharePreview.swift in Sources */,
 				BD284E721748D9A0590066F4 /* ShopHomeView.swift in Sources */,

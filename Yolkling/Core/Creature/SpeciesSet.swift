@@ -36,11 +36,30 @@ struct SpeciesSet: Identifiable {
 
 /// Where a season's live window comes from.
 ///
-/// Seasons are server-driven so a new one can open without shipping a build. Until the
-/// events table lands, nothing is running — which is the honest answer, and strictly
-/// better than pretending a season is always on. This is the single seam to replace.
+/// Seasons are server-driven so one can open without shipping a build. This reads a
+/// plain UserDefaults cache rather than talking to `EventStore` directly, and that
+/// indirection is load-bearing: `SpeciesSet` is compiled into the WIDGET target, which
+/// must never pull in networking. `EventStore` writes; this only reads, so the coupling
+/// stays one-directional and the widget can show season state too.
 enum SeasonWindows {
-    static func window(for setID: String) -> DateInterval? { nil }
+    private static let key = "yolk.seasonWindows"   // [payloadID: [start, end] epochs]
+
+    static func window(for setID: String) -> DateInterval? {
+        guard let raw = UserDefaults.standard.dictionary(forKey: key) as? [String: [Double]],
+              let pair = raw[setID], pair.count == 2, pair[1] > pair[0] else { return nil }
+        return DateInterval(start: Date(timeIntervalSince1970: pair[0]),
+                            end: Date(timeIntervalSince1970: pair[1]))
+    }
+
+    /// Called by `EventStore` after every successful refresh.
+    ///
+    /// Takes plain values rather than `[SeasonalEvent]` on purpose: this file compiles
+    /// into the widget target and `SeasonalEvent` does not, so naming that type here
+    /// would break the widget build.
+    static func publish(_ windows: [String: DateInterval]) {
+        let out = windows.mapValues { [$0.start.timeIntervalSince1970, $0.end.timeIntervalSince1970] }
+        UserDefaults.standard.set(out, forKey: key)
+    }
 }
 
 enum SpeciesSets {
