@@ -152,3 +152,59 @@ Kahneman/Knetsch/Thaler, endowment effect (JEP 1991). Zeigarnik; Rigby & Ryan,
 Comps: Finch (help.finchcare.com; ~$30M ARR estimate), Habitica ("Play to Win, Not
 Pay to Win"), Forest, Duolingo (official filings), Fabulous/Calm/Headspace (billing
 cautionary tales), Animal Crossing / Stardew / Pocket Camp Complete (cozy tone).
+
+---
+
+## The two economies, and why RevenueCat holds one of them
+
+Yolks are never sold. We adopted RevenueCat's **Virtual Currency** system specifically in
+order not to sell currency — which is a more interesting position than declining to
+integrate it, and it makes the separation auditable instead of merely promised:
+
+- **RevenueCat's ledger (`YLK`) records every Yolk that came from money.** The only
+  source is the Plus stipend: 400/month, 4,800/year, granted on purchase and on renewal.
+- **Supabase records every Yolk that came from living** — check-ins, focus, steps,
+  streaks, the weekly challenge, kindness.
+- The client only ever *reads* RevenueCat's balance and credits the delta into the
+  spendable wallet. Adjusting a RevenueCat balance needs a secret key, which has no
+  business in a client, so that ledger is append-only by construction.
+
+**Sizing, measured rather than guessed** (154 items, 40,890 Yolks to own the whole store):
+
+| | Yolks | % of store |
+|---|---|---|
+| Plus, 1 month | 400 | 1.0% |
+| Plus, 1 year | 4,800 | 11.7% |
+| casual free player, 1 year | 3,000 | 7.3% |
+| **engaged free player, 1 year** | **16,320** | **39.9%** |
+
+An engaged free player out-earns a subscriber **3.4x**. That is the point, and it is the
+honest answer to "why would a wellness app take money": **the stipend is not why anyone
+subscribes.** It cannot be. People subscribe for seasons, for the supporter glow, and to
+keep the thing alive. The Yolks are a thank-you note, not a product.
+
+## The season pass, and the one thing we will not copy
+
+Seasons borrow their shape from live-service games — cadence, identity, a shared moment,
+named finite sets. All of that is compatible with what this app is.
+
+**The battle pass is not.** A battle pass is engagement-gated: you pay up front, then you
+must *play* to unlock tiers you already bought. It is the most effective retention
+mechanic in games and it is the exact inversion of our thesis — bolt one on and the app
+suddenly needs your hours. Same objection to **story/lore**: story is content to consume,
+and it makes session length the metric. Yolkling's story is the user's own week.
+
+**The inversion worth building instead:** a season pass whose tiers advance on time spent
+*off* the phone — sleep, steps, daylight, staying under your own Screen Time budget. Same
+rhythm, same collectible identity, same shared season. But the XP is life, and the single
+thing that earns you nothing is opening the app more often.
+
+> A battle pass where the XP is time you didn't spend in our app.
+
+This is the strongest monetization idea we have, and it makes the Screen Time work
+load-bearing for revenue rather than a side feature. It needs the Family Controls
+entitlement to be fully itself, so it is a post-launch build — but the events schema
+should be shaped with tiers in mind rather than retrofitted.
+
+**Never copied:** playtime-gated tiers · story/lore · countdown pressure · anything
+randomised.

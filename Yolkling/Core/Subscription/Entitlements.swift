@@ -29,6 +29,16 @@ enum RevenueCatConfig {
     /// The offering the paywall reads from.
     static let defaultOffering = "default"
 
+    /// The virtual currency code for Yolks.
+    ///
+    /// We adopted RevenueCat's currency system specifically in order to NOT sell
+    /// currency. Yolks are never purchasable: the only cash route to one is the Plus
+    /// stipend (400/month, 4,800/year), which an engaged free player out-earns roughly
+    /// 3.4x over. RevenueCat's ledger therefore records exactly the Yolks that came from
+    /// money, and Supabase records the ones that came from living — so the two economies
+    /// stay separate and auditable rather than merely promised to be.
+    static let yolksCurrency = "YLK"
+
     /// Whether we're pointed at the Test Store rather than a real storefront.
     ///
     /// A `test_` key shipping to production is the worst kind of bug: nothing crashes,

@@ -97,6 +97,40 @@ final class SubscriptionStore {
         apply(info)
     }
 
+    // MARK: The stipend (RevenueCat Virtual Currency)
+
+    /// Lifetime Yolks granted by RevenueCat — i.e. every Yolk that came from money.
+    private(set) var stipendGranted = 0
+
+    /// Yolks granted since the last time we looked, to be credited into the spendable
+    /// wallet. Returns 0 when nothing new has arrived.
+    ///
+    /// Why it works this way: RevenueCat's balance is append-only here, because we never
+    /// deduct from it — spending happens in Supabase, and adjusting a RevenueCat balance
+    /// needs a secret key that has no business being in a client. So the ledger only ever
+    /// grows, and the delta since last check is exactly what's newly owed.
+    ///
+    /// That split is the design, not a workaround: RevenueCat records the Yolks that came
+    /// from money, Supabase records the ones that came from living, and neither can be
+    /// mistaken for the other.
+    @discardableResult
+    func claimStipend() async -> Int {
+        Purchases.shared.invalidateVirtualCurrenciesCache()
+        guard let currencies = try? await Purchases.shared.virtualCurrencies(),
+              let balance = currencies[RevenueCatConfig.yolksCurrency]?.balance
+        else { return 0 }
+
+        stipendGranted = balance
+        let key = Self.seenKey
+        let seen = UserDefaults.standard.integer(forKey: key)
+        guard balance > seen else { return 0 }
+
+        UserDefaults.standard.set(balance, forKey: key)
+        return balance - seen
+    }
+
+    private static let seenKey = "yolk.stipendSeen"
+
     // MARK: Identity
 
     /// Alias the anonymous RevenueCat user onto the signed-in Apple user id.

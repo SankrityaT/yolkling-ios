@@ -207,6 +207,20 @@ struct HomeView: View {
         .task {
             events.userID = backendUserID
             await events.refresh()
+
+            // Credit any Yolks RevenueCat has granted since we last looked. Idempotent:
+            // the high-water mark only moves after a successful credit, so a crash
+            // between the two costs the player nothing.
+            let stipend = await SubscriptionStore.shared.claimStipend()
+            if stipend > 0 {
+                wallet.earn(stipend)
+                persist()
+                dialog = YolkDialog(
+                    icon: .coins, title: "thank you",
+                    message: "\(stipend) \(Currency.name) landed, for keeping this going.",
+                    primaryTitle: "lovely"
+                )
+            }
         }
         .task { if router.pending != nil { showFriends = true } }
         .onChange(of: router.pending) { _, link in if link != nil { showFriends = true } }
