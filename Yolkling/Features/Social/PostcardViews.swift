@@ -4,20 +4,22 @@ import SwiftUI
 /// free-text field, by design. See `PostcardVocabulary` for the reasoning.
 /// The reward (if any) is small, sender-only and server-capped (docs/REWARDS.md).
 struct PostcardCompose: View {
-    let friend: Friend
+    let subject: VisitSubject
     @State var store: SocialStore
     let vibe: Vibe
     let onReward: (Int) -> Void
 
     @Environment(\.dismiss) private var dismiss
-    @State private var text = ""
+    /// The chosen phrase. A TOKEN, not text — the server looks it up and stores its own
+    /// copy, so what lands can never be something the client made up.
+    @State private var phrase: PostcardVocabulary.Phrase?
     @State private var category: PostcardVocabulary.Category = .warmth
     @State private var sending = false
     @State private var dialog: YolkDialog?
 
     var body: some View {
         VStack(alignment: .leading, spacing: YolkSpace.md) {
-            Text("a kind note to \(friend.displayName)")
+            Text("a kind note to \(subject.displayName)")
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
 
             Picker("tone", selection: $category) {
@@ -29,17 +31,17 @@ struct PostcardCompose: View {
             .onChange(of: category) { _, _ in Haptics.shared.tick() }
 
             ScrollView(.vertical, showsIndicators: false) {
-                FlowChips(items: PostcardVocabulary.phrases(in: category).map(\.text)) {
-                    text = $0
+                FlowChips(items: PostcardVocabulary.phrases(in: category).map(\.text)) { picked in
+                    phrase = PostcardVocabulary.phrases(in: category).first { $0.text == picked }
                     Haptics.shared.tick()
                 }
             }
             .frame(maxHeight: 200)
 
             // What's actually going to be sent. Read-only on purpose.
-            Text(text.isEmpty ? "pick something to say…" : text)
+            Text(phrase?.text ?? "pick something to say…")
                 .font(YolkType.body)
-                .foregroundStyle(text.isEmpty ? YolkColor.muted : YolkColor.ink)
+                .foregroundStyle(phrase == nil ? YolkColor.muted : YolkColor.ink)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .lineLimit(3, reservesSpace: true)
                 .padding(14)
@@ -54,7 +56,11 @@ struct PostcardCompose: View {
             .buttonStyle(.plain)
             .disabled(!canSend || sending)
 
-            Text("kindness earns a few Yolks, capped so it stays genuine.")
+            // Strangers earn nothing, so don't dangle a reward that isn't coming — and
+            // don't lead with the payout for friends either. The point is the note.
+            Text(subject.isStranger
+                 ? "one note per stranger, per day. no reward — that's the point."
+                 : "kindness earns a few \(Currency.name), capped so it stays genuine.")
                 .font(.caption2).foregroundStyle(YolkColor.muted)
             Spacer(minLength: 0)
         }
@@ -63,30 +69,36 @@ struct PostcardCompose: View {
         .yolkDialog($dialog)
     }
 
-    /// Only a phrase from the vocabulary can be sent. Belt-and-braces: the UI can't
-    /// produce anything else, but asserting it here means a future edit that
-    /// reintroduces free entry fails closed rather than silently shipping.
-    private var canSend: Bool { PostcardVocabulary.isValid(text) }
+    private var canSend: Bool { phrase != nil }
 
     private func send() {
-        let msg = text
-        guard PostcardVocabulary.isValid(msg) else { return }
+        guard let phrase else { return }
         sending = true
         Task {
-            let r = await store.sendPostcard(to: friend.user_id, message: msg)
+            // By TOKEN. The server validates it against its own table and stores its own
+            // copy of the text, so a client can't smuggle arbitrary content through.
+            let r = await store.sendPostcardToken(to: subject.userID, token: phrase.id)
             sending = false
             if r.ok {
                 Haptics.shared.reward()
                 if r.reward > 0 { onReward(r.reward) }
                 let m = r.reward > 0
                     ? "your note is on its way. +\(r.reward) \(Currency.name) for the kindness."
-                    : "your note is on its way. \(friend.displayName) will love it."
+                    : "your note is on its way. \(subject.displayName) will love it."
                 dialog = YolkDialog(icon: .creature(vibe, .affectionate), title: "sent!", message: m,
                                     primaryTitle: "warm", primaryAction: { dismiss() })
             } else {
                 Haptics.shared.warn()
+                let msg: String
+                switch r.reason {
+                case "already_sent":  msg = "you've already left \(subject.displayName) a note today."
+                case "not_drifted":   msg = "your yolkling isn't there any more."
+                case "blocked":       msg = "you can't reach them."
+                case "invalid_token": msg = "that one didn't send. pick another?"
+                default:              msg = "couldn't send that just now. try again in a sec."
+                }
                 dialog = YolkDialog(icon: .creature(vibe, .curious), title: "hmm",
-                                    message: "couldn't send that just now. try again in a sec.", primaryTitle: "okay")
+                                    message: msg, primaryTitle: "okay")
             }
         }
     }

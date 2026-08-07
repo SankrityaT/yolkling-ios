@@ -9,7 +9,11 @@ struct RootView: View {
     @Environment(\.modelContext) private var context
     @Query private var players: [Player]
 
+    // Launch ARGUMENTS as well as env vars: SIMCTL_CHILD_* propagates unreliably through
+    // `simctl launch`, while --args always arrives. The App Store screenshot pipeline
+    // will want this too.
     private let screenshotMode = ProcessInfo.processInfo.environment["YOLK_VIBE"] != nil
+        || CommandLine.arguments.contains("YOLK_VIBE")
 
     var body: some View {
         Group {
@@ -55,9 +59,14 @@ struct RootView: View {
                 .background(YolkColor.shell.ignoresSafeArea())
             } else if ProcessInfo.processInfo.environment["YOLK_ROOM_TRYON"] != nil {
                 RoomTryOnPreview()
-            } else if ProcessInfo.processInfo.environment["YOLK_VISIT"] != nil {
-                VisitView(friend: SocialPreview.sunny, store: SocialPreview.store, vibe: .matcha,
-                          wallet: Wallet(), onReward: { _ in })
+            } else if ProcessInfo.processInfo.environment["YOLK_VISIT"] != nil
+                        || CommandLine.arguments.contains("YOLK_VISIT") {
+                VisitView(subject: .friend(SocialPreview.sunny), store: SocialPreview.store,
+                          vibe: .matcha, wallet: Wallet(), onReward: { _ in })
+            } else if CommandLine.arguments.contains("YOLK_DRIFT") {
+                // The stranger side of the same view, for eyeballing what differs.
+                VisitView(subject: .stranger(SocialPreview.drifter), store: SocialPreview.store,
+                          vibe: .matcha, wallet: Wallet(), onReward: { _ in })
             } else if ProcessInfo.processInfo.environment["YOLK_INBOX"] != nil {
                 InboxPreview()
             } else if ProcessInfo.processInfo.environment["YOLK_COLORS"] != nil {
@@ -163,6 +172,15 @@ private enum SocialPreview {
                                       themeID: "room-beach",
                                       decorIDs: ["decor-bookshelf", "decor-lamp", "decor-cactus", "decor-balloons"],
                                       outfitIDs: ["crown"]))
+    }
+    /// A stranger's room, for the drift side of VisitView.
+    static var drifter: DriftTarget {
+        DriftTarget(user_id: "demo-pip", name: "Pip",
+                    snapshot: RoomSnapshot(colorHex: 0xB8E6D5, styleRaw: "sprout", accentHex: nil,
+                                           patternRaw: "none", activeFoundingID: nil, moodRaw: "curious",
+                                           themeID: "room-cozy",
+                                           decorIDs: ["decor-lamp", "decor-cactus"],
+                                           outfitIDs: []))
     }
     static var store: SocialStore { SocialStore(userID: "preview", myCode: "YOLK-TEST") }
 }

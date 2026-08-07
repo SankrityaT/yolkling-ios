@@ -75,7 +75,7 @@ struct FriendsView: View {
         .background(YolkColor.shell)
         .yolkDialog($dialog)
         .sheet(item: $visiting) { f in
-            VisitView(friend: f, store: store, vibe: vibe, wallet: wallet, onReward: onReward)
+            VisitView(subject: .friend(f), store: store, vibe: vibe, wallet: wallet, onReward: onReward)
                 .presentationDetents([.large])
         }
         .sheet(isPresented: $showInbox) {

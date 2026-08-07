@@ -1,9 +1,12 @@
 import SwiftUI
 
-/// Visit a friend's pet house: their creature in their decorated room, reconstructed
-/// from the snapshot they published. You can wave, leave a kind note, or gift yolks.
+/// Stand in someone's room: their creature and their decorations, reconstructed from the
+/// snapshot they published. You can wave, leave a composed note, or gift Yolks.
+///
+/// Serves both a friend and a drifted-to stranger — see `VisitSubject`. The room renders
+/// identically either way; only the permitted actions differ.
 struct VisitView: View {
-    let friend: Friend
+    let subject: VisitSubject
     @State var store: SocialStore
     let vibe: Vibe
     let wallet: Wallet
@@ -12,9 +15,11 @@ struct VisitView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var composing = false
     @State private var waved = false
-    @State private var friendWaveToken = 0   // bump to make the friend's yolk wave back
+    @State private var theirWaveToken = 0   // bump to make their yolk wave back
     @State private var dialog: YolkDialog?
     @State private var giftBusy = false
+    /// Strangers require a successful drift before any action is allowed.
+    @State private var landed = false
 
     var body: some View {
         VStack(spacing: YolkSpace.md) {
@@ -22,34 +27,72 @@ struct VisitView: View {
             room
                 .frame(height: 380)
                 .padding(.horizontal, YolkSpace.md)
-            Text(friend.snapshot == nil ? "\(friend.displayName) hasn't decorated yet" : "\(friend.displayName)'s room")
-                .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
-            actionsRow
+            caption
+            if !subject.isStranger || landed { actionsRow }
             Spacer(minLength: 0)
         }
         .padding(.top, YolkSpace.md)
         .background(YolkColor.shell)
         .sheet(isPresented: $composing) {
-            PostcardCompose(friend: friend, store: store, vibe: vibe, onReward: onReward)
+            PostcardCompose(subject: subject, store: store, vibe: vibe, onReward: onReward)
                 .presentationDetents([.medium, .large])
         }
         .yolkDialog($dialog)
-        .task { await store.logVisit(owner: friend.user_id) }
+        .task { await arrive() }
+    }
+
+    /// Landing. For a friend this is just a visit log; for a stranger the drift MUST be
+    /// recorded server-side first — every stranger action is refused otherwise, and the
+    /// refusal reads as "not_friends", which would be nonsense to the user.
+    private func arrive() async {
+        switch subject {
+        case .friend(let f):
+            await store.logVisit(owner: f.user_id)
+            landed = true
+        case .stranger(let s):
+            landed = await store.drift(to: s.user_id)
+            if !landed {
+                dialog = YolkDialog(
+                    icon: .creature(vibe, .sleepy),
+                    title: "wandered enough",
+                    message: "your yolkling has done its rounds for today. it'll head out again tomorrow.",
+                    primaryTitle: "okay", primaryAction: { dismiss() }
+                )
+            }
+        }
     }
 
     @ViewBuilder private var room: some View {
-        if let snap = friend.snapshot {
-            RoomView(vibe: snap.makeVibe(name: friend.displayName), expression: snap.expression,
-                     theme: snap.theme, outfit: snap.outfit, decor: snap.decor, waveToken: friendWaveToken)
+        if let snap = subject.snapshot {
+            RoomView(vibe: snap.makeVibe(name: subject.displayName), expression: snap.expression,
+                     theme: snap.theme, outfit: snap.outfit, decor: snap.decor, waveToken: theirWaveToken)
         } else {
-            RoomView(vibe: .yolk, expression: .happy, theme: RoomThemes.cozy, waveToken: friendWaveToken)
+            RoomView(vibe: .yolk, expression: .happy, theme: RoomThemes.cozy, waveToken: theirWaveToken)
         }
+    }
+
+    private var caption: some View {
+        Text(subject.snapshot == nil
+             ? "\(subject.displayName) hasn't decorated yet"
+             : "\(subject.displayName)'s room")
+            .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
     }
 
     private var header: some View {
         HStack {
-            Text("visiting").font(YolkType.heading).foregroundStyle(YolkColor.ink)
+            Text(subject.heading).font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Spacer()
+            // Guideline 1.2: once a stranger can reach you, blocking has to be reachable
+            // from the place you meet them, not buried in settings.
+            if subject.isStranger {
+                Menu {
+                    Button("block \(subject.displayName)", role: .destructive) { block() }
+                } label: {
+                    Image(systemName: "ellipsis").font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(YolkColor.inkSoft).padding(10)
+                        .background(YolkColor.shell2, in: Circle())
+                }
+            }
             Button { dismiss() } label: {
                 Image(systemName: "xmark").font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(YolkColor.inkSoft).padding(10).background(YolkColor.shell2, in: Circle())
@@ -59,7 +102,7 @@ struct VisitView: View {
         .padding(.horizontal, YolkSpace.lg)
     }
 
-    // MARK: Actions row
+    // MARK: Actions
 
     private var actionsRow: some View {
         HStack(spacing: YolkSpace.sm) {
@@ -76,16 +119,11 @@ struct VisitView: View {
             guard !waved else { return }
             Haptics.shared.select()
             waved = true
-            friendWaveToken += 1   // their yolk waves back
-            Task { await store.sendWave(to: friend.user_id) }
+            theirWaveToken += 1
+            Task { await store.sendWave(to: subject.userID) }
         } label: {
-            HStack(spacing: 6) {
-                Text("👋").font(.system(size: 15))
-                Text(waved ? "waved!" : "wave").font(YolkType.bodySmall.weight(.semibold))
-            }
-            .foregroundStyle(waved ? YolkColor.muted : YolkColor.ink)
-            .padding(.horizontal, 14).padding(.vertical, 11)
-            .background(YolkColor.shell2, in: Capsule())
+            actionLabel("👋", waved ? "waved!" : "wave", filled: false)
+                .foregroundStyle(waved ? YolkColor.muted : YolkColor.ink)
         }
         .buttonStyle(.plain)
         .animation(.easeInOut(duration: 0.2), value: waved)
@@ -93,65 +131,77 @@ struct VisitView: View {
 
     private var noteButton: some View {
         Button { composing = true } label: {
-            HStack(spacing: 6) {
-                Text("💌").font(.system(size: 15))
-                Text("leave a note").font(YolkType.bodySmall.weight(.semibold))
-            }
-            .foregroundStyle(YolkColor.shell)
-            .padding(.horizontal, 14).padding(.vertical, 11)
-            .background(YolkColor.ink, in: Capsule())
+            actionLabel("💌", "leave a note", filled: true)
         }
         .buttonStyle(.plain)
     }
 
     private var giftMenu: some View {
         Menu {
-            ForEach([10, 20, 50], id: \.self) { amount in
-                Button("\(amount) Yolks") { sendGift(amount) }
+            ForEach(subject.giftAmounts, id: \.self) { amount in
+                Button("\(amount) \(Currency.name)") { sendGift(amount) }
             }
         } label: {
-            HStack(spacing: 6) {
-                Text("🎁").font(.system(size: 15))
-                Text(giftBusy ? "..." : "gift").font(YolkType.bodySmall.weight(.semibold))
-            }
-            .foregroundStyle(YolkColor.ink)
-            .padding(.horizontal, 14).padding(.vertical, 11)
-            .background(YolkColor.shell2, in: Capsule())
+            actionLabel("🎁", giftBusy ? "..." : "gift", filled: false)
+                .foregroundStyle(YolkColor.ink)
         }
         .disabled(giftBusy)
+    }
+
+    private func actionLabel(_ emoji: String, _ title: String, filled: Bool) -> some View {
+        HStack(spacing: 6) {
+            Text(emoji).font(.system(size: 15))
+            Text(title).font(YolkType.bodySmall.weight(.semibold))
+        }
+        .foregroundStyle(filled ? YolkColor.shell : YolkColor.ink)
+        .padding(.horizontal, 14).padding(.vertical, 11)
+        .background(filled ? YolkColor.ink : YolkColor.shell2, in: Capsule())
+    }
+
+    // MARK: Behaviour
+
+    private func block() {
+        Task {
+            let ok = await store.block(subject.userID)
+            Haptics.shared.warn()
+            dialog = YolkDialog(
+                icon: .creature(vibe, .curious),
+                title: ok ? "blocked" : "hmm",
+                message: ok
+                    ? "your yolklings won't cross paths again."
+                    : "couldn't do that just now. try again in a sec.",
+                primaryTitle: "okay", primaryAction: { if ok { dismiss() } }
+            )
+        }
     }
 
     private func sendGift(_ amount: Int) {
         giftBusy = true
         Task {
-            let result = await store.giftYolks(to: friend.user_id, amount: amount)
+            let result = await store.giftYolks(to: subject.userID, amount: amount)
             giftBusy = false
             if result.ok {
                 Haptics.shared.reward()
-                if let newCoins = result.coins {
-                    wallet.adopt(coins: newCoins, owned: wallet.owned)
-                }
+                if let newCoins = result.coins { wallet.adopt(coins: newCoins, owned: wallet.owned) }
                 dialog = YolkDialog(
-                    icon: .coins,
-                    title: "gifted!",
-                    message: "you sent \(amount) Yolks to \(friend.displayName). how kind.",
+                    icon: .coins, title: "gifted!",
+                    message: "you sent \(amount) \(Currency.name) to \(subject.displayName). how kind.",
                     primaryTitle: "lovely"
                 )
             } else {
                 Haptics.shared.warn()
                 let message: String
                 switch result.reason {
-                case "insufficient":  message = "you don't have enough Yolks for that."
-                case "daily_cap":     message = "you have hit today's gift limit. come back tomorrow."
-                case "not_friends":   message = "you need to be friends to gift Yolks."
-                default:              message = "couldn't send that just now. try again in a sec."
+                case "insufficient":        message = "you don't have enough \(Currency.name) for that."
+                case "daily_cap":           message = "you have hit today's gift limit. come back tomorrow."
+                case "stranger_gift_cap":   message = "one gift to a stranger a day. it means more that way."
+                case "stranger_amount":     message = "a stranger gets a small gift — that's the whole idea."
+                case "blocked":             message = "you can't reach them."
+                case "not_friends":         message = "your yolkling isn't there any more."
+                default:                    message = "couldn't send that just now. try again in a sec."
                 }
-                dialog = YolkDialog(
-                    icon: .creature(vibe, .curious),
-                    title: "hmm",
-                    message: message,
-                    primaryTitle: "okay"
-                )
+                dialog = YolkDialog(icon: .creature(vibe, .curious), title: "hmm",
+                                    message: message, primaryTitle: "okay")
             }
         }
     }

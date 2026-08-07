@@ -36,8 +36,54 @@ final class SocialStore {
     }
 
     /// Publish your own creature + room so friends can visit it.
-    func publish(name: String, snapshot: RoomSnapshot) async {
-        await client.publishRoom(userID: userID, name: name, snapshot: snapshot)
+    ///
+    /// `isPublic` nil leaves the existing opt-in untouched — a routine sync must never
+    /// silently un-publish a room its owner deliberately opened up.
+    func publish(name: String, snapshot: RoomSnapshot, isPublic: Bool? = nil) async {
+        if let isPublic {
+            await client.publishRoom(userID: userID, name: name, snapshot: snapshot, isPublic: isPublic)
+        } else {
+            await client.publishRoom(userID: userID, name: name, snapshot: snapshot)
+        }
+    }
+
+    // MARK: Drift — wandering into strangers' rooms.
+
+    private(set) var driftTargets: [DriftTarget] = []
+
+    /// Where your yolkling could wander today.
+    func loadDrift() async {
+        driftTargets = await client.drift(userID: userID)
+    }
+
+    /// Land on a stranger. MUST succeed before any wave/note/gift is offered — the
+    /// server refuses those to someone you haven't drifted to, and a refusal there
+    /// surfaces as "not_friends", which would read as nonsense to the user.
+    func drift(to targetID: String) async -> Bool {
+        await client.logDrift(from: userID, to: targetID)
+    }
+
+    /// Send a postcard by vocabulary token. The server stores its own copy of the
+    /// phrase, so the message can never be something the client invented.
+    func sendPostcardToken(to: String, token: String) async -> (ok: Bool, reward: Int, reason: String?) {
+        await client.sendPostcardToken(from: userID, to: to, token: token)
+    }
+
+    // MARK: Moderation
+
+    @discardableResult
+    func block(_ targetID: String) async -> Bool {
+        let ok = await client.blockUser(userID: userID, blocked: targetID)
+        if ok {
+            driftTargets.removeAll { $0.user_id == targetID }
+            await load()
+        }
+        return ok
+    }
+
+    @discardableResult
+    func report(postcardID: Int, reason: String) async -> Bool {
+        await client.reportPostcard(userID: userID, postcardID: postcardID, reason: reason)
     }
 
     func addFriend(code: String) async -> AddFriendResult {
