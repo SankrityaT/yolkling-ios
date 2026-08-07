@@ -35,6 +35,7 @@ struct HomeView: View {
     @State private var showRoom = false
     @Environment(Router.self) private var router
     @State private var showFriends = false
+    @State private var showDrift = false
     @State private var placedByZone: [String: String]? = nil
     @State private var health = HealthService()
     @State private var screenTime = ScreenTimeService()
@@ -158,6 +159,12 @@ struct HomeView: View {
                         vibe: vibe, player: player, myName: heading, mySnapshot: mySnapshot(),
                         wallet: wallet,
                         onReward: { amt in wallet.earn(amt); persist() })
+                .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showDrift) {
+            DriftSheet(store: SocialStore(userID: backendUserID, myCode: player?.referralCode ?? ""),
+                       vibe: vibe, myName: heading, mySnapshot: mySnapshot(), wallet: wallet,
+                       onReward: { amt in wallet.earn(amt); persist() })
                 .presentationDetents([.large])
         }
         .sheet(isPresented: $showWidgetHowTo) {
@@ -495,7 +502,15 @@ struct HomeView: View {
             HStack(spacing: YolkSpace.sm) {
                 careCard("check in", reward: 10, icon: "heart.fill", done: checkedInToday) { showCheckIn = true }
                 careCard("focus", reward: 20, icon: "moon.stars.fill") { showFocus = true }
-                careCard("visit", reward: 5, icon: "person.2.fill") { showFriends = true }
+                // One card, two destinations, rather than adding a fourth card to a
+                // screen that already has too many. Wandering is the once-a-day ritual;
+                // friends are always there.
+                Menu {
+                    Button { showDrift = true } label: { Label("let it wander", systemImage: "wind") }
+                    Button { showFriends = true } label: { Label("visit a friend", systemImage: "person.2.fill") }
+                } label: {
+                    careCardLabel("visit", reward: 5, icon: "person.2.fill", done: false)
+                }
             }
             .padding(.horizontal, YolkSpace.lg)
 
@@ -744,26 +759,29 @@ struct HomeView: View {
     }
 
     private func careCard(_ title: String, reward: Int, icon: String, done: Bool = false, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            VStack(spacing: 6) {
-                Image(systemName: done ? "checkmark.circle.fill" : icon)
-                    .font(.title2)
-                    .foregroundStyle(done ? Color(hex: 0x73C57A) : YolkColor.ink)
-                Text(title).font(YolkType.bodySmall).foregroundStyle(YolkColor.ink)
-                if done {
-                    Text("done").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
-                } else {
-                    HStack(spacing: 2) {
-                        YolkCoin(size: 11, animated: false)
-                        Text("+\(reward)").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
-                    }
+        Button(action: action) { careCardLabel(title, reward: reward, icon: icon, done: done) }
+            .buttonStyle(.plain)
+    }
+
+    /// The card face, split out so a Menu can wear it too.
+    private func careCardLabel(_ title: String, reward: Int, icon: String, done: Bool) -> some View {
+        VStack(spacing: 6) {
+            Image(systemName: done ? "checkmark.circle.fill" : icon)
+                .font(.title2)
+                .foregroundStyle(done ? Color(hex: 0x73C57A) : YolkColor.ink)
+            Text(title).font(YolkType.bodySmall).foregroundStyle(YolkColor.ink)
+            if done {
+                Text("done").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+            } else {
+                HStack(spacing: 2) {
+                    YolkCoin(size: 11, animated: false)
+                    Text("+\(reward)").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                 }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+        .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
     }
 
     // MARK: Bottom nav

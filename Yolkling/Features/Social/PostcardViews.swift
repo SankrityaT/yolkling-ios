@@ -108,6 +108,7 @@ struct PostcardCompose: View {
 struct PostcardInbox: View {
     @State var store: SocialStore
     @Environment(\.dismiss) private var dismiss
+    @State private var dialog: YolkDialog?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -135,6 +136,7 @@ struct PostcardInbox: View {
             }
         }
         .background(YolkColor.shell)
+        .yolkDialog($dialog)
         .task { await store.markInboxRead() }
     }
 
@@ -144,12 +146,55 @@ struct PostcardInbox: View {
                 Text(card.senderName).font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                 Spacer()
                 if !card.read { Circle().fill(YolkColor.pink).frame(width: 8, height: 8) }
+                // Guideline 1.2 requires a way to report objectionable content and block
+                // the sender. Notes are composed from a fixed vocabulary so there should
+                // be nothing to report — but "should be" isn't a compliance argument, and
+                // reports are what prove the vocabulary is holding.
+                Menu {
+                    Button("report this note", role: .destructive) { report(card) }
+                    Button("block \(card.senderName)", role: .destructive) { block(card) }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(YolkColor.muted)
+                        .padding(.leading, 6)
+                }
             }
             Text(card.message).font(YolkType.body).foregroundStyle(YolkColor.inkSoft)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(YolkSpace.md)
         .background(YolkColor.shell2.opacity(0.7), in: RoundedRectangle(cornerRadius: 18))
+    }
+
+    private func report(_ card: Postcard) {
+        Task {
+            let ok = await store.report(postcardID: card.id, reason: "objectionable")
+            Haptics.shared.select()
+            dialog = YolkDialog(
+                icon: .creature(.yolk, .curious),
+                title: ok ? "thank you" : "hmm",
+                message: ok
+                    ? "we'll take a look. you can block them too if you'd rather not hear from them."
+                    : "couldn't send that just now. try again in a sec.",
+                primaryTitle: "okay"
+            )
+        }
+    }
+
+    private func block(_ card: Postcard) {
+        Task {
+            let ok = await store.block(card.from_id)
+            Haptics.shared.warn()
+            dialog = YolkDialog(
+                icon: .creature(.yolk, .curious),
+                title: ok ? "blocked" : "hmm",
+                message: ok
+                    ? "your yolklings won't cross paths again."
+                    : "couldn't do that just now. try again in a sec.",
+                primaryTitle: "okay"
+            )
+        }
     }
 }
 

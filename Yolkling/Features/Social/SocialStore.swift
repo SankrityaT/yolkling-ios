@@ -51,6 +51,17 @@ final class SocialStore {
 
     private(set) var driftTargets: [DriftTarget] = []
 
+    /// Whether this player's room is open to strangers. Mirrored locally so the UI can
+    /// ask before the network answers; the server remains authoritative.
+    ///
+    /// Drift is deliberately RECIPROCAL: you can only wander into open rooms, so you
+    /// open yours first. That isn't a toll — it's what keeps the pool from being all
+    /// visitors and no hosts.
+    var roomIsPublic: Bool {
+        get { UserDefaults.standard.bool(forKey: "yolk.roomPublic.\(userID)") }
+        set { UserDefaults.standard.set(newValue, forKey: "yolk.roomPublic.\(userID)") }
+    }
+
     /// Where your yolkling could wander today.
     func loadDrift() async {
         driftTargets = await client.drift(userID: userID)

@@ -12,6 +12,7 @@
 		06CFCBF306F3A0FDCAFD2653 /* SpeciesGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D92FE830A5B71AC26B90E21 /* SpeciesGalleryView.swift */; };
 		086B1B692A28EC7108795144 /* RoomDecorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */; };
 		08D9901B447473F63656E17A /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E710CBEC1093FE73775F1BE /* QRScannerView.swift */; };
+		09FE9ECC682126A937DF978F /* DriftSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6140FCDBA2426893DDB84717 /* DriftSheet.swift */; };
 		0A5BCB4BBDD1B38982E023B2 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = B946F4E30EF2C84EE207202E /* Router.swift */; };
 		0A9560FE0207E256601BA0C4 /* YolklingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95E3508A252E211E684703D /* YolklingView.swift */; };
 		100A76148307BBACD333D950 /* YolkExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */; };
@@ -211,6 +212,7 @@
 		593CF31848BF060E5D52D091 /* PostcardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardCard.swift; sourceTree = "<group>"; };
 		5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HatchModel.swift; sourceTree = "<group>"; };
 		5C049B150140A0C2342A398A /* GrowFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowFriendsView.swift; sourceTree = "<group>"; };
+		6140FCDBA2426893DDB84717 /* DriftSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriftSheet.swift; sourceTree = "<group>"; };
 		6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhileYouWereAwayStrip.swift; sourceTree = "<group>"; };
 		689CB056088DED814BB7D8E5 /* TypewriterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterText.swift; sourceTree = "<group>"; };
 		6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticView.swift; sourceTree = "<group>"; };
@@ -457,6 +459,7 @@
 		631EAC4AF7D1E66CC20EF77B /* Social */ = {
 			isa = PBXGroup;
 			children = (
+				6140FCDBA2426893DDB84717 /* DriftSheet.swift */,
 				22DB14FC98098997269CFE94 /* FriendRoomCard.swift */,
 				7E9E562134085B1FEF2F1E4F /* FriendsView.swift */,
 				5C049B150140A0C2342A398A /* GrowFriendsView.swift */,
@@ -880,6 +883,7 @@
 				DC93A5811E3A4E2B08CD8B49 /* CustomizeOptions.swift in Sources */,
 				CD3BDC853E4D567D4ECD735D /* DecorateView.swift in Sources */,
 				262E1FF02C82FE14972FB107 /* DeepLink.swift in Sources */,
+				09FE9ECC682126A937DF978F /* DriftSheet.swift in Sources */,
 				3D8D81A66570893FDA60562E /* EggView.swift in Sources */,
 				DC94E6FABC5A521DD0D848EF /* Entitlements.swift in Sources */,
 				133CACDDE3224416D9DE9BDB /* FeedbackView.swift in Sources */,
