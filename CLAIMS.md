@@ -26,7 +26,7 @@ fake reviews). Status legend: ✅ done · 🟡 partial · ⬜ not built · ⚠�
 ## the store
 - 🟡 "a little shop of hats, rooms and rare colours" — hats/glasses/neckwear closet is **done** (earn-to-own). Rooms ⬜, rare/seasonal colours ⬜.
 - 🟡 "earn coins just by living well" — earn Yolks from check-in + focus (done); from real wellness signals (not yet).
-- ⬜ "trade your spare ones with friends" — trading not built.
+- ✂️ "trade your spare ones with friends" — CUT, and removed from the landing page. A two-sided state machine, and in an earn-only economy it invites alt-account funnelling and grey-market selling of the one thing we refuse to sell.
 - ✅ "no gacha, no loot boxes, no tricks" — earn-based economy, no randomised purchases, no real-money IAP.
 
 ## pricing / honesty
@@ -69,10 +69,26 @@ Still open, and stated plainly:
 
 - ⬜ **"raise it by living"** — HealthKit reads steps and sleep today; Screen Time is
   gated on Apple's Family Controls entitlement and ships as a post-launch update.
-- ⬜ **trading** — not built.
+- ✂️ **trading** — cut on purpose, and the promise removed from yolkling.com (PR #1). Not a gap; a decision.
 - ⬜ **rooms and rare/seasonal colours in the shop** — seasons ship the machinery; the
   extra art does not exist yet.
-- ⚠️ **"three silly questions" onboarding** — the app still uses direct colour + look
-  selection. The landing page copy needs softening, or the step needs building.
+- ✅ **"three silly questions" onboarding** — BUILT. Three questions that hand you a
+  creature, with "i'd rather just pick" as an escape hatch to the old grid.
 - ✅ **"end to end encrypted"** — this claim was REMOVED from the app. The crypto layer
   isn't built, so the sign-in screen no longer says it does.
+
+## Landing page audit — 2026-08-07
+
+Checked the LIVE site (yolkling-app, Next.js) rather than the stale local copy, and found
+it selling two things the app does not do:
+
+- ✂️ **"extra creatures"** — never built. Removed from the site and from the in-app
+  paywall (Guideline 3.1.2: selling unimplemented functionality).
+- ✂️ **"cloud backup, it can't truly die"** — never built. Same treatment.
+
+The Plus tier now lists only what ships: a supporter glow, a monthly handful of Yolks,
+and every season included. See yolkling-app PR #1.
+
+**Note for future audits:** `/Users/sankiii/yolkling/` is a STALE static copy, roughly
+half the size of the live site. The real source is the `yolkling-app` repo. Auditing the
+local folder would have missed all of the above.
