@@ -58,6 +58,77 @@ final class Haptics {
         ])
     }
 
+    // MARK: Dragging texture
+
+    /// The player behind ``startScratch()``. Held because a continuous haptic has to be
+    /// steered while it runs and then stopped, which a fire-and-forget player cannot do.
+    private var scratchPlayer: CHHapticAdvancedPatternPlayer?
+
+    /// Begin a continuous scratchy texture, for a drag.
+    ///
+    /// **Why continuous and not a train of taps.** A run of transients is a click track: at
+    /// any spacing you can pick out the individual clicks, and it reads as a ratchet rather
+    /// than a surface. Friction is a sustained vibration whose character changes with how
+    /// fast you are moving, which is a continuous event with its parameters driven live.
+    /// The transient grain from ``scratchGrain(speed:)`` then rides on top, the way real
+    /// texture is a rumble with catches in it.
+    ///
+    /// Starts silent. ``updateScratch(speed:)`` is what makes it audible, so touching down
+    /// without moving buzzes nothing.
+    func startScratch() {
+        guard supportsHaptics, let engine, scratchPlayer == nil else { return }
+        do {
+            try engine.start()
+            // 30s is Core Haptics' ceiling for one continuous event. Nobody scratches for
+            // 30 seconds, and `stopScratch()` ends it long before that.
+            let event = continuousEvent(0, duration: 30, intensity: 0.0, sharpness: 0.9)
+            let pattern = try CHHapticPattern(events: [event], parameters: [])
+            let player = try engine.makeAdvancedPlayer(with: pattern)
+            try player.start(atTime: 0)
+            scratchPlayer = player
+        } catch {
+            scratchPlayer = nil
+        }
+    }
+
+    /// Steer the texture. `speed` is 0...1, normalised by the caller.
+    ///
+    /// Intensity tracks speed so a slow careful scratch is faint and a fast sweep is
+    /// coarse. Sharpness moves the opposite way, down slightly as speed rises: a fast drag
+    /// across a rough surface is more of a rumble than a hiss, and holding sharpness at
+    /// maximum makes speed read as volume rather than as friction.
+    func updateScratch(speed: Double) {
+        guard let scratchPlayer else { return }
+        let s = min(max(speed, 0), 1)
+        let intensity = Float(0.12 + 0.5 * s)
+        let sharpness = Float(0.95 - 0.25 * s)
+        try? scratchPlayer.sendParameters([
+            CHHapticDynamicParameter(parameterID: .hapticIntensityControl,
+                                     value: intensity, relativeTime: 0),
+            CHHapticDynamicParameter(parameterID: .hapticSharpnessControl,
+                                     value: sharpness, relativeTime: 0),
+        ], atTime: CHHapticTimeImmediate)
+    }
+
+    /// One irregular catch, to sit on top of the continuous bed.
+    ///
+    /// Jittered on purpose. A grain at constant intensity is a metronome, and a metronome
+    /// is the one thing a scratch is not. The caller fires these per unit of DISTANCE
+    /// travelled rather than per unit of time, so the grain is a property of the surface
+    /// rather than of the frame rate.
+    func scratchGrain(speed: Double) {
+        let s = Float(min(max(speed, 0), 1))
+        let jitter = Float.random(in: 0.7...1.0)
+        transient(intensity: (0.14 + 0.3 * s) * jitter, sharpness: 0.9)
+    }
+
+    /// Lift. Safe to call when nothing is running.
+    func stopScratch() {
+        guard let scratchPlayer else { return }
+        try? scratchPlayer.stop(atTime: CHHapticTimeImmediate)
+        self.scratchPlayer = nil
+    }
+
     // MARK: Engine
 
     private func transient(intensity: Float, sharpness: Float) {

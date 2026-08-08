@@ -32,10 +32,17 @@ struct CardScratchView: View {
     @State private var scratched: Set<Int> = []
     @State private var revealed = false
     @State private var flip: Double = 0
-    /// Distance travelled since the last haptic tick, so the texture is a function of how
+    /// Distance travelled since the last haptic grain, so the texture is a function of how
     /// far the finger has moved rather than how many events arrived.
-    @State private var sinceTick: CGFloat = 0
+    @State private var sinceGrain: CGFloat = 0
     @State private var lastPoint: CGPoint?
+    /// Smoothed finger speed, 0...1, driving the continuous haptic.
+    ///
+    /// Smoothed because raw per-event deltas are spiky enough to make the texture stutter,
+    /// and asymmetric for the same reason `CardTilt` is: it has to rise on the frame a
+    /// flick happens, and fall slowly so the roughness decays instead of cutting out the
+    /// instant the finger pauses mid-stroke.
+    @State private var speed: Double = 0
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -92,6 +99,9 @@ struct CardScratchView: View {
             // reasonable accommodation is to skip it.
             if reduceMotion { reveal(animated: false) }
         }
+        // Dismissing the sheet with a finger still down means `onEnded` never arrives, and
+        // the texture would keep playing into a view that no longer exists.
+        .onDisappear { Haptics.shared.stopScratch() }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(revealed ? "revealed" : "a card to scratch")
         .accessibilityHint("double tap to reveal")
@@ -159,10 +169,14 @@ struct CardScratchView: View {
     private var scratchGesture: some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
+                // Starts silent, so touching down without moving buzzes nothing.
+                Haptics.shared.startScratch()
                 add(value.location)
             }
             .onEnded { _ in
                 lastPoint = nil
+                speed = 0
+                Haptics.shared.stopScratch()
                 if coverage >= Self.threshold { reveal(animated: true) }
             }
     }
@@ -178,14 +192,30 @@ struct CardScratchView: View {
         let cy = min(max(Int(point.y / height * CGFloat(Self.rows)), 0), Self.rows - 1)
         scratched.insert(cy * Self.cols + cx)
 
-        // Haptic texture, keyed to DISTANCE rather than to event count. Drag events arrive
-        // at whatever rate the display runs at, so ticking per event makes a slow careful
-        // scratch feel identical to a fast one. Per unit of travel, it feels like paper.
+        // TEXTURE, in two layers.
+        //
+        // A continuous haptic is the bed — friction is a sustained vibration whose
+        // character changes with how fast you move, and a run of taps at any spacing reads
+        // as a ratchet instead of a surface. Irregular transient grains ride on top, the
+        // way real roughness is a rumble with catches in it.
+        //
+        // Both are keyed to DISTANCE TRAVELLED, not to event count. Drag events arrive at
+        // whatever rate the display runs at, so per-event grain makes a slow careful
+        // scratch feel identical to a fast sweep.
         if let last = lastPoint {
-            sinceTick += hypot(point.x - last.x, point.y - last.y)
-            if sinceTick > 13 * u {
-                sinceTick = 0
-                Haptics.shared.tick()
+            let step = hypot(point.x - last.x, point.y - last.y)
+
+            // Normalised against a brisk drag. Asymmetric smoothing for the same reason
+            // `CardTilt` uses it: rise on the frame the movement happens, fall slowly so
+            // the roughness decays rather than cutting out the moment the finger pauses.
+            let raw = min(1, Double(step / (26 * u)))
+            speed += (raw - speed) * (raw > speed ? 0.5 : 0.08)
+            Haptics.shared.updateScratch(speed: speed)
+
+            sinceGrain += step
+            if sinceGrain > 9 * u {
+                sinceGrain = 0
+                Haptics.shared.scratchGrain(speed: speed)
             }
         }
         lastPoint = point
@@ -196,6 +226,10 @@ struct CardScratchView: View {
 
     private func reveal(animated: Bool) {
         guard !revealed else { return }
+        // The threshold can be crossed mid-drag, so `onEnded` is not guaranteed to run
+        // before this. A continuous haptic left playing under a revealed card would buzz
+        // until the engine's auto-shutdown got round to it.
+        Haptics.shared.stopScratch()
         guard animated else {
             revealed = true
             onRevealed()
