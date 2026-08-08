@@ -30,12 +30,38 @@ enum ShareCardRenderer {
 
         guard let image = renderer.uiImage, let data = image.pngData() else { return nil }
 
-        // A stable filename per creature keeps the temp directory from filling up with
-        // one file per share, and lets the OS reuse the same item on a repeat share.
-        let safeName = creatureName.replacingOccurrences(of: "/", with: "-")
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("yolkling-\(safeName).png")
+        return write(data, named: "yolkling-\(safe(creatureName))")
+    }
 
+    /// Render a holo card, framed for posting.
+    ///
+    /// A separate entry point rather than a generic `render(_ view:)` because the two cards
+    /// disagree on the one thing that matters: `PostcardCard` is 360×450 and this frames a
+    /// 63×88 card inside the same box. Sharing the 3× scale is the whole overlap.
+    static func renderCard(face: YolkCardFace, inviteCode: String) -> URL? {
+        let renderer = ImageRenderer(content: CardShareCard(face: face, inviteCode: inviteCode))
+        renderer.scale = scale
+        renderer.isOpaque = true
+
+        guard let image = renderer.uiImage, let data = image.pngData() else { return nil }
+        // A DIFFERENT filename prefix from the postcard. Both used to derive the name from
+        // the creature, so sharing a card and then a postcard for the same creature wrote
+        // over the same file and whichever the share sheet read second won.
+        return write(data, named: "yolkling-card-\(safe(face.name))")
+    }
+
+    // MARK: Files
+
+    /// The only sanitisation that matters here: a path separator would silently write into
+    /// a directory that does not exist and the whole share would fail with no error.
+    private static func safe(_ name: String) -> String {
+        name.replacingOccurrences(of: "/", with: "-")
+    }
+
+    /// A stable filename keeps the temp directory from filling up with one file per share,
+    /// and lets the OS reuse the same item on a repeat share.
+    private static func write(_ data: Data, named name: String) -> URL? {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(name).png")
         do {
             try data.write(to: url, options: .atomic)
             return url

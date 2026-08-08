@@ -160,7 +160,8 @@ struct HomeView: View {
         }
         .sheet(isPresented: $showCollection) {
             CollectionView(discovered: discovered, events: events, vibe: vibe,
-                           onGranted: { ids in wallet.grant(ids); persist() })
+                           onGranted: { ids in wallet.grant(ids); persist() },
+                           inviteCode: player?.referralCode ?? "")
                 .presentationDetents([.large])
         }
         .fullScreenCover(item: $discoveryReveal) { sp in

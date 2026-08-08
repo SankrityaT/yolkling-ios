@@ -17,6 +17,12 @@ struct CollectionView: View {
     /// got it at all. A closure rather than a `Wallet` so the `YOLK_SPECIES` seam, which
     /// has no economy, still constructs.
     var onGranted: ([String]) -> Void = { _ in }
+    /// Printed into a shared card image. Empty renders without a code rather than with a
+    /// dangling `yolkling.com/add/`.
+    var inviteCode: String = ""
+
+    /// The species whose card is open full screen.
+    @State private var opened: Species?
 
     private var allSetIDs: [String] { Array(Set(SpeciesSets.all.flatMap { $0.speciesIDs })) }
     private var totalCount: Int { allSetIDs.count }
@@ -41,6 +47,16 @@ struct CollectionView: View {
         }
         .background(YolkColor.shell.ignoresSafeArea())
         .task { await events?.refresh() }
+        // `fullScreenCover`, matching the pack reveal. A card is the subject, not a detail
+        // pane, and a sheet over a grid of cards leaves the grid peeking round it.
+        .fullScreenCover(item: $opened) { sp in
+            CardDetailView(
+                face: .species(sp,
+                               number: SpeciesSets.dexNumber(of: sp.id),
+                               outOf: SpeciesSets.dexTotal),
+                inviteCode: inviteCode
+            )
+        }
     }
 
     private var header: some View {
@@ -99,13 +115,32 @@ struct CollectionView: View {
         .overlay(RoundedRectangle(cornerRadius: 22).strokeBorder(set.isSeasonal ? Color(hex: 0xF0D98A) : .clear, lineWidth: 1))
     }
 
-    private func cell(_ sp: Species) -> some View {
-        VStack(spacing: 0) {
-            if discovered.contains(sp.id) {
-                YolklingView(vibe: sp.vibe, expression: .content, size: 56).frame(height: 82)
-                Text(sp.name).font(.caption2.weight(.medium)).foregroundStyle(YolkColor.ink).lineLimit(1)
-            } else {
-                MysteryYolk(size: 56).frame(height: 82)
+    @ViewBuilder private func cell(_ sp: Species) -> some View {
+        if discovered.contains(sp.id) {
+            Button {
+                Haptics.shared.select()
+                opened = sp
+            } label: {
+                VStack(spacing: 0) {
+                    YolklingView(vibe: sp.vibe, expression: .content, size: 56,
+                                 frozenAt: YolklingView.posedT)
+                        .frame(height: 82)
+                    Text(sp.name).font(.caption2.weight(.medium))
+                        .foregroundStyle(YolkColor.ink).lineLimit(1)
+                }
+            }
+            .buttonStyle(.plain)
+        } else {
+            // A card you have not turned over, rather than a padlock.
+            //
+            // This was a mystery egg, which was already the right instinct (the empty slots
+            // are the pull, never a punishment). A face-down card is better on the same axis:
+            // an egg says "locked", a face-down card says "not yet flipped", and it is
+            // continuous with the scratch reveal that will actually turn it over. `rarity:
+            // nil` so the back gives nothing away.
+            VStack(spacing: 0) {
+                YolkCardBack(rarity: nil, width: 52)
+                    .frame(height: 82)
                 Text("?").font(.caption2.weight(.bold)).foregroundStyle(YolkColor.muted)
             }
         }
