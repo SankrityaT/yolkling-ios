@@ -64,16 +64,19 @@ struct RootView: View {
             } else if ProcessInfo.processInfo.environment["YOLK_VISIT"] != nil
                         || CommandLine.arguments.contains("YOLK_VISIT") {
                 VisitView(subject: .friend(SocialPreview.sunny), store: SocialPreview.store,
-                          vibe: .matcha, wallet: Wallet(), onReward: { _ in })
+                          vibe: .matcha, wallet: Wallet(),
+                          myOutfit: SocialPreview.myOutfit, onReward: { _ in })
             } else if CommandLine.arguments.contains("YOLK_TRADE") {
-                TradeSheet(store: SocialPreview.store, friend: SocialPreview.sunny, vibe: .yolk)
+                TradeSheet(store: SocialPreview.store, friend: SocialPreview.sunny, vibe: .yolk,
+                           myOutfit: SocialPreview.myOutfit)
             } else if CommandLine.arguments.contains("YOLK_WANDER") {
                 WanderArrival(target: SocialPreview.drifter, vibe: .yolk,
                               store: SocialPreview.store, myName: "Yolky", onReward: { _ in })
             } else if CommandLine.arguments.contains("YOLK_DRIFT") {
                 // The stranger side of the same view, for eyeballing what differs.
                 VisitView(subject: .stranger(SocialPreview.drifter), store: SocialPreview.store,
-                          vibe: .matcha, wallet: Wallet(), onReward: { _ in })
+                          vibe: .matcha, wallet: Wallet(),
+                          myOutfit: SocialPreview.myOutfit, onReward: { _ in })
             } else if ProcessInfo.processInfo.environment["YOLK_INBOX"] != nil {
                 InboxPreview()
             } else if ProcessInfo.processInfo.environment["YOLK_COLORS"] != nil {
@@ -190,6 +193,14 @@ private enum SocialPreview {
                                            outfitIDs: []))
     }
     static var store: SocialStore { SocialStore(userID: "preview", myCode: "YOLK-TEST") }
+
+    /// A stand-in for "what I'm wearing", so the swap preview has something to swap
+    /// against in the dev seams. One item per slot, matching `WardrobeStore`.
+    static var myOutfit: [Cosmetic] {
+        ["flower", "glasses", "scarf"].compactMap { id in
+            CosmeticCatalog.all.first { $0.id == id }
+        }
+    }
 }
 
 /// Dev seam wrapper: the postcard inbox, loaded from the live backend for this install.

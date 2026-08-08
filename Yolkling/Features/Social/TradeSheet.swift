@@ -14,6 +14,9 @@ struct TradeSheet: View {
     /// nil → just the inbox. Set → also offer a swap with this friend.
     var friend: Friend? = nil
     let vibe: Vibe
+    /// What YOUR yolkling is wearing, so every swap can be previewed on the creature you
+    /// actually own rather than on a bare stand-in.
+    var myOutfit: [Cosmetic] = []
 
     @Environment(\.dismiss) private var dismiss
     @State private var mine: [Cosmetic] = []
@@ -52,7 +55,7 @@ struct TradeSheet: View {
                     .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
             }
             Spacer()
-            Button { dismiss() } label: {
+            Button { Haptics.shared.tick(); dismiss() } label: {
                 Image(systemName: "xmark").font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(YolkColor.inkSoft).padding(10)
                     .background(YolkColor.shell2, in: Circle())
@@ -72,27 +75,28 @@ struct TradeSheet: View {
                     Text("\(offer.otherName) wants to swap")
                         .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
 
-                    // Direction is the single most important thing on a trade screen, so
-                    // it's carried by layout and colour, not a caption: what you gain sits
-                    // on the left under a green label, what you lose on the right.
-                    HStack(alignment: .top, spacing: YolkSpace.sm) {
-                        directedItem(offer.cosmeticYouGet, label: "you get", gaining: true)
-                        Image(systemName: "arrow.left.arrow.right")
-                            .font(.system(size: 15, weight: .bold))
-                            .foregroundStyle(YolkColor.muted)
-                            .padding(.top, 40)
-                        directedItem(offer.cosmeticYouGive, label: "you give", gaining: false)
+                    // Accepting a trade is a decision about your creature, so the answer to
+                    // "should I?" is your creature, before and after — not two objects in
+                    // boxes you have to mentally dress yourself.
+                    SwapPreview(vibe: vibe, currentOutfit: myOutfit,
+                                giving: offer.cosmeticYouGive, getting: offer.cosmeticYouGet)
+
+                    // The preview carries the picture; these two lines carry the names and
+                    // rarities, which it can't.
+                    VStack(spacing: 4) {
+                        namedRow(offer.cosmeticYouGet, label: "you get", gaining: true)
+                        namedRow(offer.cosmeticYouGive, label: "you give", gaining: false)
                     }
 
                     HStack(spacing: YolkSpace.sm) {
-                        Button { respond(offer, accept: false) } label: {
+                        Button { Haptics.shared.tick(); respond(offer, accept: false) } label: {
                             Text("no thanks").font(YolkType.bodySmall.weight(.semibold))
                                 .foregroundStyle(YolkColor.inkSoft)
                                 .frame(maxWidth: .infinity).padding(.vertical, 13)
                                 .background(YolkColor.shell, in: Capsule())
                         }
                         .buttonStyle(.plain)
-                        Button { respond(offer, accept: true) } label: {
+                        Button { Haptics.shared.select(); respond(offer, accept: true) } label: {
                             Text("swap").font(YolkType.body.weight(.semibold))
                                 .foregroundStyle(YolkColor.shell)
                                 .frame(maxWidth: .infinity).padding(.vertical, 13)
@@ -122,10 +126,21 @@ struct TradeSheet: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, YolkSpace.md)
                 } else {
+                    // The preview sits ABOVE the pickers on purpose. It's the thing the
+                    // screen is for; putting it under two scrolling rows would push it off
+                    // the fold on a small phone at exactly the moment it becomes useful.
+                    SwapPreview(vibe: vibe, currentOutfit: myOutfit, giving: give, getting: want)
+                        // The beat where the swap becomes real and the "after" creature
+                        // lands. One pop, on the transition only — re-picking within a
+                        // complete swap keeps the lighter per-tile ticks.
+                        .onChange(of: give != nil && want != nil) { _, complete in
+                            if complete { Haptics.shared.pop() }
+                        }
+
                     pickRow(title: "you give", items: mine, selection: $give, gaining: false)
                     pickRow(title: "you get", items: theirs, selection: $want, gaining: true)
 
-                    Button { propose(to: friend) } label: {
+                    Button { Haptics.shared.select(); propose(to: friend) } label: {
                         Text(busy ? "asking…" : "ask for the swap")
                             .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.shell)
                             .frame(maxWidth: .infinity).padding(.vertical, 14)
@@ -161,7 +176,9 @@ struct TradeSheet: View {
                     ForEach(items) { item in
                         let on = selection.wrappedValue?.id == item.id
                         Button {
-                            Haptics.shared.tick()
+                            // Picking and un-picking should not feel the same. Choosing is
+                            // the crisp one; putting something back is a soft tick.
+                            if on { Haptics.shared.tick() } else { Haptics.shared.select() }
                             selection.wrappedValue = on ? nil : item
                         } label: {
                             ItemTile(item: item, vibe: vibe, side: 96, selected: on)
@@ -174,24 +191,30 @@ struct TradeSheet: View {
         }
     }
 
-    private func directedItem(_ item: Cosmetic?, label: String, gaining: Bool) -> some View {
-        VStack(spacing: 6) {
+    /// Name + rarity for one side of an incoming offer. The `SwapPreview` above it already
+    /// shows what the trade looks like; this only has to say what the things are called.
+    private func namedRow(_ item: Cosmetic?, label: String, gaining: Bool) -> some View {
+        let accent = gaining ? Color(hex: 0x5FA86B) : YolkColor.muted
+        return HStack(spacing: YolkSpace.sm) {
             Text(label)
                 .font(.caption2.weight(.bold))
-                .foregroundStyle(gaining ? Color(hex: 0x5FA86B) : YolkColor.muted)
+                .foregroundStyle(accent)
                 .padding(.horizontal, 9).padding(.vertical, 4)
-                .background(
-                    (gaining ? Color(hex: 0x5FA86B) : YolkColor.muted).opacity(0.14),
-                    in: Capsule()
-                )
-            if let item {
-                ItemTile(item: item, vibe: vibe, side: 96)
-            } else {
-                RoundedRectangle(cornerRadius: 20).fill(YolkColor.shell)
-                    .frame(width: 96, height: 96)
+                .background(accent.opacity(0.14), in: Capsule())
+                // Fixed width so the two labels' trailing edges line up and the names
+                // start on a shared left margin.
+                .frame(width: 70, alignment: .leading)
+            Text(item?.name ?? "something")
+                .font(YolkType.bodySmall.weight(.semibold))
+                .foregroundStyle(YolkColor.ink)
+                .lineLimit(1)
+            if let item, item.rarity != .common {
+                Text(item.rarity.rawValue)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(item.rarity == .epic ? Color(hex: 0xFFC23B) : Color(hex: 0x8FD0FF))
             }
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity)
     }
 
     private var emptyState: some View {

@@ -70,6 +70,7 @@
 		661AD66CBC76712E89119F7E /* FocusLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE7AD43C334266A4F352AB8 /* FocusLiveActivity.swift */; };
 		69D11733107EDC3AA9EDB710 /* SeasonBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334D734661EDF43E80B4A217 /* SeasonBanner.swift */; };
 		6A5F07B799F0E18D074604F6 /* CareEngines.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38FB1D1C79AAE4A5CC2E1CE /* CareEngines.swift */; };
+		7174436B53983F61625E185B /* SwapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C2E9327AAC745CB3DD23D /* SwapPreview.swift */; };
 		774E938C4B98B2F1E3959A7E /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
 		7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */; };
 		7D316A3F6CA5988E2356DA7C /* PackRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C490033D514C40A0067B7 /* PackRevealView.swift */; };
@@ -222,6 +223,7 @@
 		4E4A5383B84FED32116786EF /* YolkNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkNotifications.swift; sourceTree = "<group>"; };
 		4E67B727AE71BD4028C618FB /* Mood.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mood.swift; sourceTree = "<group>"; };
 		4FF366FD2F7B0531883B229D /* Vibe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vibe.swift; sourceTree = "<group>"; };
+		525C2E9327AAC745CB3DD23D /* SwapPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPreview.swift; sourceTree = "<group>"; };
 		571CDDC06280096B10794E7C /* PostcardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardViews.swift; sourceTree = "<group>"; };
 		593CF31848BF060E5D52D091 /* PostcardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardCard.swift; sourceTree = "<group>"; };
 		5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HatchModel.swift; sourceTree = "<group>"; };
@@ -491,6 +493,7 @@
 				7271B792C6CDA97F073DDC10 /* QRCodeView.swift */,
 				3E710CBEC1093FE73775F1BE /* QRScannerView.swift */,
 				4799EF90AC77C8C84A3D581B /* SocialStore.swift */,
+				525C2E9327AAC745CB3DD23D /* SwapPreview.swift */,
 				750F2FC038A981EDCD250E18 /* TradeSheet.swift */,
 				8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */,
 				B10352955EC8A724ED2AEAC4 /* VisitView.swift */,
@@ -983,6 +986,7 @@
 				2CAAC08C69E1616E53A9DE93 /* SpeciesSet.swift in Sources */,
 				59DE5860CD52D0A5C2A9961F /* SubscriptionStore.swift in Sources */,
 				F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */,
+				7174436B53983F61625E185B /* SwapPreview.swift in Sources */,
 				56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */,
 				DAAC52882B232B1980F924A5 /* TradeSheet.swift in Sources */,
 				CF37128F7CA33BB9DE42746D /* TrustStage.swift in Sources */,

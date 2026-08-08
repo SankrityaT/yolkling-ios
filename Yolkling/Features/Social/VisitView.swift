@@ -10,6 +10,9 @@ struct VisitView: View {
     @State var store: SocialStore
     let vibe: Vibe
     let wallet: Wallet
+    /// Your own outfit, carried through so a swap can be previewed on your creature.
+    /// Stranger visits never reach the trade sheet, so it's optional there.
+    var myOutfit: [Cosmetic] = []
     let onReward: (Int) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -40,7 +43,7 @@ struct VisitView: View {
         }
         .sheet(isPresented: $swapping) {
             if case .friend(let f) = subject {
-                TradeSheet(store: store, friend: f, vibe: vibe)
+                TradeSheet(store: store, friend: f, vibe: vibe, myOutfit: myOutfit)
                     .presentationDetents([.large])
             }
         }

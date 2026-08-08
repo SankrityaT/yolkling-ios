@@ -48,7 +48,7 @@ struct DriftSheet: View {
         .task { await refresh() }
         .sheet(item: $visiting) { t in
             VisitView(subject: .stranger(t), store: store, vibe: vibe,
-                      wallet: wallet, onReward: onReward)
+                      wallet: wallet, myOutfit: mySnapshot.outfit, onReward: onReward)
                 .presentationDetents([.large])
         }
     }
