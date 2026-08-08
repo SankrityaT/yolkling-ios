@@ -77,6 +77,8 @@ struct RootView: View {
                 VisitView(subject: .stranger(SocialPreview.drifter), store: SocialPreview.store,
                           vibe: .matcha, wallet: Wallet(),
                           myOutfit: SocialPreview.myOutfit, onReward: { _ in })
+            } else if CommandLine.arguments.contains("YOLK_HOLO") {
+                HoloPreview()
             } else if ProcessInfo.processInfo.environment["YOLK_INBOX"] != nil {
                 InboxPreview()
             } else if ProcessInfo.processInfo.environment["YOLK_COLORS"] != nil {
@@ -200,6 +202,54 @@ private enum SocialPreview {
         ["flower", "glasses", "scarf"].compactMap { id in
             CosmeticCatalog.all.first { $0.id == id }
         }
+    }
+}
+
+/// Dev seam: the holo card, one rarity at a time, so each laminate can be judged on its
+/// own. The simulator has no gyroscope, so drag the card to tilt it there.
+private struct HoloPreview: View {
+    private let rarities = Species.Rarity.allCases
+    @State private var pick = 1
+
+    private var face: YolkCardFace {
+        let r = rarities[pick]
+        // A real species per rarity where one exists, so the palettes are the ones that
+        // will actually ship rather than a swatch. Founding species live in their own
+        // array, so `all` has none — hence the explicit rarity override below, without
+        // which the founding tab silently showed a common card under a pearl finish.
+        let s = SpeciesCatalog.all.first { $0.rarity == r } ?? SpeciesCatalog.all[0]
+        var f = YolkCardFace.species(s, discovered: .now, number: 42, outOf: 912)
+        f.rarity = r
+        f.stats = [
+            .init(label: "streak", value: "12", icon: "flame.fill"),
+            .init(label: "trust", value: "84%", icon: "heart.fill"),
+            .init(label: "cared", value: "47", icon: "hand.raised.fill"),
+            .init(label: "focus", value: "9h", icon: "moon.stars.fill"),
+        ]
+        f.outfit = ["flower", "scarf"].compactMap { id in
+            CosmeticCatalog.all.first { $0.id == id }
+        }
+        return f
+    }
+
+    var body: some View {
+        VStack(spacing: YolkSpace.lg) {
+            Spacer()
+            YolkCard(face: face, width: 300)
+            Spacer()
+            Picker("", selection: $pick) {
+                ForEach(rarities.indices, id: \.self) { i in
+                    Text(rarities[i].rawValue).tag(i)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, YolkSpace.lg)
+            Text(HoloMaterial.forRarity(rarities[pick]).label)
+                .font(YolkType.label).foregroundStyle(YolkColor.muted)
+                .padding(.bottom, YolkSpace.lg)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(YolkColor.shell.ignoresSafeArea())
     }
 }
 

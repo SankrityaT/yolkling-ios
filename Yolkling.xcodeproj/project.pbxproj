@@ -70,6 +70,7 @@
 		661AD66CBC76712E89119F7E /* FocusLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE7AD43C334266A4F352AB8 /* FocusLiveActivity.swift */; };
 		69D11733107EDC3AA9EDB710 /* SeasonBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334D734661EDF43E80B4A217 /* SeasonBanner.swift */; };
 		6A5F07B799F0E18D074604F6 /* CareEngines.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38FB1D1C79AAE4A5CC2E1CE /* CareEngines.swift */; };
+		6CCEA71E6A40893115EAD6E7 /* HoloMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775778FA780FB58DC2F96847 /* HoloMaterial.swift */; };
 		7174436B53983F61625E185B /* SwapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C2E9327AAC745CB3DD23D /* SwapPreview.swift */; };
 		774E938C4B98B2F1E3959A7E /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
 		7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */; };
@@ -83,6 +84,7 @@
 		8B9D92868991771D4FADBDC1 /* CreatureParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7831C9E0C1B95A7B333E3D4 /* CreatureParts.swift */; };
 		8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689CB056088DED814BB7D8E5 /* TypewriterText.swift */; };
 		8CFEA4E65FD7AA9F81025A05 /* Mood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E67B727AE71BD4028C618FB /* Mood.swift */; };
+		8D25FD82B5D02C23463C3A46 /* YolkCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55E15A3191441EF6DD5D2C0 /* YolkCard.swift */; };
 		8E04A92EF50B352275AF88DE /* YolkMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */; };
 		91BA909DB55DA72B013072D0 /* Cosmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */; };
 		934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */; };
@@ -99,6 +101,7 @@
 		AA2F9619CCFEA5395EB5D25F /* WanderArrival.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46E50093F8B5CD1A4FB50FE1 /* WanderArrival.swift */; };
 		ABA9885E8F8594EE01C4A444 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */; };
 		B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9E562134085B1FEF2F1E4F /* FriendsView.swift */; };
+		B230DDE4DA3A2793C38B4C11 /* YolkCardFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F368C2F7CFCEF100548E1 /* YolkCardFace.swift */; };
 		B272ABAEB76D8F68D7565E90 /* ColorShop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E4757EC5D4372E5784BF025 /* ColorShop.swift */; };
 		B3140FD6A3D1EB7B1A6E617C /* RoomDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */; };
 		B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC859F6086205595CCA3548F /* YolkDialog.swift */; };
@@ -116,6 +119,7 @@
 		C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */; };
 		C55C3F43C2A4755813270CBE /* RarityAura.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9B833332453257B1847522 /* RarityAura.swift */; };
 		C5670AB65ECB4D8B04B5808C /* RoomZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7558E421CB8F49D94D63FD7 /* RoomZone.swift */; };
+		C6646B454E0F91B067AE8521 /* CardTilt.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */; };
 		C6C49BBE9D1EFD446E11DFEB /* CosmeticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */; };
 		C7461608412DBBB8EB030FA8 /* CreatureStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8223D82853775F0621924C5 /* CreatureStyle.swift */; };
 		CA9F4D5D2F5BE5C80C7FFDE4 /* CosmeticPreviewGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */; };
@@ -185,6 +189,7 @@
 		02B3C10F5C7A1D79618B0B35 /* SocialModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialModels.swift; sourceTree = "<group>"; };
 		062DF25F0B107A6A708BE8E2 /* Onest-VF.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Onest-VF.ttf"; sourceTree = "<group>"; };
 		096CDDB0222B5437F850166C /* Species+Cozy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Cozy.swift"; sourceTree = "<group>"; };
+		0A2F368C2F7CFCEF100548E1 /* YolkCardFace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCardFace.swift; sourceTree = "<group>"; };
 		0A7C0703029E40E6699C7F53 /* Yolkling.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Yolkling.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Garden.swift"; sourceTree = "<group>"; };
 		0FA2EE3D862627BDDB70A446 /* YolklingWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingWidgetBundle.swift; sourceTree = "<group>"; };
@@ -237,6 +242,7 @@
 		7271B792C6CDA97F073DDC10 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeQuiz.swift; sourceTree = "<group>"; };
 		750F2FC038A981EDCD250E18 /* TradeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeSheet.swift; sourceTree = "<group>"; };
+		775778FA780FB58DC2F96847 /* HoloMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloMaterial.swift; sourceTree = "<group>"; };
 		77B3DF45A83DE92F2CDBBAA4 /* YolklingWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = YolklingWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A1C490033D514C40A0067B7 /* PackRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackRevealView.swift; sourceTree = "<group>"; };
 		7C9EA7652B10E7A58EC9A965 /* SharePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreview.swift; sourceTree = "<group>"; };
@@ -278,10 +284,12 @@
 		D3023148FA25E063CED922DF /* SyncClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncClient.swift; sourceTree = "<group>"; };
 		D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticPreviewGrid.swift; sourceTree = "<group>"; };
 		D4FC884495811BB1821AF2CB /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
+		DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTilt.swift; sourceTree = "<group>"; };
 		DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeStore.swift; sourceTree = "<group>"; };
 		DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkMotion.swift; sourceTree = "<group>"; };
 		E3E3DAFC3357CF16EDB765B2 /* FocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusView.swift; sourceTree = "<group>"; };
 		E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkSpacing.swift; sourceTree = "<group>"; };
+		E55E15A3191441EF6DD5D2C0 /* YolkCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCard.swift; sourceTree = "<group>"; };
 		E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CosmeticView+Spring.swift"; sourceTree = "<group>"; };
 		E8223D82853775F0621924C5 /* CreatureStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatureStyle.swift; sourceTree = "<group>"; };
 		EC9B833332453257B1847522 /* RarityAura.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RarityAura.swift; sourceTree = "<group>"; };
@@ -360,6 +368,17 @@
 				271C78981C0D5681EF94171E /* Haptics.swift */,
 			);
 			path = Haptics;
+			sourceTree = "<group>";
+		};
+		34BCCA526A8E36F0B73F30BF /* Cards */ = {
+			isa = PBXGroup;
+			children = (
+				DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */,
+				775778FA780FB58DC2F96847 /* HoloMaterial.swift */,
+				E55E15A3191441EF6DD5D2C0 /* YolkCard.swift */,
+				0A2F368C2F7CFCEF100548E1 /* YolkCardFace.swift */,
+			);
+			path = Cards;
 			sourceTree = "<group>";
 		};
 		394018C170D352E4CE8BBA3C /* Referral */ = {
@@ -446,6 +465,7 @@
 		619ECA6D3E8E4951D510C960 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				34BCCA526A8E36F0B73F30BF /* Cards */,
 				0B166213DBFCD7C33ACDCACB /* Components */,
 				4846EE911EBDB76ADA46BC5C /* Configuration */,
 				6F8DCD02D9BD39A89E74A1D2 /* Cosmetics */,
@@ -917,6 +937,7 @@
 				BA925A3A4FA9DD75958F5189 /* AppEnvironment.swift in Sources */,
 				C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */,
 				823C10E6893487A0027EA9EB /* BrandFonts.swift in Sources */,
+				C6646B454E0F91B067AE8521 /* CardTilt.swift in Sources */,
 				6A5F07B799F0E18D074604F6 /* CareEngines.swift in Sources */,
 				F2C5878F99269B2EDA41761C /* CollectionView.swift in Sources */,
 				B272ABAEB76D8F68D7565E90 /* ColorShop.swift in Sources */,
@@ -945,6 +966,7 @@
 				0364CA692D518EF8AAF0F8B0 /* Haptics.swift in Sources */,
 				ED4E74BB4114F9EA58A24D8C /* HatchModel.swift in Sources */,
 				E8D0C3C3964CD981CBFACC61 /* HealthService.swift in Sources */,
+				6CCEA71E6A40893115EAD6E7 /* HoloMaterial.swift in Sources */,
 				F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */,
 				E261AFCE62FB64987CEDB149 /* HomeView.swift in Sources */,
 				0934185C7FCCBB0433E403E5 /* ItemTile.swift in Sources */,
@@ -1002,6 +1024,8 @@
 				2457FC8BE922B4C6358E0241 /* WidgetHowToView.swift in Sources */,
 				E6AD6071FF213AC002F4DCAE /* WidgetPublisher.swift in Sources */,
 				C1DED04D454F150D89F0A062 /* WidgetSnapshot.swift in Sources */,
+				8D25FD82B5D02C23463C3A46 /* YolkCard.swift in Sources */,
+				B230DDE4DA3A2793C38B4C11 /* YolkCardFace.swift in Sources */,
 				D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */,
 				BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */,
 				B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */,
