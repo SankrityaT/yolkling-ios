@@ -329,6 +329,10 @@ struct ShopHomeView: View {
                 HStack(spacing: YolkSpace.sm) {
                     content()
                 }
+                // Rarity auras and selection states extend past a card's frame; without
+                // this the ScrollView clips them and the effect silently disappears.
+                .padding(.vertical, 8)
+                .padding(.horizontal, 2)
             }
         }
     }
@@ -423,8 +427,14 @@ struct ShopHomeView: View {
                     // Rarity was on every item and drawn nowhere — an epic looked like a
                     // common with a different number beside it. The aura makes it felt
                     // before it's read, which is most of why pulling a rare feels good.
-                    RarityAura(rarity: item.rarity, size: 84)
-                    CosmeticView(kind: item.kind, size: 50).frame(maxWidth: .infinity, maxHeight: .infinity)
+                    RarityAura(rarity: item.rarity, size: 84,
+                               frozenAt: RarityAura.posedT, intensity: 0.45)
+                    // Worn, not floating. A hat with no head has no scale or orientation,
+                    // so it reads as an abstract shape — same fix as the swap screen.
+                    // frozenAt because a grid of these would otherwise run one live
+                    // TimelineView per card.
+                    YolklingView(vibe: previewVibe, expression: .content, size: 52,
+                                 outfit: [item], frozenAt: YolklingView.posedT)
                     if item.rarity != .common { rarityDot(item.rarity).padding(8) }
                 }
                 .frame(width: 84, height: 84)

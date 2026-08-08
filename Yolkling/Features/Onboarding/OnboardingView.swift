@@ -115,7 +115,10 @@ private struct CustomizeView: View {
                             }
                         }
                     }
+                    // Vertical room so the bouncy select animation (which overshoots
+                    // past 1.0) isn't clipped by the ScrollView's bounds.
                     .padding(.horizontal, 2)
+                    .padding(.vertical, 8)
                 }
 
                 sectionLabel("pick a color")

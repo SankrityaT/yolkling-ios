@@ -212,7 +212,7 @@ struct DecorateView: View {
                     }
                 }
                 .padding(.horizontal, YolkSpace.lg)
-                .padding(.vertical, 4)
+                .padding(.vertical, 10)
             }
         }
     }
@@ -319,7 +319,7 @@ struct DecorateView: View {
                     }
                 }
                 .padding(.horizontal, YolkSpace.lg)
-                .padding(.vertical, 4)
+                .padding(.vertical, 10)
             }
         }
         .padding(.bottom, YolkSpace.xs)

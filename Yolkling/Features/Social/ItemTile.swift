@@ -40,9 +40,14 @@ struct ItemTile: View {
                            frozenAt: RarityAura.posedT, intensity: 0.45)
 
                 // The item, worn. This is the whole fix.
+                //
+                // Nudged down slightly: hats anchor well above the creature's centre, so
+                // a tall one (crown, wizard hat) grazes the tile's top edge when the
+                // creature is optically centred.
                 YolklingView(vibe: vibe, expression: .content,
-                             size: side * 0.62, outfit: [item],
+                             size: side * 0.58, outfit: [item],
                              frozenAt: YolklingView.posedT)
+                    .offset(y: side * 0.05)
             }
             .frame(width: side, height: side)
             .overlay(
@@ -50,6 +55,9 @@ struct ItemTile: View {
                     .strokeBorder(selected ? YolkColor.ink : tint.opacity(item.rarity == .common ? 0.5 : 0.9),
                                   lineWidth: selected ? 3 : 1.5)
             )
+            // Badge sits INSIDE the tile. It used to overhang by 6pt, which a horizontal
+            // ScrollView happily clipped — SwiftUI clips scroll content to bounds, so any
+            // decoration that pokes outside a row is invisible the moment it matters.
             .overlay(alignment: .topTrailing) {
                 if selected {
                     Image(systemName: "checkmark")
@@ -57,7 +65,7 @@ struct ItemTile: View {
                         .foregroundStyle(YolkColor.shell)
                         .padding(5)
                         .background(YolkColor.ink, in: Circle())
-                        .offset(x: 6, y: -6)
+                        .padding(6)
                 }
             }
             .scaleEffect(selected ? 1.04 : 1)

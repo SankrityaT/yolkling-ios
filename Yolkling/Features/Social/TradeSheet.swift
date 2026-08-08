@@ -169,7 +169,7 @@ struct TradeSheet: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 2).padding(.vertical, 4)
+                .padding(.horizontal, 2).padding(.vertical, 10)
             }
         }
     }
