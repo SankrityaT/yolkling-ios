@@ -124,6 +124,7 @@
 		CF37128F7CA33BB9DE42746D /* TrustStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822B58776D67B8C7AC5DB908 /* TrustStage.swift */; };
 		D1F0716DBE1CD83F845635F5 /* VisitSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */; };
 		D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
+		DAAC52882B232B1980F924A5 /* TradeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750F2FC038A981EDCD250E18 /* TradeSheet.swift */; };
 		DC6715049B14E1C73DC19A60 /* DMMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C7A696ACFBC053E0809E12F /* DMMono-Regular.ttf */; };
 		DC93A5811E3A4E2B08CD8B49 /* CustomizeOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28194194B325C85B2FB43038 /* CustomizeOptions.swift */; };
 		DC94E6FABC5A521DD0D848EF /* Entitlements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FF8FE4B124490B3815CD5B /* Entitlements.swift */; };
@@ -232,6 +233,7 @@
 		6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cosmetic.swift; sourceTree = "<group>"; };
 		7271B792C6CDA97F073DDC10 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeQuiz.swift; sourceTree = "<group>"; };
+		750F2FC038A981EDCD250E18 /* TradeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeSheet.swift; sourceTree = "<group>"; };
 		77B3DF45A83DE92F2CDBBAA4 /* YolklingWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = YolklingWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A1C490033D514C40A0067B7 /* PackRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackRevealView.swift; sourceTree = "<group>"; };
 		7C9EA7652B10E7A58EC9A965 /* SharePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreview.swift; sourceTree = "<group>"; };
@@ -486,6 +488,7 @@
 				7271B792C6CDA97F073DDC10 /* QRCodeView.swift */,
 				3E710CBEC1093FE73775F1BE /* QRScannerView.swift */,
 				4799EF90AC77C8C84A3D581B /* SocialStore.swift */,
+				750F2FC038A981EDCD250E18 /* TradeSheet.swift */,
 				8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */,
 				B10352955EC8A724ED2AEAC4 /* VisitView.swift */,
 				46E50093F8B5CD1A4FB50FE1 /* WanderArrival.swift */,
@@ -977,6 +980,7 @@
 				59DE5860CD52D0A5C2A9961F /* SubscriptionStore.swift in Sources */,
 				F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */,
 				56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */,
+				DAAC52882B232B1980F924A5 /* TradeSheet.swift in Sources */,
 				CF37128F7CA33BB9DE42746D /* TrustStage.swift in Sources */,
 				8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */,
 				52AAB71891CABF5B96820C3F /* Vibe.swift in Sources */,

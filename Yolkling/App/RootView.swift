@@ -65,6 +65,8 @@ struct RootView: View {
                         || CommandLine.arguments.contains("YOLK_VISIT") {
                 VisitView(subject: .friend(SocialPreview.sunny), store: SocialPreview.store,
                           vibe: .matcha, wallet: Wallet(), onReward: { _ in })
+            } else if CommandLine.arguments.contains("YOLK_TRADE") {
+                TradeSheet(store: SocialPreview.store, friend: SocialPreview.sunny, vibe: .yolk)
             } else if CommandLine.arguments.contains("YOLK_WANDER") {
                 WanderArrival(target: SocialPreview.drifter, vibe: .yolk,
                               store: SocialPreview.store, myName: "Yolky", onReward: { _ in })

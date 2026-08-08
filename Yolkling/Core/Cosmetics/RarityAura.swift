@@ -58,16 +58,19 @@ struct RarityAura: View {
 
         ZStack {
             // Glow. Two offset circles on epic so the colour moves through it.
+            // Tuned down after seeing it at tile size: at the first opacities the glow
+            // filled the tile and the ITEM stopped reading, which defeats the point — the
+            // aura is meant to frame what you're looking at, not replace it.
             if let a = tint.first {
-                Circle().fill(a.opacity(rarity == .epic ? 0.34 : 0.24))
-                    .frame(width: size * 1.02 * breath, height: size * 1.02 * breath)
-                    .blur(radius: size * 0.16)
+                Circle().fill(a.opacity(rarity == .epic ? 0.24 : 0.16))
+                    .frame(width: size * 0.84 * breath, height: size * 0.84 * breath)
+                    .blur(radius: size * 0.13)
             }
             if rarity == .epic, tint.count > 1 {
-                Circle().fill(tint[1].opacity(0.28))
-                    .frame(width: size * 0.88 * breath, height: size * 0.88 * breath)
-                    .blur(radius: size * 0.16)
-                    .offset(x: size * 0.06, y: -size * 0.05)
+                Circle().fill(tint[1].opacity(0.2))
+                    .frame(width: size * 0.72 * breath, height: size * 0.72 * breath)
+                    .blur(radius: size * 0.13)
+                    .offset(x: size * 0.05, y: -size * 0.04)
             }
 
             // A slow ring, epic only. Rotation is the clearest "this one is special"
@@ -78,9 +81,9 @@ struct RarityAura: View {
                         AngularGradient(colors: [tint[0].opacity(0.0), tint[0].opacity(0.7),
                                                  tint[1].opacity(0.7), tint[0].opacity(0.0)],
                                         center: .center),
-                        lineWidth: size * 0.022
+                        lineWidth: size * 0.018
                     )
-                    .frame(width: size * 0.94, height: size * 0.94)
+                    .frame(width: size * 0.86, height: size * 0.86)
                     .rotationEffect(.degrees(animate ? t * 26 : 42))
             }
 
@@ -88,7 +91,7 @@ struct RarityAura: View {
             // they're scattered rather than evenly spaced, and identical every render.
             ForEach(0..<sparkleCount, id: \.self) { i in
                 let a = Self.hash01(i, salt: 0x51) * 2 * .pi
-                let r = 0.36 + 0.12 * Self.hash01(i, salt: 0x9C)
+                let r = 0.34 + 0.11 * Self.hash01(i, salt: 0x9C)
                 let drift = animate ? sin(2 * .pi * 0.22 * t + Double(i)) : 0.3
                 let twinkle = animate ? 0.45 + 0.55 * abs(sin(2 * .pi * 0.5 * t + Double(i) * 1.3)) : 0.8
 

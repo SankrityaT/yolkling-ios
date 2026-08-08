@@ -18,6 +18,7 @@ struct VisitView: View {
     @State private var theirWaveToken = 0   // bump to make their yolk wave back
     @State private var dialog: YolkDialog?
     @State private var giftBusy = false
+    @State private var swapping = false
     /// Strangers require a successful drift before any action is allowed.
     @State private var landed = false
 
@@ -36,6 +37,12 @@ struct VisitView: View {
         .sheet(isPresented: $composing) {
             PostcardCompose(subject: subject, store: store, vibe: vibe, onReward: onReward)
                 .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $swapping) {
+            if case .friend(let f) = subject {
+                TradeSheet(store: store, friend: f, vibe: vibe)
+                    .presentationDetents([.large])
+            }
         }
         .yolkDialog($dialog)
         .task { await arrive() }
@@ -108,7 +115,9 @@ struct VisitView: View {
         HStack(spacing: YolkSpace.sm) {
             waveButton
             noteButton
-            giftMenu
+            // Swapping is friends-only: a stranger offer is a scam surface with no upside,
+            // and you've no reason to trust someone your creature met once.
+            if case .friend = subject { swapButton } else { giftMenu }
         }
         .padding(.horizontal, YolkSpace.lg)
         .padding(.top, YolkSpace.xs)
@@ -134,6 +143,19 @@ struct VisitView: View {
             actionLabel("💌", "leave a note", filled: true)
         }
         .buttonStyle(.plain)
+    }
+
+    private var swapButton: some View {
+        Menu {
+            Button { swapping = true } label: { Label("offer a swap", systemImage: "arrow.left.arrow.right") }
+            ForEach(subject.giftAmounts, id: \.self) { amount in
+                Button("gift \(amount) \(Currency.name)") { sendGift(amount) }
+            }
+        } label: {
+            actionLabel("🔁", giftBusy ? "..." : "swap", filled: false)
+                .foregroundStyle(YolkColor.ink)
+        }
+        .disabled(giftBusy)
     }
 
     private var giftMenu: some View {

@@ -110,6 +110,36 @@ final class SocialStore {
         await client.sendPostcardToken(from: userID, to: to, token: token)
     }
 
+    // MARK: Trading
+
+    private(set) var trades: [TradeOffer] = []
+
+    var incomingTrades: [TradeOffer] { trades.filter(\.incoming) }
+
+    func loadTrades() async {
+        trades = await client.trades(userID: userID)
+    }
+
+    func tradeable(with other: String) async -> (mine: [Cosmetic], theirs: [Cosmetic]) {
+        let ids = await client.tradeable(userID: userID, with: other)
+        func look(_ list: [String]) -> [Cosmetic] {
+            list.compactMap { id in CosmeticCatalog.all.first { $0.id == id } }
+        }
+        return (look(ids.mine), look(ids.theirs))
+    }
+
+    func propose(to other: String, offer: String, want: String) async -> (ok: Bool, reason: String?) {
+        let r = await client.proposeTrade(from: userID, to: other, offer: offer, want: want)
+        if r.ok { await loadTrades() }
+        return r
+    }
+
+    func respond(to trade: TradeOffer, accept: Bool) async -> (ok: Bool, reason: String?) {
+        let r = await client.respondTrade(userID: userID, tradeID: trade.id, accept: accept)
+        if r.ok { await loadTrades() }
+        return r
+    }
+
     // MARK: Moderation
 
     @discardableResult

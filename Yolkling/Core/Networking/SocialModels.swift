@@ -64,6 +64,29 @@ extension RoomSnapshot {
 }
 
 /// A friend + their latest published room snapshot (from get_friends).
+/// A pending swap offer. Always a SWAP — nothing in this app moves one-way, because a
+/// one-way transfer is the one shape that lets an alt account farm seasonal items.
+struct TradeOffer: Codable, Sendable, Identifiable {
+    let id: Int
+    let from_id: String
+    let to_id: String
+    let offer_item: String
+    let want_item: String
+    let status: String
+    let incoming: Bool
+    let other_name: String?
+
+    var otherName: String { (other_name?.isEmpty == false ? other_name : nil) ?? "a friend" }
+
+    /// What lands in YOUR wardrobe if this goes through.
+    var youGet: String { incoming ? offer_item : want_item }
+    /// What leaves it.
+    var youGive: String { incoming ? want_item : offer_item }
+
+    var cosmeticYouGet: Cosmetic? { CosmeticCatalog.all.first { $0.id == youGet } }
+    var cosmeticYouGive: Cosmetic? { CosmeticCatalog.all.first { $0.id == youGive } }
+}
+
 /// A stranger's room your yolkling can drift into.
 ///
 /// Shaped like `Friend` on purpose — same fields, same accessors — so `VisitView` can

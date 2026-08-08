@@ -145,6 +145,39 @@ struct SupabaseClient {
                                             "p_snapshot": snapObj, "p_public": isPublic])
     }
 
+    // MARK: Trading. See docs/sql/trading.sql.
+
+    /// Pending offers in both directions.
+    func trades(userID: String) async -> [TradeOffer] {
+        guard let data = await post("my_trades", ["p_user": userID]) else { return [] }
+        return (try? JSONDecoder().decode([TradeOffer].self, from: data)) ?? []
+    }
+
+    /// What the two of you could actually swap — each side's tradeable items the other
+    /// lacks. Exactly the set of offers that can succeed.
+    func tradeable(userID: String, with other: String) async -> (mine: [String], theirs: [String]) {
+        guard let data = await post("tradeable_between", ["p_user": userID, "p_other": other]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return ([], []) }
+        return (obj["mine"] as? [String] ?? [], obj["theirs"] as? [String] ?? [])
+    }
+
+    func proposeTrade(from: String, to: String, offer: String, want: String) async -> (ok: Bool, reason: String?) {
+        guard let data = await post("propose_trade",
+                                    ["p_from": from, "p_to": to, "p_offer": offer, "p_want": want]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return (false, nil) }
+        return (obj["ok"] as? Bool ?? false, obj["reason"] as? String)
+    }
+
+    func respondTrade(userID: String, tradeID: Int, accept: Bool) async -> (ok: Bool, reason: String?) {
+        guard let data = await postJSON("respond_trade",
+                                        ["p_user": userID, "p_trade": tradeID, "p_accept": accept]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return (false, nil) }
+        return (obj["ok"] as? Bool ?? false, obj["reason"] as? String)
+    }
+
     // MARK: Cloud backup. See docs/sql/backup.sql.
 
     /// Save the creature. Keyed on the Sign in with Apple id.
