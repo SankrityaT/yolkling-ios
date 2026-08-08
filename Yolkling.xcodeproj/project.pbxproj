@@ -11,6 +11,7 @@
 		03B787A52BC86AF96B68F016 /* FocusSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */; };
 		06CFCBF306F3A0FDCAFD2653 /* SpeciesGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D92FE830A5B71AC26B90E21 /* SpeciesGalleryView.swift */; };
 		0761A9E428F716F629E0E8A8 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9E64CF6D045ACC42F06467FE /* RevenueCatUI */; };
+		07718ACB92EB92E7631816A2 /* CosmeticView+Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */; };
 		086B1B692A28EC7108795144 /* RoomDecorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */; };
 		08D9901B447473F63656E17A /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E710CBEC1093FE73775F1BE /* QRScannerView.swift */; };
 		09FE9ECC682126A937DF978F /* DriftSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6140FCDBA2426893DDB84717 /* DriftSheet.swift */; };
@@ -138,6 +139,7 @@
 		ED4E74BB4114F9EA58A24D8C /* HatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */; };
 		EE8A541C3D503283B576EFE5 /* VibeQuiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */; };
 		EE8ECFF9FECF524B0766A792 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */; };
+		EFB372B359CCCC214A44F93E /* CosmeticView+Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */; };
 		F0CD39EDFF070A9DF531E05A /* RoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A696350A3A3F96048352A62 /* RoomView.swift */; };
 		F0D956D4138C84573620C1A5 /* RoomDecorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */; };
 		F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F554785860AE53390D69233E /* SupabaseClient.swift */; };
@@ -272,6 +274,7 @@
 		DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkMotion.swift; sourceTree = "<group>"; };
 		E3E3DAFC3357CF16EDB765B2 /* FocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusView.swift; sourceTree = "<group>"; };
 		E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkSpacing.swift; sourceTree = "<group>"; };
+		E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CosmeticView+Spring.swift"; sourceTree = "<group>"; };
 		E8223D82853775F0621924C5 /* CreatureStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatureStyle.swift; sourceTree = "<group>"; };
 		EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		EFC6AD7229641595F1324223 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -543,6 +546,7 @@
 				7E4757EC5D4372E5784BF025 /* ColorShop.swift */,
 				6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */,
 				6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */,
+				E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */,
 			);
 			path = Cosmetics;
 			sourceTree = "<group>";
@@ -855,6 +859,7 @@
 				2104EC3B551DC384D0C848E9 /* CareEngines.swift in Sources */,
 				990CEEC0D3390B9E529A469A /* ColorShop.swift in Sources */,
 				91BA909DB55DA72B013072D0 /* Cosmetic.swift in Sources */,
+				07718ACB92EB92E7631816A2 /* CosmeticView+Spring.swift in Sources */,
 				3B1559031499A54AAAF1AD2A /* CosmeticView.swift in Sources */,
 				3C010459CE49815CAD71620B /* CreatureParts.swift in Sources */,
 				2E5A1E21EB4608C0ED24796B /* CreatureStyle.swift in Sources */,
@@ -903,6 +908,7 @@
 				B272ABAEB76D8F68D7565E90 /* ColorShop.swift in Sources */,
 				EB5206DA5E4CA7790D03C424 /* Cosmetic.swift in Sources */,
 				CA9F4D5D2F5BE5C80C7FFDE4 /* CosmeticPreviewGrid.swift in Sources */,
+				EFB372B359CCCC214A44F93E /* CosmeticView+Spring.swift in Sources */,
 				C6C49BBE9D1EFD446E11DFEB /* CosmeticView.swift in Sources */,
 				8B9D92868991771D4FADBDC1 /* CreatureParts.swift in Sources */,
 				C7461608412DBBB8EB030FA8 /* CreatureStyle.swift in Sources */,

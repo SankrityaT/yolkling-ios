@@ -21,7 +21,7 @@ final class Wallet {
     init(coins: Int = Wallet.welcomeGrant, owned: Set<String> = []) {
         self.coins = coins
         // Free starter items are always owned, unioned with anything restored.
-        let free = Set(CosmeticCatalog.all.filter { $0.cost == 0 }.map(\.id))
+        let free = Set(CosmeticCatalog.all.filter { $0.cost == 0 && !$0.grantOnly }.map(\.id))
         self.owned = owned.union(free)
     }
 
@@ -32,12 +32,15 @@ final class Wallet {
     /// Free starter items stay unioned in so they never vanish.
     func adopt(coins newCoins: Int, owned newOwned: Set<String>) {
         coins = newCoins
-        let free = Set(CosmeticCatalog.all.filter { $0.cost == 0 }.map(\.id))
+        let free = Set(CosmeticCatalog.all.filter { $0.cost == 0 && !$0.grantOnly }.map(\.id))
         owned = newOwned.union(free)
     }
 
     func owns(_ cosmetic: Cosmetic) -> Bool {
-        cosmetic.cost == 0 || owned.contains(cosmetic.id)
+        // Grant-only items are never free, whatever their cost says — they're earned by
+        // being there for a season, not bought.
+        if cosmetic.grantOnly { return owned.contains(cosmetic.id) }
+        return cosmetic.cost == 0 || owned.contains(cosmetic.id)
     }
 
     func canAfford(_ cosmetic: Cosmetic) -> Bool { coins >= cosmetic.cost }

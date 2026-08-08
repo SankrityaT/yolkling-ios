@@ -9,6 +9,14 @@ struct CosmeticView: View {
 
     var body: some View {
         switch kind {
+        // spring bloom season
+        case .blossomCrown:   blossomCrown
+        case .butterflyPerch: butterflyPerch
+        case .wateringCan:    wateringCan
+        case .petalLashes:    petalLashes
+        case .rainCape:       rainCape
+        case .cloverChain:    cloverChain
+
         case .beanie:       beanie
         case .partyHat:     partyHat
         case .gradCap:      gradCap

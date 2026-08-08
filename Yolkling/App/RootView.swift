@@ -29,7 +29,9 @@ struct RootView: View {
             } else if ProcessInfo.processInfo.environment["YOLK_PACK"] != nil,
                       let sp = SpeciesCatalog.all.first(where: { $0.id == "garden-firefleur" }) {
                 PackRevealView(species: sp)
-            } else if let slot = ProcessInfo.processInfo.environment["YOLK_COSMETICS"] {
+            } else if let slot = ProcessInfo.processInfo.environment["YOLK_COSMETICS"]
+                        ?? CommandLine.arguments.first(where: { $0.hasPrefix("YOLK_COSMETICS=") })
+                            .map({ String($0.dropFirst("YOLK_COSMETICS=".count)) }) {
                 CosmeticPreviewGrid(items: Array(CosmeticCatalog.items(in: CosmeticSlot(rawValue: slot) ?? .hat).reversed()))
             } else if let r = ProcessInfo.processInfo.environment["YOLK_ROOM"] {
                 let theme = RoomThemes.all[min(max(Int(r) ?? 0, 0), RoomThemes.all.count - 1)]

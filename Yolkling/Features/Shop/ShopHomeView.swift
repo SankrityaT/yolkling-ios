@@ -222,9 +222,12 @@ struct ShopHomeView: View {
                 card: { colourCard($0) }
             )
         case .outfit:
-            // Flatten all cosmetics for cross-slot curated strips
+            // Flatten all cosmetics for cross-slot curated strips.
+            // Grant-only items are excluded: they're seasonal, unbuyable at any price,
+            // and listing them at cost 0 would hand them to everyone and destroy the
+            // only scarcity the economy has.
             curatedStrips(
-                catalog: CosmeticCatalog.all,
+                catalog: CosmeticCatalog.all.filter { !$0.grantOnly },
                 cost: { $0.cost },
                 isOwned: { wallet.owns($0) },
                 card: { cosmeticCard($0) }

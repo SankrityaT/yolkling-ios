@@ -11,6 +11,18 @@ struct Cosmetic: Identifiable, Codable, Sendable, Hashable {
     let rarity: Rarity
     let cost: Int   // coins; 0 = free starter
 
+    /// Grant-only: never in the shop, never buyable at any price.
+    ///
+    /// This is what creates a have/have-not gradient. Everything else is purchasable by
+    /// anyone with enough earned Yolks, so it carries no signal — one hat is as
+    /// obtainable as another. A seasonal item you can ONLY get by being there while the
+    /// season ran is the first thing in this app worth wanting from someone else, which
+    /// is the precondition for trading meaning anything.
+    ///
+    /// Note `cost: 0` cannot express this: Wallet unions every zero-cost item into
+    /// `owned` as a free starter, so a cost of 0 would hand these to everybody.
+    var grantOnly: Bool = false
+
     /// Today: a built-in code renderer. Later gains `.svg(url)` / `.lottie(url)`
     /// so community items slot in without changing equip/shop logic.
     enum Kind: String, Codable, Sendable {
@@ -31,6 +43,11 @@ struct Cosmetic: Identifiable, Codable, Sendable, Hashable {
         case polkaBowtie, necktie, bandana, bellCollar, ruffCollar
         case pearlNecklace, pendantNecklace, starPendant, flowerLei, cape
         case medalRibbon, locket, babyBib, backpackStrap, sash   // neck (new)
+
+        // spring bloom season — grant-only, see CosmeticView+Spring.swift
+        case blossomCrown, butterflyPerch, wateringCan           // hat
+        case petalLashes                                          // eyes
+        case rainCape, cloverChain                                // neck
 
         /// Cosmetics that drape behind the body (drawn before the body circle in
         /// YolklingView), so a cape falls behind the yolk instead of covering it.
@@ -160,6 +177,14 @@ enum CosmeticCatalog {
         Cosmetic(id: "baby-bib",   name: "Bib",          slot: .neck, kind: .babyBib,      rarity: .common, cost: 120),
         Cosmetic(id: "backpack-strap", name: "Backpack Strap", slot: .neck, kind: .backpackStrap, rarity: .rare, cost: 260),
         Cosmetic(id: "sash",       name: "Sash",         slot: .neck, kind: .sash,         rarity: .epic,   cost: 450),
+
+        // --- spring bloom season (grant-only; you cannot buy these at any price) ---
+        Cosmetic(id: "spring-blossom-crown", name: "Blossom Crown", slot: .hat,  kind: .blossomCrown,   rarity: .epic, cost: 0, grantOnly: true),
+        Cosmetic(id: "spring-butterfly",     name: "Butterfly",     slot: .hat,  kind: .butterflyPerch, rarity: .epic, cost: 0, grantOnly: true),
+        Cosmetic(id: "spring-watering-can",  name: "Watering Can",  slot: .hat,  kind: .wateringCan,    rarity: .rare, cost: 0, grantOnly: true),
+        Cosmetic(id: "spring-petal-lashes",  name: "Petal Lashes",  slot: .eyes, kind: .petalLashes,    rarity: .rare, cost: 0, grantOnly: true),
+        Cosmetic(id: "spring-rain-cape",     name: "Rain Cape",     slot: .neck, kind: .rainCape,       rarity: .epic, cost: 0, grantOnly: true),
+        Cosmetic(id: "spring-clover-chain",  name: "Clover Chain",  slot: .neck, kind: .cloverChain,    rarity: .rare, cost: 0, grantOnly: true)
     ]
 
     static func items(in slot: CosmeticSlot) -> [Cosmetic] {
