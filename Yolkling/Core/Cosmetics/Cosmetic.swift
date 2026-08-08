@@ -79,7 +79,7 @@ enum CosmeticSlot: String, CaseIterable, Codable, Sendable, Identifiable {
     }
 }
 
-enum Rarity: String, Codable, Sendable {
+enum Rarity: String, Codable, Sendable, Hashable, CaseIterable {
     case common, rare, epic
 }
 

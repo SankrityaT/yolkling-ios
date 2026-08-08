@@ -420,6 +420,10 @@ struct ShopHomeView: View {
             VStack(spacing: 6) {
                 ZStack(alignment: .topTrailing) {
                     RoundedRectangle(cornerRadius: 18).fill(YolkColor.shell2)
+                    // Rarity was on every item and drawn nowhere — an epic looked like a
+                    // common with a different number beside it. The aura makes it felt
+                    // before it's read, which is most of why pulling a rare feels good.
+                    RarityAura(rarity: item.rarity, size: 84)
                     CosmeticView(kind: item.kind, size: 50).frame(maxWidth: .infinity, maxHeight: .infinity)
                     if item.rarity != .common { rarityDot(item.rarity).padding(8) }
                 }

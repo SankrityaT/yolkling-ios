@@ -112,6 +112,7 @@
 		C2BC5F4B1FA45DC677D46D34 /* YolkMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */; };
 		C480FA56FCB49E46CB06330F /* SeasonalEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEEAB12F5F5DA67AF043023C /* SeasonalEvent.swift */; };
 		C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */; };
+		C55C3F43C2A4755813270CBE /* RarityAura.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9B833332453257B1847522 /* RarityAura.swift */; };
 		C5670AB65ECB4D8B04B5808C /* RoomZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7558E421CB8F49D94D63FD7 /* RoomZone.swift */; };
 		C6C49BBE9D1EFD446E11DFEB /* CosmeticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */; };
 		C7461608412DBBB8EB030FA8 /* CreatureStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8223D82853775F0621924C5 /* CreatureStyle.swift */; };
@@ -135,6 +136,7 @@
 		E8D0C3C3964CD981CBFACC61 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF65067E79FAEAB6D81D2EF4 /* HealthService.swift */; };
 		EAB5803EDCB8DCC6C88906B5 /* Mood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E67B727AE71BD4028C618FB /* Mood.swift */; };
 		EB5206DA5E4CA7790D03C424 /* Cosmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */; };
+		EBBB3A6F92782CE6D4471FAF /* RarityAura.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9B833332453257B1847522 /* RarityAura.swift */; };
 		ED4C25AD7489535A06F7DC2F /* FoundingFlair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FCBBEBD1D5464C4A735893 /* FoundingFlair.swift */; };
 		ED4E74BB4114F9EA58A24D8C /* HatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */; };
 		EE8A541C3D503283B576EFE5 /* VibeQuiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */; };
@@ -276,6 +278,7 @@
 		E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkSpacing.swift; sourceTree = "<group>"; };
 		E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CosmeticView+Spring.swift"; sourceTree = "<group>"; };
 		E8223D82853775F0621924C5 /* CreatureStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatureStyle.swift; sourceTree = "<group>"; };
+		EC9B833332453257B1847522 /* RarityAura.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RarityAura.swift; sourceTree = "<group>"; };
 		EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		EFC6AD7229641595F1324223 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F554785860AE53390D69233E /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
@@ -547,6 +550,7 @@
 				6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */,
 				6B85CFE1D5A6E14648AAA2AC /* CosmeticView.swift */,
 				E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */,
+				EC9B833332453257B1847522 /* RarityAura.swift */,
 			);
 			path = Cosmetics;
 			sourceTree = "<group>";
@@ -868,6 +872,7 @@
 				661AD66CBC76712E89119F7E /* FocusLiveActivity.swift in Sources */,
 				ED4C25AD7489535A06F7DC2F /* FoundingFlair.swift in Sources */,
 				EAB5803EDCB8DCC6C88906B5 /* Mood.swift in Sources */,
+				C55C3F43C2A4755813270CBE /* RarityAura.swift in Sources */,
 				B3140FD6A3D1EB7B1A6E617C /* RoomDecor.swift in Sources */,
 				F0D956D4138C84573620C1A5 /* RoomDecorView.swift in Sources */,
 				E3FB760D2CB53242FC1E4C8E /* RoomTheme.swift in Sources */,
@@ -945,6 +950,7 @@
 				2E8A4379E8AC57C0E654C849 /* ProfileView.swift in Sources */,
 				984F2FF722D79E95EDC451AB /* QRCodeView.swift in Sources */,
 				08D9901B447473F63656E17A /* QRScannerView.swift in Sources */,
+				EBBB3A6F92782CE6D4471FAF /* RarityAura.swift in Sources */,
 				62F892518BC4B84224E78C5D /* ReferralView.swift in Sources */,
 				8A16161AA593A990544C3CD7 /* Rewards.swift in Sources */,
 				A3456E748BB01E749F4C4FD9 /* RoomDecor.swift in Sources */,
