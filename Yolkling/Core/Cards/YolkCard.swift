@@ -354,14 +354,28 @@ struct YolkCard: View {
                 .shadow(color: .black.opacity(0.22), radius: 0, x: -pose.x * 0.9, y: -pose.y * 0.9)
                 .lineLimit(1).minimumScaleFactor(0.6)
             Spacer(minLength: 4 * u)
-            rarityChip
+            cornerMark
         }
     }
 
-    private var rarityChip: some View {
+    /// Rarity on a found species; "yours" on the one you made.
+    ///
+    /// A bond card must not print a rarity, and not because the field is empty — because
+    /// rarity is a fact about a *species*, and the creature you made is not one. Stamping
+    /// "common" on it would say something false about the only card in here that is
+    /// actually yours.
+    @ViewBuilder private var cornerMark: some View {
+        if face.kind == .bond {
+            chip(icon: "heart.fill", text: "yours")
+        } else {
+            chip(icon: rarityIcon, text: face.rarity.rawValue)
+        }
+    }
+
+    private func chip(icon: String, text: String) -> some View {
         HStack(spacing: 3 * u) {
-            Image(systemName: rarityIcon).font(.system(size: 8 * u, weight: .black))
-            Text(face.rarity.rawValue)
+            Image(systemName: icon).font(.system(size: 8 * u, weight: .black))
+            Text(text)
                 .font(.system(size: 9 * u, weight: .black, design: .rounded))
         }
         .foregroundStyle(YolkColor.ink.opacity(0.75))

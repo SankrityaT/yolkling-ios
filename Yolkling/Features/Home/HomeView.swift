@@ -466,6 +466,11 @@ struct HomeView: View {
         player?.careStreak = r.streak
         player?.restTokens = r.restTokens
         player?.lastCareDate = .now
+        // Lifetime count, incremented once per day on the first care of that day. This is
+        // the number the bond card carries: `careStreak` resets on a gap, so it can only
+        // ever say how you are doing lately, never how long you have been here.
+        if firstToday { player?.totalCareDays += 1 }
+
         guard firstToday else { persist(); return }
 
         var bonus = 0
@@ -1116,6 +1121,12 @@ struct HomeView: View {
         if let date = focusEarnedDate, !Calendar.current.isDateInToday(date) {
             focusEarnedToday = 0   // new day, reset the tally
         }
+        // Counted BEFORE the daily cap, and outside the `award > 0` branch: the cap limits
+        // what a focus session pays, not whether it happened. A card that stopped counting
+        // your focus once you hit the day's Yolk ceiling would be lying about the hour you
+        // actually sat there.
+        player?.totalFocusMinutes += max(0, minutes)
+
         let award = min(minutes, max(0, focusDailyCap - focusEarnedToday))
         if award > 0 {
             Haptics.shared.reward()

@@ -331,6 +331,32 @@ extension HoloMaterial {
         case .epic:   prism
         }
     }
+
+    /// **The finish that cannot be bought.**
+    ///
+    /// Your own creature's card has no rarity — it is not a species you found, it is the
+    /// one you made. So its laminate comes from `trust` instead, and that is the whole
+    /// argument this app makes about money in one object: the best-looking card in here
+    /// has no price on it.
+    ///
+    /// Trust is the right source and the only honest one. It rises *only* when you look
+    /// after yourself (a check-in, the grow-by-living bonus) and never from petting the
+    /// creature, it moves at most once a day so it cannot be crammed, and it decays when
+    /// you stop showing up. That last part matters: the finish is a live reading of the
+    /// relationship, not a trophy you keep after you have stopped.
+    ///
+    /// The five `TrustStage` cases already partition 0...1 into exactly five bands, so
+    /// this reuses them rather than inventing a second set of thresholds that would
+    /// immediately drift out of step with the label under the creature.
+    static func forTrust(_ trust: Double) -> HoloMaterial {
+        switch TrustStage.from(trust: trust) {
+        case .stranger:  pearl_
+        case .warming:   holo
+        case .friend:    prism
+        case .companion: cosmos
+        case .devoted:   aurora
+        }
+    }
 }
 
 // MARK: - Shared maths

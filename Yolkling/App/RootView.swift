@@ -247,6 +247,21 @@ private struct HoloPreview: View {
     private let rarities = Species.Rarity.allCases
     @State private var pick = 1
 
+    /// Flip the whole thing over, so the back can be judged per rarity too.
+    @State private var flipped = false
+    /// The bond card, which has no rarity and takes its finish from trust instead.
+    @State private var bond = false
+    @State private var trust: Double = 0.95
+
+    private var bondFace: YolkCardFace {
+        .bond(name: "Yolky", vibe: .yolk,
+              outfit: ["flower", "scarf"].compactMap { id in
+                  CosmeticCatalog.all.first { $0.id == id }
+              },
+              trust: trust, careDays: 128, focusMinutes: 1284,
+              speciesFound: 24, createdAt: .now)
+    }
+
     private var face: YolkCardFace {
         let r = rarities[pick]
         // A real species per rarity where one exists, so the palettes are the ones that
@@ -268,21 +283,53 @@ private struct HoloPreview: View {
         return f
     }
 
+    /// What the label under the card should say: the laminate name, and where it came
+    /// from. Worth printing, because "trust picked this one" is the whole point of the
+    /// bond card and is otherwise invisible.
+    private var caption: String {
+        if bond {
+            let stage = TrustStage.from(trust: trust)
+            return "\(bondFace.material.label)  ·  trust \(Int(trust * 100))%  ·  \(stage.label)"
+        }
+        return HoloMaterial.forRarity(rarities[pick]).label
+    }
+
     var body: some View {
-        VStack(spacing: YolkSpace.lg) {
+        VStack(spacing: YolkSpace.md) {
             Spacer()
-            YolkCard(face: face, width: 300)
-            Spacer()
-            Picker("", selection: $pick) {
-                ForEach(rarities.indices, id: \.self) { i in
-                    Text(rarities[i].rawValue).tag(i)
-                }
+            if flipped {
+                YolkCardBack(rarity: bond ? nil : rarities[pick],
+                             width: 300, pose: YolkCard.posed)
+            } else {
+                YolkCard(face: bond ? bondFace : face, width: 300)
             }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, YolkSpace.lg)
-            Text(HoloMaterial.forRarity(rarities[pick]).label)
+            Spacer()
+
+            Text(caption)
                 .font(YolkType.label).foregroundStyle(YolkColor.muted)
-                .padding(.bottom, YolkSpace.lg)
+                .lineLimit(1).minimumScaleFactor(0.7)
+
+            if bond {
+                // The finish ladder, walked by hand. Five trust bands, five laminates.
+                Slider(value: $trust, in: 0...1)
+                    .padding(.horizontal, YolkSpace.lg)
+            } else {
+                Picker("", selection: $pick) {
+                    ForEach(rarities.indices, id: \.self) { i in
+                        Text(rarities[i].rawValue).tag(i)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, YolkSpace.lg)
+            }
+
+            HStack(spacing: YolkSpace.sm) {
+                Toggle("bond card", isOn: $bond)
+                Toggle("face down", isOn: $flipped)
+            }
+            .toggleStyle(.button)
+            .font(YolkType.bodySmall)
+            .padding(.bottom, YolkSpace.lg)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(YolkColor.shell.ignoresSafeArea())

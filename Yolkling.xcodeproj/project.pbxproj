@@ -81,6 +81,7 @@
 		8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E45824D017316F04EAB9F /* YolkRoomWidget.swift */; };
 		8643941FECB35114AD0E6FF0 /* EventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B11B8AC851E841F937667EF /* EventStore.swift */; };
 		8A16161AA593A990544C3CD7 /* Rewards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4BB5586801A2B60F7F7A7 /* Rewards.swift */; };
+		8AB5D8F4D1CD51841F5F8A02 /* YolkCardBack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4438975C80653EBA9197E0C /* YolkCardBack.swift */; };
 		8B9D92868991771D4FADBDC1 /* CreatureParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7831C9E0C1B95A7B333E3D4 /* CreatureParts.swift */; };
 		8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689CB056088DED814BB7D8E5 /* TypewriterText.swift */; };
 		8CFEA4E65FD7AA9F81025A05 /* Mood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E67B727AE71BD4028C618FB /* Mood.swift */; };
@@ -265,6 +266,7 @@
 		AEEAB12F5F5DA67AF043023C /* SeasonalEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonalEvent.swift; sourceTree = "<group>"; };
 		AF4187DA7A92439863DAF815 /* YolklingWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YolklingWidgets.entitlements; sourceTree = "<group>"; };
 		B10352955EC8A724ED2AEAC4 /* VisitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitView.swift; sourceTree = "<group>"; };
+		B4438975C80653EBA9197E0C /* YolkCardBack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCardBack.swift; sourceTree = "<group>"; };
 		B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundingRevealView.swift; sourceTree = "<group>"; };
 		B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopHomeView.swift; sourceTree = "<group>"; };
 		B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
@@ -376,6 +378,7 @@
 				DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */,
 				775778FA780FB58DC2F96847 /* HoloMaterial.swift */,
 				E55E15A3191441EF6DD5D2C0 /* YolkCard.swift */,
+				B4438975C80653EBA9197E0C /* YolkCardBack.swift */,
 				0A2F368C2F7CFCEF100548E1 /* YolkCardFace.swift */,
 			);
 			path = Cards;
@@ -1025,6 +1028,7 @@
 				E6AD6071FF213AC002F4DCAE /* WidgetPublisher.swift in Sources */,
 				C1DED04D454F150D89F0A062 /* WidgetSnapshot.swift in Sources */,
 				8D25FD82B5D02C23463C3A46 /* YolkCard.swift in Sources */,
+				8AB5D8F4D1CD51841F5F8A02 /* YolkCardBack.swift in Sources */,
 				B230DDE4DA3A2793C38B4C11 /* YolkCardFace.swift in Sources */,
 				D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */,
 				BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */,

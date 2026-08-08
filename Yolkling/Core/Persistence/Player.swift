@@ -51,6 +51,19 @@ final class Player {
     var lastCareDate: Date?
     var restTokens: Int = 2
 
+    /// Lifetime totals, for the card.
+    ///
+    /// `careStreak` is the CURRENT run and resets to 1 on a gap, and `weekCareDays` only
+    /// covers this calendar week — so neither could answer "how many days have you shown
+    /// up for this creature", which is the one number a bond card should carry. A streak
+    /// says how you are doing lately; these say how long you have been here, and only one
+    /// of those survives a bad fortnight.
+    ///
+    /// Deliberately monotonic: nothing decrements them. Trust already handles decay, and
+    /// a lifetime count that goes backwards is not a lifetime count.
+    var totalCareDays: Int = 0
+    var totalFocusMinutes: Int = 0
+
     /// Weekly challenge progress (care N days in a calendar week for a bonus).
     var weekStart: Date?
     var weekCareDays: Int = 0
