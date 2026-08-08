@@ -68,27 +68,34 @@ struct TradeSheet: View {
         VStack(alignment: .leading, spacing: YolkSpace.sm) {
             Text("waiting on you").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
             ForEach(store.incomingTrades) { offer in
-                VStack(spacing: YolkSpace.sm) {
-                    HStack(spacing: YolkSpace.md) {
-                        swapItem(offer.cosmeticYouGet, caption: "you get")
+                VStack(spacing: YolkSpace.md) {
+                    Text("\(offer.otherName) wants to swap")
+                        .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+
+                    // Direction is the single most important thing on a trade screen, so
+                    // it's carried by layout and colour, not a caption: what you gain sits
+                    // on the left under a green label, what you lose on the right.
+                    HStack(alignment: .top, spacing: YolkSpace.sm) {
+                        directedItem(offer.cosmeticYouGet, label: "you get", gaining: true)
                         Image(systemName: "arrow.left.arrow.right")
-                            .font(.caption.weight(.bold)).foregroundStyle(YolkColor.muted)
-                        swapItem(offer.cosmeticYouGive, caption: "you give")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(YolkColor.muted)
+                            .padding(.top, 40)
+                        directedItem(offer.cosmeticYouGive, label: "you give", gaining: false)
                     }
-                    Text("\(offer.otherName) asked")
-                        .font(.caption2).foregroundStyle(YolkColor.muted)
+
                     HStack(spacing: YolkSpace.sm) {
                         Button { respond(offer, accept: false) } label: {
                             Text("no thanks").font(YolkType.bodySmall.weight(.semibold))
-                                .foregroundStyle(YolkColor.ink)
-                                .frame(maxWidth: .infinity).padding(.vertical, 11)
-                                .background(YolkColor.shell2, in: Capsule())
+                                .foregroundStyle(YolkColor.inkSoft)
+                                .frame(maxWidth: .infinity).padding(.vertical, 13)
+                                .background(YolkColor.shell, in: Capsule())
                         }
                         .buttonStyle(.plain)
                         Button { respond(offer, accept: true) } label: {
-                            Text("swap").font(YolkType.bodySmall.weight(.semibold))
+                            Text("swap").font(YolkType.body.weight(.semibold))
                                 .foregroundStyle(YolkColor.shell)
-                                .frame(maxWidth: .infinity).padding(.vertical, 11)
+                                .frame(maxWidth: .infinity).padding(.vertical, 13)
                                 .background(YolkColor.ink, in: Capsule())
                         }
                         .buttonStyle(.plain)
@@ -115,8 +122,8 @@ struct TradeSheet: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, YolkSpace.md)
                 } else {
-                    pickRow(title: "you give", items: mine, selection: $give)
-                    pickRow(title: "you get", items: theirs, selection: $want)
+                    pickRow(title: "you give", items: mine, selection: $give, gaining: false)
+                    pickRow(title: "you get", items: theirs, selection: $want, gaining: true)
 
                     Button { propose(to: friend) } label: {
                         Text(busy ? "asking…" : "ask for the swap")
@@ -134,9 +141,21 @@ struct TradeSheet: View {
         }
     }
 
-    private func pickRow(title: String, items: [Cosmetic], selection: Binding<Cosmetic?>) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title).font(.caption2).foregroundStyle(YolkColor.muted)
+    private func pickRow(title: String, items: [Cosmetic], selection: Binding<Cosmetic?>, gaining: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Text(title)
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(gaining ? Color(hex: 0x5FA86B) : YolkColor.muted)
+                    .padding(.horizontal, 9).padding(.vertical, 4)
+                    .background(
+                        (gaining ? Color(hex: 0x5FA86B) : YolkColor.muted).opacity(0.14),
+                        in: Capsule()
+                    )
+                if selection.wrappedValue == nil {
+                    Text("pick one").font(.caption2).foregroundStyle(YolkColor.muted)
+                }
+            }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: YolkSpace.sm) {
                     ForEach(items) { item in
@@ -145,40 +164,32 @@ struct TradeSheet: View {
                             Haptics.shared.tick()
                             selection.wrappedValue = on ? nil : item
                         } label: {
-                            VStack(spacing: 4) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 16).fill(YolkColor.shell2)
-                                    RarityAura(rarity: item.rarity, size: 72)
-                                    CosmeticView(kind: item.kind, size: 44)
-                                }
-                                .frame(width: 72, height: 72)
-                                .overlay(RoundedRectangle(cornerRadius: 16)
-                                    .strokeBorder(YolkColor.ink, lineWidth: on ? 2.5 : 0))
-                                Text(item.name).font(.caption2).foregroundStyle(YolkColor.muted)
-                                    .lineLimit(1).frame(width: 76)
-                            }
+                            ItemTile(item: item, vibe: vibe, side: 96, selected: on)
                         }
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(.vertical, 2)
+                .padding(.horizontal, 2).padding(.vertical, 4)
             }
         }
     }
 
-    private func swapItem(_ item: Cosmetic?, caption: String) -> some View {
-        VStack(spacing: 4) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 16).fill(YolkColor.shell)
-                if let item {
-                    RarityAura(rarity: item.rarity, size: 68)
-                    CosmeticView(kind: item.kind, size: 42)
-                }
+    private func directedItem(_ item: Cosmetic?, label: String, gaining: Bool) -> some View {
+        VStack(spacing: 6) {
+            Text(label)
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(gaining ? Color(hex: 0x5FA86B) : YolkColor.muted)
+                .padding(.horizontal, 9).padding(.vertical, 4)
+                .background(
+                    (gaining ? Color(hex: 0x5FA86B) : YolkColor.muted).opacity(0.14),
+                    in: Capsule()
+                )
+            if let item {
+                ItemTile(item: item, vibe: vibe, side: 96)
+            } else {
+                RoundedRectangle(cornerRadius: 20).fill(YolkColor.shell)
+                    .frame(width: 96, height: 96)
             }
-            .frame(width: 68, height: 68)
-            Text(caption).font(.caption2).foregroundStyle(YolkColor.muted)
-            Text(item?.name ?? "—").font(.caption2.weight(.semibold))
-                .foregroundStyle(YolkColor.ink).lineLimit(1)
         }
         .frame(maxWidth: .infinity)
     }

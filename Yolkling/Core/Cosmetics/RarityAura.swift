@@ -19,6 +19,10 @@ struct RarityAura: View {
     var size: CGFloat = 90
     /// Render a single fixed frame instead of animating.
     var frozenAt: Double? = nil
+    /// Dial the whole effect down. 1 is the hero treatment (a reveal, the creature
+    /// itself); ~0.4 is right for a list tile, where a full aura stops being a frame and
+    /// starts being the subject.
+    var intensity: Double = 1
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -62,12 +66,12 @@ struct RarityAura: View {
             // filled the tile and the ITEM stopped reading, which defeats the point — the
             // aura is meant to frame what you're looking at, not replace it.
             if let a = tint.first {
-                Circle().fill(a.opacity(rarity == .epic ? 0.24 : 0.16))
+                Circle().fill(a.opacity((rarity == .epic ? 0.24 : 0.16) * intensity))
                     .frame(width: size * 0.84 * breath, height: size * 0.84 * breath)
                     .blur(radius: size * 0.13)
             }
             if rarity == .epic, tint.count > 1 {
-                Circle().fill(tint[1].opacity(0.2))
+                Circle().fill(tint[1].opacity(0.2 * intensity))
                     .frame(width: size * 0.72 * breath, height: size * 0.72 * breath)
                     .blur(radius: size * 0.13)
                     .offset(x: size * 0.05, y: -size * 0.04)
@@ -78,8 +82,8 @@ struct RarityAura: View {
             if rarity == .epic {
                 Circle()
                     .strokeBorder(
-                        AngularGradient(colors: [tint[0].opacity(0.0), tint[0].opacity(0.7),
-                                                 tint[1].opacity(0.7), tint[0].opacity(0.0)],
+                        AngularGradient(colors: [tint[0].opacity(0.0), tint[0].opacity(0.7 * intensity),
+                                                 tint[1].opacity(0.7 * intensity), tint[0].opacity(0.0)],
                                         center: .center),
                         lineWidth: size * 0.018
                     )
@@ -98,7 +102,7 @@ struct RarityAura: View {
                 Image(systemName: "sparkle")
                     .font(.system(size: size * (rarity == .epic ? 0.13 : 0.1)))
                     .foregroundStyle(tint[i % tint.count])
-                    .opacity(twinkle)
+                    .opacity(twinkle * intensity)
                     .offset(x: cos(a) * size * r,
                             y: sin(a) * size * r + drift * size * 0.03)
             }

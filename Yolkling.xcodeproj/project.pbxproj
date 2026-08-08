@@ -14,6 +14,7 @@
 		07718ACB92EB92E7631816A2 /* CosmeticView+Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */; };
 		086B1B692A28EC7108795144 /* RoomDecorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */; };
 		08D9901B447473F63656E17A /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E710CBEC1093FE73775F1BE /* QRScannerView.swift */; };
+		0934185C7FCCBB0433E403E5 /* ItemTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886B48B3C1A83FC87B2FA7DC /* ItemTile.swift */; };
 		09FE9ECC682126A937DF978F /* DriftSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6140FCDBA2426893DDB84717 /* DriftSheet.swift */; };
 		0A5BCB4BBDD1B38982E023B2 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = B946F4E30EF2C84EE207202E /* Router.swift */; };
 		0A9560FE0207E256601BA0C4 /* YolklingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95E3508A252E211E684703D /* YolklingView.swift */; };
@@ -245,6 +246,7 @@
 		8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitSubject.swift; sourceTree = "<group>"; };
 		822B58776D67B8C7AC5DB908 /* TrustStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustStage.swift; sourceTree = "<group>"; };
 		84BAF4635144BD7C85922AB8 /* ShareCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRenderer.swift; sourceTree = "<group>"; };
+		886B48B3C1A83FC87B2FA7DC /* ItemTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTile.swift; sourceTree = "<group>"; };
 		8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Ocean.swift"; sourceTree = "<group>"; };
 		974C6D0127079C7B7DCD5F95 /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMMono-Medium.ttf"; sourceTree = "<group>"; };
@@ -484,6 +486,7 @@
 				22DB14FC98098997269CFE94 /* FriendRoomCard.swift */,
 				7E9E562134085B1FEF2F1E4F /* FriendsView.swift */,
 				5C049B150140A0C2342A398A /* GrowFriendsView.swift */,
+				886B48B3C1A83FC87B2FA7DC /* ItemTile.swift */,
 				571CDDC06280096B10794E7C /* PostcardViews.swift */,
 				7271B792C6CDA97F073DDC10 /* QRCodeView.swift */,
 				3E710CBEC1093FE73775F1BE /* QRScannerView.swift */,
@@ -941,6 +944,7 @@
 				E8D0C3C3964CD981CBFACC61 /* HealthService.swift in Sources */,
 				F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */,
 				E261AFCE62FB64987CEDB149 /* HomeView.swift in Sources */,
+				0934185C7FCCBB0433E403E5 /* ItemTile.swift in Sources */,
 				8CFEA4E65FD7AA9F81025A05 /* Mood.swift in Sources */,
 				339169F8EB3C2F3BEAB56081 /* MoodCheckInView.swift in Sources */,
 				23B68D582EA550BE1B5B2088 /* OnboardingView.swift in Sources */,
