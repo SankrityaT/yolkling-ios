@@ -252,6 +252,11 @@ private struct HoloPreview: View {
     /// The bond card, which has no rarity and takes its finish from trust instead.
     @State private var bond = false
     @State private var trust: Double = 0.95
+    /// Scratch mode. `scratchID` is bumped to hand `CardScratchView` a fresh identity so
+    /// toggling it off and on again gives you an unscratched card instead of the one you
+    /// already cleared.
+    @State private var scratch = false
+    @State private var scratchID = 0
 
     private var bondFace: YolkCardFace {
         .bond(name: "Yolky", vibe: .yolk,
@@ -297,7 +302,10 @@ private struct HoloPreview: View {
     var body: some View {
         VStack(spacing: YolkSpace.md) {
             Spacer()
-            if flipped {
+            if scratch {
+                CardScratchView(face: bond ? bondFace : face, width: 300)
+                    .id(scratchID)
+            } else if flipped {
                 YolkCardBack(rarity: bond ? nil : rarities[pick],
                              width: 300, pose: YolkCard.posed)
             } else {
@@ -326,10 +334,16 @@ private struct HoloPreview: View {
             HStack(spacing: YolkSpace.sm) {
                 Toggle("bond card", isOn: $bond)
                 Toggle("face down", isOn: $flipped)
+                Toggle("scratch", isOn: $scratch)
             }
             .toggleStyle(.button)
             .font(YolkType.bodySmall)
             .padding(.bottom, YolkSpace.lg)
+            // A scratched card stays scratched, so changing what is UNDER it has to hand
+            // the view a new identity or you keep looking at the one you already cleared.
+            .onChange(of: scratch) { _, _ in scratchID += 1 }
+            .onChange(of: pick) { _, _ in scratchID += 1 }
+            .onChange(of: bond) { _, _ in scratchID += 1 }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(YolkColor.shell.ignoresSafeArea())
