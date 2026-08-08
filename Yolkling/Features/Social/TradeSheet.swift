@@ -14,6 +14,11 @@ struct TradeSheet: View {
     /// nil → just the inbox. Set → also offer a swap with this friend.
     var friend: Friend? = nil
     let vibe: Vibe
+    /// The live wallet. Required, not optional: a swap moves real items, and without this
+    /// the id you gave away stays in `owned` and `HomeView.persist()` re-inserts it via
+    /// `push_wallet` — so both players end up owning it. An optional here would fail
+    /// silently, which is exactly the bug being fixed.
+    let wallet: Wallet
     /// What YOUR yolkling is wearing, so every swap can be previewed on the creature you
     /// actually own rather than on a bare stand-in.
     var myOutfit: [Cosmetic] = []
@@ -269,6 +274,15 @@ struct TradeSheet: View {
             if r.ok {
                 Haptics.shared.reward()
                 if accept {
+                    // The server has ALREADY performed this swap — `respond_trade` deleted
+                    // both rows and inserted the two new ones. Mirror it locally with the
+                    // same two ids the trade row carries, so the next `push_wallet` can't
+                    // re-insert what was just given away. No refetch needed: these come
+                    // from the row the server acted on, so they cannot disagree with it.
+                    //
+                    // Mutating `owned` fires HomeView's `.onChange(of: wallet.owned)`,
+                    // which prunes the outfit and pushes — no callback required.
+                    wallet.applyTrade(gave: offer.youGive, got: offer.youGet)
                     dialog = YolkDialog(icon: .creature(vibe, .excited), title: "swapped!",
                                         message: "\(offer.cosmeticYouGet?.name ?? "it") is yours now.",
                                         primaryTitle: "lovely")

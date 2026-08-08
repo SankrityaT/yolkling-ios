@@ -31,11 +31,16 @@ create table if not exists public.trade_offers (
 create index if not exists trade_offers_to   on public.trade_offers(to_id, status);
 create index if not exists trade_offers_from on public.trade_offers(from_id, status);
 
--- Founding species are never tradeable.
-create or replace function is_tradeable(p_item text)
-returns boolean language sql immutable as $$
-  select p_item not like 'founding-%';
-$$;
+-- `is_tradeable` is DEFINED IN tradeable_items.sql, not here.
+--
+-- It used to live here as `p_item not like 'founding-%'`, and that blocklist was the
+-- bug: `inventory` also holds colour swatches, room themes and decor, so everything
+-- except founding species was tradeable by default — including the colour of your
+-- creature's face. See tradeable_items.sql for the full reasoning.
+--
+-- The definition was moved rather than fixed in place on purpose. Left here as a
+-- `create or replace`, re-running this file to pick up any other change would silently
+-- reinstate the blocklist and reopen the hole. Apply tradeable_items.sql after this one.
 
 create or replace function propose_trade(p_from text, p_to text, p_offer text, p_want text)
 returns jsonb language plpgsql security definer as $$
@@ -107,6 +112,17 @@ begin
   if not p_accept then
     update public.trade_offers set status = 'declined' where id = p_trade;
     return jsonb_build_object('ok', true, 'accepted', false);
+  end if;
+
+  -- Re-check TRADEABILITY at accept time, not only at propose time. What may be traded
+  -- is a rule that changes (see tradeable_items.sql, which turned a blocklist into an
+  -- allowlist), and an offer made under the old rule is still sitting here `pending`.
+  -- Letting one land would move a colour swatch or a room theme out of inventory while
+  -- Player.colorHex / Player.roomThemeID kept rendering it — a divergence nothing can
+  -- repair.
+  if not is_tradeable(t.offer_item) or not is_tradeable(t.want_item) then
+    update public.trade_offers set status = 'expired' where id = p_trade;
+    return jsonb_build_object('ok', false, 'reason', 'not_tradeable');
   end if;
 
   -- Re-check ownership at ACCEPT time. Either side may have traded their half away

@@ -28,12 +28,35 @@ final class WardrobeStore {
         equipped[cosmetic.slot]?.id == cosmetic.id
     }
 
-    /// Restore the equipped set from persisted cosmetic ids.
-    func restore(equippedIDs: [String]) {
+    /// Take off anything you no longer own.
+    ///
+    /// You can trade away a hat while wearing it. Nothing used to notice: the item stayed
+    /// equipped, `persist()` wrote it into `equippedItemIDs`, and `mySnapshot()` published
+    /// it to friends — so you kept visibly wearing something you provably didn't have.
+    ///
+    /// Takes the **predicate** rather than the `Wallet` so this stays a pure store with no
+    /// dependency on the economy, and so the free-starter and grant-only rules live in
+    /// exactly one place (`Wallet.owns`).
+    ///
+    /// Returns early when nothing is stale, so it can't loop through the `onChange` that
+    /// watches `equipped`.
+    func prune(owns: (Cosmetic) -> Bool) {
+        let stale = equipped.filter { !owns($0.value) }.map(\.key)
+        guard !stale.isEmpty else { return }
+        for slot in stale { equipped[slot] = nil }
+    }
+
+    /// Restore the equipped set from persisted cosmetic ids, dropping anything not owned.
+    ///
+    /// REPLACES rather than merges. The old version only ever added, which meant a cloud
+    /// restore left you wearing items the restored snapshot wasn't wearing.
+    func restore(equippedIDs: [String], owns: (Cosmetic) -> Bool) {
+        var next: [CosmeticSlot: Cosmetic] = [:]
         for id in equippedIDs {
-            if let item = CosmeticCatalog.all.first(where: { $0.id == id }) {
-                equipped[item.slot] = item
+            if let item = CosmeticCatalog.all.first(where: { $0.id == id }), owns(item) {
+                next[item.slot] = item
             }
         }
+        equipped = next
     }
 }

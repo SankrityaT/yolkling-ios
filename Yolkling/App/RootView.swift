@@ -7,7 +7,22 @@ import SwiftData
 /// straight to a demo home for deterministic App Store captures.
 struct RootView: View {
     @Environment(\.modelContext) private var context
-    @Query private var players: [Player]
+
+    /// Sorted, because `players.first` decides which creature you wake up to.
+    ///
+    /// An unsorted `@Query` has no defined order. There is only one code path that
+    /// inserts a `Player` (`save(_:)` below) so a second row should be impossible — but
+    /// "impossible" here rests on a single `if`, not on a constraint, and if one ever did
+    /// appear the app would silently alternate between two creatures across launches.
+    /// Sorting makes any extra row inert instead. Deliberately NOT paired with a repair
+    /// pass that deletes duplicates: creation order is not necessarily progress order, and
+    /// deleting the wrong one destroys somebody's creature.
+    @Query(sort: \Player.createdAt, order: .forward) private var players: [Player]
+
+    /// Guards against a double-tap on the onboarding button inserting two Players.
+    /// `@Query` does not republish within the same runloop turn, so `players.isEmpty` is
+    /// still true on the second call — local state is what actually closes the window.
+    @State private var saving = false
 
     // Launch ARGUMENTS as well as env vars: SIMCTL_CHILD_* propagates unreliably through
     // `simctl launch`, while --args always arrives. The App Store screenshot pipeline
@@ -68,7 +83,7 @@ struct RootView: View {
                           myOutfit: SocialPreview.myOutfit, onReward: { _ in })
             } else if CommandLine.arguments.contains("YOLK_TRADE") {
                 TradeSheet(store: SocialPreview.store, friend: SocialPreview.sunny, vibe: .yolk,
-                           myOutfit: SocialPreview.myOutfit)
+                           wallet: Wallet(), myOutfit: SocialPreview.myOutfit)
             } else if CommandLine.arguments.contains("YOLK_WANDER") {
                 WanderArrival(target: SocialPreview.drifter, vibe: .yolk,
                               store: SocialPreview.store, myName: "Yolky", onReward: { _ in })
@@ -113,9 +128,30 @@ struct RootView: View {
         // colours (text fields, placeholders) never flip to dark and vanish.
         .preferredColorScheme(.light)
         .onAppear { YolkNotifications.reschedule() }
+        .overlay(alignment: .bottom) { playerCountOverlay }
+    }
+
+    /// `YOLK_PLAYERS` — proves the uniqueness fix without a debugger.
+    ///
+    /// Two things have to hold: the count stays 1 however hard the onboarding button is
+    /// hammered, and `first` names the SAME creature on every launch. The second is what
+    /// the `@Query` sort buys, and it is invisible unless something prints it.
+    @ViewBuilder private var playerCountOverlay: some View {
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["YOLK_PLAYERS"] != nil
+            || CommandLine.arguments.contains("YOLK_PLAYERS") {
+            Text("players=\(players.count)  first=\(players.first?.name ?? "-")")
+                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .padding(.horizontal, 6).padding(.vertical, 3)
+                .background(.black).foregroundStyle(.white)
+                .allowsHitTesting(false)
+        }
+        #endif
     }
 
     private func save(_ creature: HatchedCreature) {
+        guard !saving, players.isEmpty else { return }
+        saving = true
         let player = Player(
             name: creature.name,
             colorHex: Int(creature.colorHex),

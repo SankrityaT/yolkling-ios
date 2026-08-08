@@ -9,6 +9,14 @@ struct CollectionView: View {
     /// nil in previews and screenshot seams; the Dex renders fine without a season.
     var events: EventStore? = nil
     var vibe: Vibe = .yolk
+    /// The ids a season just granted, so the player actually receives what they earned.
+    ///
+    /// `join_event` puts them in the server's `inventory`, but nothing was putting them in
+    /// the local `Wallet.owned` — and `Wallet.owns` for a `grantOnly` item is strictly
+    /// `owned.contains`, so the seasonal cosmetic stayed locked. A signed-out player never
+    /// got it at all. A closure rather than a `Wallet` so the `YOLK_SPECIES` seam, which
+    /// has no economy, still constructs.
+    var onGranted: ([String]) -> Void = { _ in }
 
     private var allSetIDs: [String] { Array(Set(SpeciesSets.all.flatMap { $0.speciesIDs })) }
     private var totalCount: Int { allSetIDs.count }
@@ -20,7 +28,10 @@ struct CollectionView: View {
                 header
                 if let events, let season = events.featured {
                     SeasonBanner(event: season, vibe: vibe) {
-                        Task { await events.join(season) }
+                        Task {
+                            let granted = await events.join(season)
+                            if !granted.isEmpty { onGranted(granted) }
+                        }
                     }
                 }
                 ForEach(SpeciesSets.all) { setCard($0) }

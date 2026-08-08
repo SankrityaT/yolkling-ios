@@ -282,9 +282,18 @@ struct SupabaseClient {
     /// The server's current view of the player's wallet.
     func walletState(userID: String) async -> (coins: Int, owned: [String])? {
         guard let data = await postJSON("wallet_state", ["p_user": userID]),
-              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              // An ABSENT `owned` key is a malformed response, not an empty inventory.
+              // This used to default to `[]`, which was harmless while the caller unioned
+              // — but `Wallet.reconcile` now adopts this list authoritatively, so a 200
+              // with an unexpected body would wipe everything the player owns and
+              // `persist()` would immediately write the empty set to SwiftData, the
+              // widget, and the published room. `wallet_state` coalesces to `'[]'::jsonb`
+              // (docs/sql/wallet.sql), so a genuinely empty inventory still arrives as a
+              // present key and is correctly distinguished from a broken one.
+              let owned = obj["owned"] as? [String]
         else { return nil }
-        return (obj["coins"] as? Int ?? 0, obj["owned"] as? [String] ?? [])
+        return (obj["coins"] as? Int ?? 0, owned)
     }
 
     /// Push the local wallet up; returns the reconciled authoritative state to adopt.

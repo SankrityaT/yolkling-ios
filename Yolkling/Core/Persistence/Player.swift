@@ -64,6 +64,15 @@ final class Player {
     var ownedItemIDs: [String]
     var equippedItemIDs: [String]
 
+    /// The subset of `ownedItemIDs` the server has confirmed holding.
+    ///
+    /// Persisted so the distinction survives a relaunch: without it, every cold start
+    /// would treat the whole wallet as unsynced and a reconcile could never remove an
+    /// item you traded away. See `Wallet.syncedIDs` for why the distinction matters.
+    /// Defaulted, so existing saves migrate lightly (they start empty, which makes the
+    /// first reconcile a no-op — intended).
+    var syncedItemIDs: [String] = []
+
     /// The Sign in with Apple stable user id, once they sign in. nil = local-only.
     var appleUserID: String?
 

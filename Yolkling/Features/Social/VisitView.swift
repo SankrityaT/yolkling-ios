@@ -43,7 +43,8 @@ struct VisitView: View {
         }
         .sheet(isPresented: $swapping) {
             if case .friend(let f) = subject {
-                TradeSheet(store: store, friend: f, vibe: vibe, myOutfit: myOutfit)
+                TradeSheet(store: store, friend: f, vibe: vibe,
+                           wallet: wallet, myOutfit: myOutfit)
                     .presentationDetents([.large])
             }
         }

@@ -6,6 +6,10 @@ import SwiftData
 /// for now; each becomes a real feature (mood check-in, focus session, visits).
 struct HomeView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
+
+    /// `YOLK_PROBE=<itemID>` — draws the ownership probe overlay. Debug-only seam.
+    @State private var probeID: String?
     private let injected: HatchedCreature?
     private let player: Player?
     @State private var vibeIndex: Int
@@ -72,12 +76,17 @@ struct HomeView: View {
         _moodIndex = State(initialValue: min(max(startMood, 0), Mood.allCases.count - 1))
 
         // Restore wallet + outfit from the saved player (or defaults for demo).
-        _wallet = State(initialValue: Wallet(
+        let w = Wallet(
             coins: player?.coins ?? Wallet.welcomeGrant,
-            owned: Set(player?.ownedItemIDs ?? [])
-        ))
+            owned: Set(player?.ownedItemIDs ?? []),
+            synced: Set(player?.syncedItemIDs ?? [])
+        )
+        _wallet = State(initialValue: w)
         let store = WardrobeStore()
-        store.restore(equippedIDs: player?.equippedItemIDs ?? [])
+        // Built after the wallet, because restoring an outfit is ownership-gated now:
+        // you can trade away a hat while wearing it, and it must not come back on at
+        // launch just because the id is still in `equippedItemIDs`.
+        store.restore(equippedIDs: player?.equippedItemIDs ?? [], owns: w.owns)
         _wardrobe = State(initialValue: store)
         _lastCheckIn = State(initialValue: player?.lastCheckInDate)
         _focusEarnedToday = State(initialValue: player?.focusEarnedToday ?? 0)
@@ -150,7 +159,8 @@ struct HomeView: View {
             .presentationDetents([.large])
         }
         .sheet(isPresented: $showCollection) {
-            CollectionView(discovered: discovered, events: events, vibe: vibe)
+            CollectionView(discovered: discovered, events: events, vibe: vibe,
+                           onGranted: { ids in wallet.grant(ids); persist() })
                 .presentationDetents([.large])
         }
         .fullScreenCover(item: $discoveryReveal) { sp in
@@ -202,13 +212,17 @@ struct HomeView: View {
             }
         }
         .yolkDialog($dialog)
-        .onAppear { applyScreenshotSeams(); applyTrustDecay(); restoreHealth(); pushWalletToServer(); helloWaveIfTrusted(); maybeShowTutorial(); migratePlacedDecorIfNeeded(); maybeShowWidgetNudge() }
+        .onAppear { onAppearWork() }
+        // The proposer learns nothing when the other side accepts — `respond_trade` tells
+        // only the responder. Without a foreground pull, A keeps and re-uploads an item
+        // they gave away, forever. This is the half of the fix the trade sheet can't do.
+        .onChange(of: scenePhase) { _, phase in if phase == .active { reconcileWallet() } }
         .onChange(of: wallet.coins) { _, _ in persist() }
         .onChange(of: wallet.owned) { _, _ in persist() }
         .onChange(of: wardrobe.equipped) { _, _ in persist() }
         .onChange(of: player?.appleUserID) { _, newID in
             guard let newID else { return }
-            adoptServerWallet()   // just signed in → restore + sync
+            reconcileWallet()   // just signed in → restore + sync
             Task { await offerRestore(appleUserID: newID) }
             // Alias RevenueCat's anonymous user onto the Apple id in the SAME place, so
             // exactly one seam knows about the signed-out → signed-in transition.
@@ -249,6 +263,30 @@ struct HomeView: View {
         .overlay {
             if showTutorial { HomeTutorial(name: heading, onDone: finishTutorial) }
         }
+        .overlay(alignment: .top) { probeOverlay }
+    }
+
+    /// One screenshot-legible line answering the only questions that matter for the
+    /// ownership fixes: does the client think you own it, does it believe the SERVER
+    /// thinks so, and are you still wearing it.
+    ///
+    /// `owned` vs `synced` is the whole distinction `Wallet.syncedIDs` exists for, and
+    /// seeing both is what separates "the server removed this" from "the server never
+    /// heard of it" without attaching a debugger.
+    @ViewBuilder private var probeOverlay: some View {
+        #if DEBUG
+        if let probeID {
+            let cosmetic = CosmeticCatalog.all.first { $0.id == probeID }
+            Text("\(probeID)  owned=\(wallet.owned.contains(probeID) ? "Y" : "N")"
+                 + "  synced=\(wallet.syncedIDs.contains(probeID) ? "Y" : "N")"
+                 + "  worn=\(wardrobe.outfit.contains { $0.id == probeID } ? "Y" : "N")"
+                 + "  owns=\(cosmetic.map { wallet.owns($0) ? "Y" : "N" } ?? "-")")
+                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .padding(.horizontal, 6).padding(.vertical, 3)
+                .background(.black).foregroundStyle(.white)
+                .allowsHitTesting(false)
+        }
+        #endif
     }
 
     private func maybeShowTutorial() {
@@ -270,8 +308,14 @@ struct HomeView: View {
     /// Write the live wallet + outfit back to the saved player.
     private func persist() {
         guard let player else { return }
+        // FIRST, before anything reads the outfit. persist() fires on nearly every
+        // interaction, which makes it the one write barrier a prune cannot be forgotten
+        // at — and it stops a traded-away item reaching `equippedItemIDs`, the widget, or
+        // `mySnapshot().outfitIDs`, which is what friends see.
+        wardrobe.prune(owns: wallet.owns)
         player.coins = wallet.coins
         player.ownedItemIDs = Array(wallet.owned)
+        player.syncedItemIDs = Array(wallet.syncedIDs)
         player.equippedItemIDs = wardrobe.outfit.map(\.id)
         player.discoveredSpeciesIDs = Array(discovered)
         player.careStreak = careStreak
@@ -298,24 +342,68 @@ struct HomeView: View {
         WidgetPublisher.publish(name: heading, room: mySnapshot())
     }
 
+    /// Everything that runs once when home appears.
+    ///
+    /// Extracted from an inline `.onAppear` closure because `body`'s modifier chain had
+    /// grown past what the type-checker will solve in reasonable time — adding one more
+    /// `.onChange` tipped it over. Eight calls in a trailing closure are eight more
+    /// expressions to infer; a single method call is one.
+    ///
+    /// Note `reconcileWallet()` REPLACES the bare `pushWalletToServer()` that used to be
+    /// here. If both ran, the push would re-insert a traded-away item before the pull
+    /// could read it — the duplication bug, restaged.
+    private func onAppearWork() {
+        applyScreenshotSeams()
+        applyTrustDecay()
+        restoreHealth()
+        reconcileWallet()
+        helloWaveIfTrusted()
+        maybeShowTutorial()
+        migratePlacedDecorIfNeeded()
+        maybeShowWidgetNudge()
+    }
+
     /// Mirror the wallet to the server when signed in (durable + cross-device, #11).
     /// Best-effort + fire-and-forget; offline / signed-out play stays fully local.
     private func pushWalletToServer() {
         guard let uid = player?.appleUserID else { return }
         let coins = wallet.coins
         let owned = Array(wallet.owned)
-        Task { _ = await SupabaseClient.shared.pushWallet(userID: uid, coins: coins, owned: owned) }
+        Task {
+            guard let s = await SupabaseClient.shared.pushWallet(userID: uid, coins: coins, owned: owned)
+            else { return }
+            // Only a CONFIRMED push may mark ids synced. A dropped request has to leave
+            // them unsynced, or the next reconcile reads the server's silence about them
+            // as a removal and deletes a purchase that never landed.
+            wallet.markSynced(Set(s.owned))
+            player?.syncedItemIDs = s.owned
+            try? context.save()
+        }
     }
 
-    /// On sign-in (or cross-device), pull the server wallet and merge: keep the higher
-    /// coin balance so nothing is lost, union owned items, then push the result back.
-    private func adoptServerWallet() {
+    /// Adopt the server's inventory as the record of **what** you own.
+    ///
+    /// Replaces the old `adoptServerWallet`, which unioned — and a union cannot express a
+    /// removal. `respond_trade` deletes the row for an item you traded away, but the
+    /// client never saw it, so the next `push_wallet` (insert-only) put it straight back
+    /// and both players ended up owning it.
+    ///
+    /// **Gated on `appleUserID`, exactly like `pushWalletToServer`.** A signed-out player
+    /// has never pushed, so their server inventory is empty; adopting it would delete
+    /// everything they have. This guard is the difference between a fix and a disaster.
+    ///
+    /// Coins are merged rather than replaced — `gift_yolks` writes them server-side, so
+    /// taking the lower of the two could destroy a gift that just arrived.
+    private func reconcileWallet() {
         guard let uid = player?.appleUserID else { return }
         Task {
             if let s = await SupabaseClient.shared.walletState(userID: uid) {
-                wallet.adopt(coins: max(s.coins, wallet.coins), owned: wallet.owned.union(s.owned))
+                wallet.reconcile(serverOwned: Set(s.owned))
+                if s.coins > wallet.coins {
+                    wallet.adopt(coins: s.coins, owned: wallet.owned)
+                }
             }
-            persist()   // writes locally + pushes the merged state up
+            persist()   // prunes the outfit, writes locally, pushes the settled state up
         }
     }
 
@@ -992,10 +1080,14 @@ struct HomeView: View {
         placedByZone = player.placedDecorByZone
 
         wallet.adopt(coins: player.coins, owned: Set(player.ownedItemIDs))
-        wardrobe.restore(equippedIDs: player.equippedItemIDs)
+        wardrobe.restore(equippedIDs: player.equippedItemIDs, owns: wallet.owns)
 
         try? context.save()
         publishWidget()
+        // A backup snapshot UNIONS owned ids (`PlayerSnapshot.apply`), so a restore is a
+        // third channel that can resurrect something already traded away. Pull the
+        // server's real inventory straight afterwards and let it prune the difference.
+        reconcileWallet()
         Haptics.shared.reward()
     }
 
@@ -1045,18 +1137,31 @@ struct HomeView: View {
 
     private func applyScreenshotSeams() {
         let env = ProcessInfo.processInfo.environment
-        if let outfit = env["YOLK_OUTFIT"] {
-            for id in outfit.split(separator: ",") {
-                if let item = CosmeticCatalog.all.first(where: { $0.id == String(id) }) {
-                    wardrobe.toggle(item)
-                }
-            }
-        }
         // Accept a launch ARGUMENT as well as an env var: SIMCTL_CHILD_* env vars
         // propagate unreliably through `simctl launch`, while --args always arrives.
         // The screenshot pipeline needs a deterministic way onto each screen.
         func seam(_ key: String) -> Bool {
             env[key] != nil || CommandLine.arguments.contains(key)
+        }
+        #if DEBUG
+        // BEFORE the outfit seam. Equipping is ownership-gated now, so seeding has to
+        // happen first or `persist()`'s prune correctly takes the item straight back off
+        // and `YOLK_OUTFIT` looks broken.
+        applyOwnershipSeams(env, seam: seam)
+        #endif
+        // Reads a launch ARGUMENT too, not just the env var. Same reason as `seam(_:)`
+        // above — and this one bit during verification: `YOLK_OUTFIT=crown` passed to
+        // `simctl launch` silently did nothing, which looked like the new ownership prune
+        // eating the item.
+        let outfitSpec = env["YOLK_OUTFIT"] ?? CommandLine.arguments
+            .first { $0.hasPrefix("YOLK_OUTFIT=") }
+            .map { String($0.dropFirst("YOLK_OUTFIT=".count)) }
+        if let outfitSpec {
+            for id in outfitSpec.split(separator: ",") {
+                if let item = CosmeticCatalog.all.first(where: { $0.id == String(id) }) {
+                    wardrobe.toggle(item)
+                }
+            }
         }
         if seam("YOLK_WARDROBE") { showWardrobe = true }
         if seam("YOLK_PROFILE") { showProfile = true }
@@ -1073,6 +1178,42 @@ struct HomeView: View {
         if env["YOLK_TUTORIAL"] != nil { Task { try? await Task.sleep(for: .seconds(0.6)); withAnimation { showTutorial = true } } }
         #endif
     }
+
+    #if DEBUG
+    /// Seams for verifying the ownership fixes. There is no test target (docs/CONVENTIONS),
+    /// so a screenshot has to be able to answer "who owns this, and does the client agree
+    /// with the server" — hence the probe overlay these feed.
+    ///
+    /// `arg(_:)` reads a `KEY=value` launch argument as well as an env var, because
+    /// `SIMCTL_CHILD_*` propagates unreliably through `simctl launch` while `--args`
+    /// always arrives.
+    private func applyOwnershipSeams(_ env: [String: String], seam: (String) -> Bool) {
+        func arg(_ key: String) -> String? {
+            if let v = env[key] { return v }
+            return CommandLine.arguments
+                .first { $0.hasPrefix(key + "=") }
+                .map { String($0.dropFirst(key.count + 1)) }
+        }
+
+        // Makes a simulator a distinct SIGNED-IN account without real Sign in with Apple.
+        // The enabling seam for the whole two-account trade test — and note it fires the
+        // existing `.onChange(of: player?.appleUserID)`, which is the behaviour under test.
+        if let id = arg("YOLK_APPLE_ID"), player?.appleUserID != id {
+            player?.appleUserID = id
+            try? context.save()
+        }
+        // Put items in the wallet without earning them. Uses `grant`, so they land
+        // unsynced — which is also what makes seam-seeded items a valid stand-in for an
+        // offline purchase in the race test.
+        if let ids = arg("YOLK_SEED_OWNED") {
+            wallet.grant(ids.split(separator: ",").map(String.init))
+            persist()
+        }
+        if let id = arg("YOLK_PROBE") { probeID = id }
+        // Reconcile immediately, so a test doesn't have to background and foreground.
+        if seam("YOLK_RECONCILE") { reconcileWallet() }
+    }
+    #endif
 
     /// Re-enable Health reads for a player who connected on a previous launch.
     private func restoreHealth() {
