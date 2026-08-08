@@ -94,3 +94,26 @@ private extension SpeciesSet {
         self.init(id: id, name: name, blurb: blurb, speciesIDs: speciesIDs, isSeasonal: isSeasonalSet)
     }
 }
+
+// MARK: - Dex numbering
+
+extension SpeciesSets {
+    /// Every species reachable through play, in a stable order.
+    ///
+    /// The Dex universe is the UNION OF THE SETS, not the whole catalog. `SpeciesCatalog`
+    /// names 203 species but only these appear in a completable set, and only these are
+    /// what `DiscoveryEngine.pickNext` can hand you — so a card numbered against the
+    /// catalog would print a denominator the player can never reach.
+    ///
+    /// Sorted, so a species' number is a property of the species rather than of the order
+    /// the sets happen to be declared in. Move a set and every card keeps its number.
+    static let dex: [String] = Array(Set(all.flatMap { $0.speciesIDs })).sorted()
+
+    static var dexTotal: Int { dex.count }
+
+    /// A card's printed number, 1-based. `nil` for a species outside the Dex (a founding
+    /// grant, say), which correctly prints no serial at all rather than a made-up one.
+    static func dexNumber(of speciesID: String) -> Int? {
+        dex.firstIndex(of: speciesID).map { $0 + 1 }
+    }
+}

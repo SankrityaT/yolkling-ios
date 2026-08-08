@@ -63,10 +63,27 @@ struct YolkCard: View {
                     x: -pose.x * 14 * u, y: 10 * u - pose.y * 10 * u)
             .contentShape(RoundedRectangle(cornerRadius: 18 * u, style: .continuous))
             .gesture(interactive && frozenAt == nil ? drag : nil)
-            .onAppear { if interactive, frozenAt == nil { tilt.start(reduceMotion: reduceMotion) } }
+            .onAppear { syncTilt() }
+            // `interactive` is not fixed for the life of the card. A scratch card mounts
+            // covered and inert, and only becomes live once you have uncovered it — so an
+            // `onAppear`-only start ran while `interactive` was still false and the
+            // gyroscope never started at all. The card looked frozen after the reveal,
+            // which is the one moment it most needs to move.
+            .onChange(of: interactive) { _, _ in syncTilt() }
             .onDisappear { tilt.stop() }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(accessibilityText)
+    }
+
+    /// Start or stop reading motion to match the card's current state. Idempotent at both
+    /// ends (`CardTilt.start` no-ops if already running, `stop` if already stopped), so it
+    /// is safe to call from every lifecycle hook that could change the answer.
+    private func syncTilt() {
+        if interactive, frozenAt == nil {
+            tilt.start(reduceMotion: reduceMotion)
+        } else {
+            tilt.stop()
+        }
     }
 
     private var drag: some Gesture {

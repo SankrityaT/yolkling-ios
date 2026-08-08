@@ -16,6 +16,18 @@ struct YolkExpression: Equatable, Sendable {
     // MARK: Eyes
     var eyeOpenness: Double      // 0 closed ... 1 wide
     var eyeShape: EyeShape       // discrete token layered on openness
+
+    /// A wink: how far the creature's RIGHT eye is closed, independently of the left.
+    /// 0 both eyes as `eyeShape` says, 1 fully winking.
+    ///
+    /// The only asymmetric thing on the face, and it needs its own field because
+    /// `eyeShape` and `eyeOpenness` are shared by both eyes by design — the whole
+    /// expression system is "one pose, applied twice", which is what keeps 14 moods
+    /// cheap. A wink is the one gesture that cannot be expressed that way, so rather
+    /// than splitting every eye field in two it gets a single scalar that overrides one
+    /// side. Lerps continuously, so a wink opens and closes smoothly like any other pose
+    /// change.
+    var wink: Double = 0
     var pupilX: Double           // -1 ... 1 gaze left/right
     var pupilY: Double           // -1 ... 1 gaze down/up
     var pupilScale: Double       // 0.6 dilated-pin ... 1.3 wide
@@ -53,6 +65,7 @@ struct YolkExpression: Equatable, Sendable {
     init(
         eyeOpenness: Double = 0.62,
         eyeShape: EyeShape = .round,
+        wink: Double = 0,
         pupilX: Double = 0,
         pupilY: Double = 0,
         pupilScale: Double = 1,
@@ -73,6 +86,7 @@ struct YolkExpression: Equatable, Sendable {
     ) {
         self.eyeOpenness = eyeOpenness
         self.eyeShape = eyeShape
+        self.wink = wink
         self.pupilX = pupilX
         self.pupilY = pupilY
         self.pupilScale = pupilScale
@@ -120,6 +134,18 @@ extension YolkExpression {
         eyeOpenness: 0.5, eyeShape: .heart,
         mouthCurve: 0.5, blush: 0.8,
         bodyLean: 0.16, headTilt: 5, energy: 0.4, particle: .hearts
+    )
+
+    /// A heart-eyed wink. The "yes, this one" face.
+    ///
+    /// One heart eye and one closed, which is why `wink` had to exist: it is the only pose
+    /// in the set where the two eyes disagree. Blush is at maximum and the head tilts into
+    /// it, so it reads as delighted rather than merely smug.
+    static let smitten = YolkExpression(
+        eyeOpenness: 0.55, eyeShape: .heart, wink: 1,
+        mouthCurve: 0.8, mouthOpen: 0.15, mouthAsymmetry: 0.35, blush: 0.95,
+        squashStretch: 0.1, bodyLean: 0.1, headTilt: 7,
+        bounce: 0.22, energy: 0.6, particle: .hearts
     )
 
     static let curious = YolkExpression(
@@ -191,6 +217,7 @@ extension YolkExpression {
         return YolkExpression(
             eyeOpenness: m(a.eyeOpenness, b.eyeOpenness),
             eyeShape: t < 0.5 ? a.eyeShape : b.eyeShape,
+            wink: m(a.wink, b.wink),
             pupilX: m(a.pupilX, b.pupilX),
             pupilY: m(a.pupilY, b.pupilY),
             pupilScale: m(a.pupilScale, b.pupilScale),

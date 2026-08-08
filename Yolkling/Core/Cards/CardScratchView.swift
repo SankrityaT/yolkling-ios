@@ -19,6 +19,9 @@ import SwiftUI
 struct CardScratchView: View {
     let face: YolkCardFace
     var width: CGFloat = 300
+    /// Skip the scratch and show the card. For screenshot seams, and anywhere the reveal
+    /// has already happened and this is just displaying the result.
+    var revealImmediately: Bool = false
     /// Called once, when the card has finished revealing itself.
     var onRevealed: () -> Void = {}
 
@@ -97,7 +100,7 @@ struct CardScratchView: View {
             // Reduce Motion gets the card, not a puzzle. Scratching is a motion-based
             // interaction and there is no accessible version of "keep rubbing"; the
             // reasonable accommodation is to skip it.
-            if reduceMotion { reveal(animated: false) }
+            if reduceMotion || revealImmediately { reveal(animated: false) }
         }
         // Dismissing the sheet with a finger still down means `onEnded` never arrives, and
         // the texture would keep playing into a view that no longer exists.
@@ -187,10 +190,7 @@ struct CardScratchView: View {
         if lastPoint == nil { strokes.append([]) }
         strokes[strokes.count - 1].append(point)
 
-        // Grid cell for coverage. Clamped, because a drag can travel outside the card.
-        let cx = min(max(Int(point.x / width * CGFloat(Self.cols)), 0), Self.cols - 1)
-        let cy = min(max(Int(point.y / height * CGFloat(Self.rows)), 0), Self.rows - 1)
-        scratched.insert(cy * Self.cols + cx)
+        markCovered(around: point)
 
         // TEXTURE, in two layers.
         //
@@ -222,6 +222,38 @@ struct CardScratchView: View {
 
         // Finish as soon as they have clearly seen it, without waiting for them to lift.
         if coverage >= Self.threshold { reveal(animated: true) }
+    }
+
+    /// Mark every grid cell the brush actually covers, not just the one under the finger.
+    ///
+    /// Marking a single cell per touch point undercounts badly, because the brush erases a
+    /// disc wider than one cell. A drag hides it (points arrive densely enough to catch the
+    /// neighbours anyway) but a tap does not, so the panel would look most of the way gone
+    /// while coverage still read a third. The threshold has to measure the same thing the
+    /// eye does.
+    private func markCovered(around point: CGPoint) {
+        let cellW = width / CGFloat(Self.cols)
+        let cellH = height / CGFloat(Self.rows)
+        let r = brush / 2
+        // Only the cells whose bounding box the disc could reach.
+        let minX = max(Int((point.x - r) / cellW), 0)
+        let maxX = min(Int((point.x + r) / cellW), Self.cols - 1)
+        let minY = max(Int((point.y - r) / cellH), 0)
+        let maxY = min(Int((point.y + r) / cellH), Self.rows - 1)
+        guard minX <= maxX, minY <= maxY else { return }
+
+        for cy in minY...maxY {
+            for cx in minX...maxX {
+                // Centre-in-disc rather than any-overlap: a cell the brush only clips the
+                // corner of is not meaningfully cleared, and counting it would let the
+                // threshold trip while the card was still mostly covered.
+                let centre = CGPoint(x: (CGFloat(cx) + 0.5) * cellW,
+                                     y: (CGFloat(cy) + 0.5) * cellH)
+                if hypot(centre.x - point.x, centre.y - point.y) <= r {
+                    scratched.insert(cy * Self.cols + cx)
+                }
+            }
+        }
     }
 
     private func reveal(animated: Bool) {

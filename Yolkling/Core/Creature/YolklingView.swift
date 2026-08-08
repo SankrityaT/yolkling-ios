@@ -229,6 +229,39 @@ struct YolklingView: View {
     /// as an effect rather than an eyeball, and blinking them looks like a glitch.
     @ViewBuilder
     private func eye(side: CGFloat, e: YolkExpression, blink: Double) -> some View {
+        // A wink closes ONE eye, so it is the only place the two sides diverge. `blink` is
+        // OPENNESS (1 open, 0 shut), so a wink is just a lid that has come all the way down
+        // on one side.
+        //
+        // `side > 0` is the creature's right, which is the one that winks. Arbitrary, but it
+        // has to be consistent or the face swaps sides mid-transition.
+        let lid = side > 0 ? min(blink, 1 - e.wink) : blink
+
+        // A SHUT EYE IS A SHUT EYE, whatever the eye normally looks like.
+        //
+        // Folding the wink into `blink` and trusting each shape to handle it does not work:
+        // `.heart` and `.sparkle` are drawn as symbols and ignore the lid entirely, so a
+        // fully winking heart eye rendered as a wide-open heart. Screenshot showed two
+        // hearts and no wink.
+        //
+        // Below this the shape stops mattering, because you cannot see a heart through a
+        // closed eyelid. Threshold rather than a fade so the swap happens while the eye is
+        // nearly shut and never reads as a pop.
+        if lid < 0.28 {
+            return AnyView(closedLid(openness: lid))
+        }
+        return AnyView(eyeBody(side: side, e: e, blink: lid))
+    }
+
+    /// A closed eye: the same soft arc a happy squint uses, flattened by how shut it is.
+    /// One shape for blinks, winks and sleepy droops, so they all agree.
+    private func closedLid(openness: Double) -> some View {
+        LidEye(lift: max(0, openness / 0.28) * 0.5)
+            .stroke(YolkColor.ink, style: StrokeStyle(lineWidth: size * 0.026, lineCap: .round))
+            .frame(width: size * 0.2, height: size * 0.1)
+    }
+
+    private func eyeBody(side: CGFloat, e: YolkExpression, blink: Double) -> some View {
         Group {
             switch e.eyeShape {
             case .round:

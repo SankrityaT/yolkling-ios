@@ -70,6 +70,8 @@ final class CardTilt {
     private var idle: Double = 0
 
     private var reduceMotion = false
+    /// Whether the sheet is currently inside the sweet spot, for the haptic's hysteresis.
+    private var inSweetSpot = false
 
     // MARK: Lifecycle
 
@@ -214,6 +216,33 @@ final class CardTilt {
         sheet = foil.value
         velocity = foil.velocity
         speed = foil.speed
+
+        reportSweetSpot()
+    }
+
+    /// A tick when the material lines up.
+    ///
+    /// `HoloMaterial` puts the sweet spot off-centre specifically so it has to be hunted
+    /// for, and hunting for something you can only see is half an interaction. Feeling the
+    /// moment it aligns is what tells you it was a real place on the card rather than the
+    /// foil happening to look nice, and it is what makes people keep turning it.
+    ///
+    /// **Hysteresis, not a threshold.** A single trip point would chatter continuously while
+    /// a hand hovered near the edge of the spot, which is the worst possible haptic: constant
+    /// and meaningless. It fires entering at 0.72 and only re-arms once you have clearly left
+    /// at 0.45.
+    ///
+    /// Gated on the input actually being driven. The idle drift sweeps through the spot on
+    /// its own, and a card buzzing at nobody is a bug.
+    private func reportSweetSpot() {
+        guard usingDeviceMotion || touching else { inSweetSpot = false; return }
+        let s = Holo.spot(foil.value)
+        if s > 0.72, !inSweetSpot {
+            inSweetSpot = true
+            Haptics.shared.select()
+        } else if s < 0.45 {
+            inSweetSpot = false
+        }
     }
 
     /// `CADisplayLink` needs an `NSObject` target and retains it, so a proxy holding the
