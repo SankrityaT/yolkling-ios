@@ -145,6 +145,29 @@ struct SupabaseClient {
                                             "p_snapshot": snapObj, "p_public": isPublic])
     }
 
+    // MARK: Cloud backup. See docs/sql/backup.sql.
+
+    /// Save the creature. Keyed on the Sign in with Apple id.
+    @discardableResult
+    func pushPlayerState(userID: String, state: [String: Any]) async -> Bool {
+        guard let data = await postJSON("push_player_state",
+                                        ["p_user": userID, "p_state": state,
+                                         "p_version": AppEnvironment.appVersion]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return obj["ok"] as? Bool ?? false
+    }
+
+    /// Fetch a saved creature, or nil if there isn't one.
+    /// nil means "nothing saved" — never "an empty creature".
+    func pullPlayerState(userID: String) async -> [String: Any]? {
+        guard let data = await post("pull_player_state", ["p_user": userID]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              obj["found"] as? Bool == true
+        else { return nil }
+        return obj["state"] as? [String: Any]
+    }
+
     // MARK: Seasons. See docs/sql/events.sql.
 
     /// Seasons running right now.

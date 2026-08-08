@@ -17,6 +17,12 @@ enum AppEnvironment {
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsdWNla3ZyZHh2cGt2Yml6YWJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NjY4ODAsImV4cCI6MjA5NzI0Mjg4MH0.r6XhJ6Suh_Azr3q7G1b6lYHfAS52j0B_y9Gbn7AREUA"
 
     static let supabaseProjectRef = "vlucekvrdxvpkvbizabz"
+
+    /// Marketing version, stamped onto backups and feedback so a bad restore can be
+    /// traced to the build that wrote it.
+    static var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev"
+    }
 }
 
 /// Single source of truth for public-facing URLs. Apple App Review rejects the

@@ -209,6 +209,7 @@ struct HomeView: View {
         .onChange(of: player?.appleUserID) { _, newID in
             guard let newID else { return }
             adoptServerWallet()   // just signed in → restore + sync
+            Task { await offerRestore(appleUserID: newID) }
             // Alias RevenueCat's anonymous user onto the Apple id in the SAME place, so
             // exactly one seam knows about the signed-out → signed-in transition.
             Task { await SubscriptionStore.shared.identify(newID) }
@@ -284,6 +285,12 @@ struct HomeView: View {
         try? context.save()
         pushWalletToServer()
         publishWidget()
+        // Cloud backup, throttled to once every few minutes inside PlayerBackup — this
+        // fires on nearly every interaction and the creature changes meaningfully a few
+        // times a day, not a few times a second.
+        if let uid = player.appleUserID {
+            Task { await PlayerBackup.push(player, appleUserID: uid) }
+        }
     }
 
     /// Publish the current yolk look to the App Group so the home-screen widget reflects it.
@@ -931,6 +938,65 @@ struct HomeView: View {
             .padding(.vertical, 8)
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: Cloud backup
+
+    /// Ask before restoring. Never silently.
+    ///
+    /// Signing in on a device that already has a creature is the dangerous case: the
+    /// backup might be an older, better-developed yolkling, or it might be a stale one
+    /// from a phone you stopped using. Only the person can know which. So a restore that
+    /// would overwrite anything real is offered, not performed — and a backup of a
+    /// barely-started creature isn't worth interrupting anyone for at all.
+    private func offerRestore(appleUserID: String) async {
+        guard let player, let snapshot = await PlayerBackup.pull(appleUserID: appleUserID) else { return }
+        guard snapshot.isWorthRestoring else { return }
+
+        // Nothing here worth keeping → just restore, no question to answer.
+        let localIsFresh = player.careStreak == 0 && player.discoveredSpeciesIDs.count <= 3
+        if localIsFresh {
+            restore(snapshot, into: player)
+            dialog = YolkDialog(icon: .creature(vibe, .affectionate), title: "welcome back",
+                                message: "\(snapshot.name) was waiting for you.", primaryTitle: "hello again")
+            return
+        }
+
+        dialog = YolkDialog(
+            icon: .creature(vibe, .curious),
+            title: "there's another yolkling",
+            message: "\(snapshot.name) is saved to this Apple ID, \(snapshot.careStreak) days along. bring them back? \(player.name) here would be replaced.",
+            primaryTitle: "bring \(snapshot.name) back",
+            primaryAction: { restore(snapshot, into: player) },
+            secondaryTitle: "keep \(player.name)"
+        )
+    }
+
+    /// Apply a backup to the model AND to the in-memory state that mirrors it.
+    ///
+    /// Deliberately does NOT call `persist()`. persist() copies the CURRENT wallet,
+    /// wardrobe and @State into the player — so calling it after a restore would
+    /// immediately overwrite everything just restored with the pre-restore values. The
+    /// @State here is seeded once in `init`, so it has to be moved forward by hand.
+    private func restore(_ snapshot: PlayerSnapshot, into player: Player) {
+        snapshot.apply(to: player)
+
+        careStreak = player.careStreak
+        restTokens = player.restTokens
+        lastCareDate = player.lastCareDate
+        weekStart = player.weekStart
+        weekCareDays = player.weekCareDays
+        weeklyClaimed = player.weeklyClaimed
+        discovered = Set(player.discoveredSpeciesIDs)
+        roomThemeID = player.roomThemeID
+        placedByZone = player.placedDecorByZone
+
+        wallet.adopt(coins: player.coins, owned: Set(player.ownedItemIDs))
+        wardrobe.restore(equippedIDs: player.equippedItemIDs)
+
+        try? context.save()
+        publishWidget()
+        Haptics.shared.reward()
     }
 
     // MARK: Actions
