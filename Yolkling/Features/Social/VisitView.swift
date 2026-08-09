@@ -26,6 +26,7 @@ struct VisitView: View {
     @State private var giftBusy = false
     @State private var swapping = false
     @State private var showCollection = false
+    @State private var showActions = false
     /// Strangers require a successful drift before any action is allowed.
     @State private var landed = false
 
@@ -56,6 +57,19 @@ struct VisitView: View {
             if case .friend(let f) = subject {
                 FriendCollectionView(friend: f, mine: myDiscovered)
                     .presentationDetents([.large])
+            }
+        }
+        .sheet(isPresented: $showActions) {
+            if case .friend(let f) = subject {
+                FriendActionsSheet(
+                    friend: f, giftAmounts: subject.giftAmounts, busy: giftBusy,
+                    onSeeCollection: { showCollection = true },
+                    onSwap: { swapping = true },
+                    onGift: { sendGift($0) }
+                )
+                // Sized to its content. A `.large` detent over a room would hide the room,
+                // and these are actions you take while looking at it.
+                .presentationDetents([.height(430)])
             }
         }
         .yolkDialog($dialog)
@@ -145,7 +159,7 @@ struct VisitView: View {
             theirWaveToken += 1
             Task { await store.sendWave(to: subject.userID) }
         } label: {
-            actionLabel("👋", waved ? "waved!" : "wave", filled: false)
+            actionLabel(.wave, waved ? "waved!" : "wave", filled: false)
                 .foregroundStyle(waved ? YolkColor.muted : YolkColor.ink)
         }
         .buttonStyle(.plain)
@@ -154,28 +168,21 @@ struct VisitView: View {
 
     private var noteButton: some View {
         Button { composing = true } label: {
-            actionLabel("💌", "leave a note", filled: true)
+            actionLabel(.note, "leave a note", filled: true)
         }
         .buttonStyle(.plain)
     }
 
+    /// A sheet rather than a `Menu`, so the rows can be drawn. See `FriendActionsSheet`.
     private var swapButton: some View {
-        Menu {
-            Button { swapping = true } label: { Label("offer a swap", systemImage: "arrow.left.arrow.right") }
-            // Sits above the gift amounts on purpose: seeing what they have is what makes
-            // a swap worth proposing, so it should be reachable before you commit to one.
-            if case .friend = subject {
-                Button { showCollection = true } label: {
-                    Label("see what they've found", systemImage: "square.grid.2x2")
-                }
-            }
-            ForEach(subject.giftAmounts, id: \.self) { amount in
-                Button("gift \(amount) \(Currency.name)") { sendGift(amount) }
-            }
+        Button {
+            Haptics.shared.tick()
+            showActions = true
         } label: {
-            actionLabel("🔁", giftBusy ? "..." : "swap", filled: false)
+            actionLabel(.swap, giftBusy ? "..." : "swap", filled: false)
                 .foregroundStyle(YolkColor.ink)
         }
+        .buttonStyle(.plain)
         .disabled(giftBusy)
     }
 
@@ -185,15 +192,24 @@ struct VisitView: View {
                 Button("\(amount) \(Currency.name)") { sendGift(amount) }
             }
         } label: {
-            actionLabel("🎁", giftBusy ? "..." : "gift", filled: false)
+            actionLabel(.gift, giftBusy ? "..." : "gift", filled: false)
                 .foregroundStyle(YolkColor.ink)
         }
         .disabled(giftBusy)
     }
 
-    private func actionLabel(_ emoji: String, _ title: String, filled: Bool) -> some View {
-        HStack(spacing: 6) {
-            Text(emoji).font(.system(size: 15))
+    /// Drawn glyphs, not emoji.
+    ///
+    /// This row used 👋 💌 🔁 🎁. The swap emoji renders BLUE on iOS, which is not in this
+    /// app's palette at all, and all four came from a different rendering engine than
+    /// everything else on the screen. In an app whose whole claim is that nothing is an
+    /// asset, the action row was four imported pictures.
+    ///
+    /// The glyph strokes with `.foreground`, so it simply inherits the label's colour and
+    /// the filled variant needs no special handling.
+    private func actionLabel(_ glyph: YolkGlyph.Kind, _ title: String, filled: Bool) -> some View {
+        HStack(spacing: 7) {
+            YolkGlyph(kind: glyph, size: 16)
             Text(title).font(YolkType.bodySmall.weight(.semibold))
         }
         .foregroundStyle(filled ? YolkColor.shell : YolkColor.ink)

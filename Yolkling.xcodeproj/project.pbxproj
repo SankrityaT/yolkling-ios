@@ -18,6 +18,7 @@
 		09FE9ECC682126A937DF978F /* DriftSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6140FCDBA2426893DDB84717 /* DriftSheet.swift */; };
 		0A5BCB4BBDD1B38982E023B2 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = B946F4E30EF2C84EE207202E /* Router.swift */; };
 		0A9560FE0207E256601BA0C4 /* YolklingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95E3508A252E211E684703D /* YolklingView.swift */; };
+		0F43BA5020257840F2122EAC /* YolkGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */; };
 		100A76148307BBACD333D950 /* YolkExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */; };
 		115C413B6DCAC129F76CCDB3 /* WhileYouWereAwayStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */; };
 		1174E2755C3353C39FD9A5F5 /* VisitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10352955EC8A724ED2AEAC4 /* VisitView.swift */; };
@@ -106,6 +107,7 @@
 		B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9E562134085B1FEF2F1E4F /* FriendsView.swift */; };
 		B230DDE4DA3A2793C38B4C11 /* YolkCardFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F368C2F7CFCEF100548E1 /* YolkCardFace.swift */; };
 		B272ABAEB76D8F68D7565E90 /* ColorShop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E4757EC5D4372E5784BF025 /* ColorShop.swift */; };
+		B2F7A5E40D9C63BADB899598 /* YolkGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */; };
 		B3140FD6A3D1EB7B1A6E617C /* RoomDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */; };
 		B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC859F6086205595CCA3548F /* YolkDialog.swift */; };
 		B4E3FDCDEF5E47C4461202BA /* BodyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */; };
@@ -113,6 +115,7 @@
 		BA925A3A4FA9DD75958F5189 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6242A91695E361503D3DAA6 /* AppEnvironment.swift */; };
 		BB04580D3125794B8DB6BD99 /* YolklingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE819215FD090FE423F75193 /* YolklingApp.swift */; };
 		BB7652868F1A1B518E9EB1F4 /* PlusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */; };
+		BC5CE54C730EBAAD577FA470 /* FriendActionsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3925311E6FA72C12BCFD77C4 /* FriendActionsSheet.swift */; };
 		BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCE5524395404EDA669648 /* YolkColors.swift */; };
 		BD284E721748D9A0590066F4 /* ShopHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */; };
 		C12C0259ED876B5BA58FE8C2 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
@@ -216,6 +219,7 @@
 		334D734661EDF43E80B4A217 /* SeasonBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonBanner.swift; sourceTree = "<group>"; };
 		36DC24772B748D797777AB22 /* WidgetPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPublisher.swift; sourceTree = "<group>"; };
 		370AC2BE38C8F35E8C59C790 /* YolkType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkType.swift; sourceTree = "<group>"; };
+		3925311E6FA72C12BCFD77C4 /* FriendActionsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendActionsSheet.swift; sourceTree = "<group>"; };
 		3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomDecor.swift; sourceTree = "<group>"; };
 		3A81F4FB5B6B4FE7DC31F059 /* Species.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Species.swift; sourceTree = "<group>"; };
 		3C7A696ACFBC053E0809E12F /* DMMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMMono-Regular.ttf"; sourceTree = "<group>"; };
@@ -307,6 +311,7 @@
 		EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		EFC6AD7229641595F1324223 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F554785860AE53390D69233E /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
+		F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkGlyph.swift; sourceTree = "<group>"; };
 		F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCollectionView.swift; sourceTree = "<group>"; };
 		F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPattern.swift; sourceTree = "<group>"; };
 		FD20DDA9932DC37F8B2B837F /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
@@ -519,6 +524,7 @@
 			isa = PBXGroup;
 			children = (
 				6140FCDBA2426893DDB84717 /* DriftSheet.swift */,
+				3925311E6FA72C12BCFD77C4 /* FriendActionsSheet.swift */,
 				F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */,
 				22DB14FC98098997269CFE94 /* FriendRoomCard.swift */,
 				7E9E562134085B1FEF2F1E4F /* FriendsView.swift */,
@@ -770,6 +776,7 @@
 				47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */,
 				2CFCE5524395404EDA669648 /* YolkColors.swift */,
 				BC859F6086205595CCA3548F /* YolkDialog.swift */,
+				F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */,
 				E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */,
 				370AC2BE38C8F35E8C59C790 /* YolkType.swift */,
 			);
@@ -939,6 +946,7 @@
 				62EBBA87B5CC8CC8247CDCA8 /* YolkColors.swift in Sources */,
 				4BEACA0FC5E5B4E77845EF9C /* YolkDialog.swift in Sources */,
 				100A76148307BBACD333D950 /* YolkExpression.swift in Sources */,
+				0F43BA5020257840F2122EAC /* YolkGlyph.swift in Sources */,
 				8E04A92EF50B352275AF88DE /* YolkMotion.swift in Sources */,
 				8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */,
 				493B4B1BAEB403ED5AC5FC32 /* YolkSpacing.swift in Sources */,
@@ -981,6 +989,7 @@
 				4ADF5DECBAE24ABD3C448D5D /* FocusView.swift in Sources */,
 				51E42375AA5DE76C791EA2F5 /* FoundingFlair.swift in Sources */,
 				84E321BD0A5CB442877C103B /* FoundingRevealView.swift in Sources */,
+				BC5CE54C730EBAAD577FA470 /* FriendActionsSheet.swift in Sources */,
 				F6E72741E88E322E12CFF18B /* FriendCollectionView.swift in Sources */,
 				E7FEADC4EC542107262901AD /* FriendRoomCard.swift in Sources */,
 				B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */,
@@ -1054,6 +1063,7 @@
 				BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */,
 				B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */,
 				474D87224A811FFD99C64FC4 /* YolkExpression.swift in Sources */,
+				B2F7A5E40D9C63BADB899598 /* YolkGlyph.swift in Sources */,
 				C2BC5F4B1FA45DC677D46D34 /* YolkMotion.swift in Sources */,
 				FBFF303FA92AE2EEBC97B37A /* YolkNotifications.swift in Sources */,
 				3395E08E88EBF6AF2686CB1A /* YolkSegmented.swift in Sources */,
