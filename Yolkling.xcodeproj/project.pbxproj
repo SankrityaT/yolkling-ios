@@ -41,6 +41,7 @@
 		301A7CC3CC8CED5A339A5398 /* BrandFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D460297B8B82462A61ED36 /* BrandFonts.swift */; };
 		339169F8EB3C2F3BEAB56081 /* MoodCheckInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE358D6CD83AA87EA6358B2 /* MoodCheckInView.swift */; };
 		3395E08E88EBF6AF2686CB1A /* YolkSegmented.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F403602C69613F256AC4FD /* YolkSegmented.swift */; };
+		363FF6492F6CCD6F82CF23A3 /* YolkMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD66B197F22F7316ED9073EF /* YolkMenu.swift */; };
 		36C7C22D0128007F01EAD514 /* RoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A696350A3A3F96048352A62 /* RoomView.swift */; };
 		36DE543C57BBE8E69AD40D7B /* Species+Cozy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096CDDB0222B5437F850166C /* Species+Cozy.swift */; };
 		370441F2076020435ED5FD7C /* SocialModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B3C10F5C7A1D79618B0B35 /* SocialModels.swift */; };
@@ -115,7 +116,6 @@
 		BA925A3A4FA9DD75958F5189 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6242A91695E361503D3DAA6 /* AppEnvironment.swift */; };
 		BB04580D3125794B8DB6BD99 /* YolklingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE819215FD090FE423F75193 /* YolklingApp.swift */; };
 		BB7652868F1A1B518E9EB1F4 /* PlusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */; };
-		BC5CE54C730EBAAD577FA470 /* FriendActionsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3925311E6FA72C12BCFD77C4 /* FriendActionsSheet.swift */; };
 		BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCE5524395404EDA669648 /* YolkColors.swift */; };
 		BD284E721748D9A0590066F4 /* ShopHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */; };
 		C12C0259ED876B5BA58FE8C2 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
@@ -164,6 +164,7 @@
 		F6E72741E88E322E12CFF18B /* FriendCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */; };
 		F881D46D850C51D7C10D8613 /* DMMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */; };
 		F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */; };
+		FAB6F8C59864F026AAC940A1 /* YolkMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD66B197F22F7316ED9073EF /* YolkMenu.swift */; };
 		FBD468390A672D74FF782DCA /* CardScratchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9DF2A1897F2D6B597F6A9B /* CardScratchView.swift */; };
 		FBEE7B6C3B94CF8C263C8033 /* RoomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */; };
 		FBFF303FA92AE2EEBC97B37A /* YolkNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E4A5383B84FED32116786EF /* YolkNotifications.swift */; };
@@ -219,7 +220,6 @@
 		334D734661EDF43E80B4A217 /* SeasonBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonBanner.swift; sourceTree = "<group>"; };
 		36DC24772B748D797777AB22 /* WidgetPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPublisher.swift; sourceTree = "<group>"; };
 		370AC2BE38C8F35E8C59C790 /* YolkType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkType.swift; sourceTree = "<group>"; };
-		3925311E6FA72C12BCFD77C4 /* FriendActionsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendActionsSheet.swift; sourceTree = "<group>"; };
 		3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomDecor.swift; sourceTree = "<group>"; };
 		3A81F4FB5B6B4FE7DC31F059 /* Species.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Species.swift; sourceTree = "<group>"; };
 		3C7A696ACFBC053E0809E12F /* DMMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMMono-Regular.ttf"; sourceTree = "<group>"; };
@@ -273,6 +273,7 @@
 		A7558E421CB8F49D94D63FD7 /* RoomZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomZone.swift; sourceTree = "<group>"; };
 		A999B3ECF4F6D60AF1777E91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomDecorView.swift; sourceTree = "<group>"; };
+		AD66B197F22F7316ED9073EF /* YolkMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkMenu.swift; sourceTree = "<group>"; };
 		AEEAB12F5F5DA67AF043023C /* SeasonalEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonalEvent.swift; sourceTree = "<group>"; };
 		AF4187DA7A92439863DAF815 /* YolklingWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YolklingWidgets.entitlements; sourceTree = "<group>"; };
 		B10352955EC8A724ED2AEAC4 /* VisitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitView.swift; sourceTree = "<group>"; };
@@ -524,7 +525,6 @@
 			isa = PBXGroup;
 			children = (
 				6140FCDBA2426893DDB84717 /* DriftSheet.swift */,
-				3925311E6FA72C12BCFD77C4 /* FriendActionsSheet.swift */,
 				F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */,
 				22DB14FC98098997269CFE94 /* FriendRoomCard.swift */,
 				7E9E562134085B1FEF2F1E4F /* FriendsView.swift */,
@@ -777,6 +777,7 @@
 				2CFCE5524395404EDA669648 /* YolkColors.swift */,
 				BC859F6086205595CCA3548F /* YolkDialog.swift */,
 				F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */,
+				AD66B197F22F7316ED9073EF /* YolkMenu.swift */,
 				E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */,
 				370AC2BE38C8F35E8C59C790 /* YolkType.swift */,
 			);
@@ -947,6 +948,7 @@
 				4BEACA0FC5E5B4E77845EF9C /* YolkDialog.swift in Sources */,
 				100A76148307BBACD333D950 /* YolkExpression.swift in Sources */,
 				0F43BA5020257840F2122EAC /* YolkGlyph.swift in Sources */,
+				363FF6492F6CCD6F82CF23A3 /* YolkMenu.swift in Sources */,
 				8E04A92EF50B352275AF88DE /* YolkMotion.swift in Sources */,
 				8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */,
 				493B4B1BAEB403ED5AC5FC32 /* YolkSpacing.swift in Sources */,
@@ -989,7 +991,6 @@
 				4ADF5DECBAE24ABD3C448D5D /* FocusView.swift in Sources */,
 				51E42375AA5DE76C791EA2F5 /* FoundingFlair.swift in Sources */,
 				84E321BD0A5CB442877C103B /* FoundingRevealView.swift in Sources */,
-				BC5CE54C730EBAAD577FA470 /* FriendActionsSheet.swift in Sources */,
 				F6E72741E88E322E12CFF18B /* FriendCollectionView.swift in Sources */,
 				E7FEADC4EC542107262901AD /* FriendRoomCard.swift in Sources */,
 				B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */,
@@ -1064,6 +1065,7 @@
 				B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */,
 				474D87224A811FFD99C64FC4 /* YolkExpression.swift in Sources */,
 				B2F7A5E40D9C63BADB899598 /* YolkGlyph.swift in Sources */,
+				FAB6F8C59864F026AAC940A1 /* YolkMenu.swift in Sources */,
 				C2BC5F4B1FA45DC677D46D34 /* YolkMotion.swift in Sources */,
 				FBFF303FA92AE2EEBC97B37A /* YolkNotifications.swift in Sources */,
 				3395E08E88EBF6AF2686CB1A /* YolkSegmented.swift in Sources */,

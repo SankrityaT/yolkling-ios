@@ -27,6 +27,7 @@ struct VisitView: View {
     @State private var swapping = false
     @State private var showCollection = false
     @State private var showActions = false
+    @State private var showBlock = false
     /// Strangers require a successful drift before any action is allowed.
     @State private var landed = false
 
@@ -59,18 +60,26 @@ struct VisitView: View {
                     .presentationDetents([.large])
             }
         }
-        .sheet(isPresented: $showActions) {
-            if case .friend(let f) = subject {
-                FriendActionsSheet(
-                    friend: f, giftAmounts: subject.giftAmounts, busy: giftBusy,
-                    onSeeCollection: { showCollection = true },
-                    onSwap: { swapping = true },
-                    onGift: { sendGift($0) }
-                )
-                // Sized to its content. A `.large` detent over a room would hide the room,
-                // and these are actions you take while looking at it.
-                .presentationDetents([.height(430)])
+        // Sits at the bottom of the screen, in the empty space BELOW the action row rather
+        // than on top of it. Anchoring near the row looked right on a Pro Max and covered
+        // the buttons that opened it; the room shrinks with the screen, so there is no
+        // fixed offset above the row that survives an SE. Bottom-anchored is the same on
+        // every device, and it still grows out of the button's edge.
+        .yolkMenu(isPresented: $showActions, alignment: .bottom, anchor: .top) {
+            friendMenu.padding(.bottom, YolkSpace.lg)
+        }
+        .yolkMenu(isPresented: $showBlock, alignment: .topTrailing) {
+            YolkMenu(width: 230) {
+                YolkMenuRow(glyph: nil, title: "block \(subject.displayName)",
+                            detail: "your yolklings won't cross paths again",
+                            destructive: true) {
+                    Haptics.shared.warn()
+                    showBlock = false
+                    block()
+                }
             }
+            .padding(.trailing, YolkSpace.lg)
+            .padding(.top, 56)
         }
         .yolkDialog($dialog)
         .task { await arrive() }
@@ -120,13 +129,15 @@ struct VisitView: View {
             // Guideline 1.2: once a stranger can reach you, blocking has to be reachable
             // from the place you meet them, not buried in settings.
             if subject.isStranger {
-                Menu {
-                    Button("block \(subject.displayName)", role: .destructive) { block() }
+                Button {
+                    Haptics.shared.tick()
+                    withAnimation(.snappy(duration: 0.22)) { showBlock = true }
                 } label: {
                     Image(systemName: "ellipsis").font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(YolkColor.inkSoft).padding(10)
                         .background(YolkColor.shell2, in: Circle())
                 }
+                .buttonStyle(.plain)
             }
             Button { dismiss() } label: {
                 Image(systemName: "xmark").font(.system(size: 15, weight: .semibold))
@@ -173,11 +184,71 @@ struct VisitView: View {
         .buttonStyle(.plain)
     }
 
-    /// A sheet rather than a `Menu`, so the rows can be drawn. See `FriendActionsSheet`.
+    /// What you can do in a friend's room, in our own menu rather than a native one.
+    ///
+    /// Seeing what they have comes FIRST: it is what makes a swap worth proposing, and
+    /// offering one blind wastes both people's time.
+    ///
+    /// The gift amounts are one row of three, not three rows. Gifting is ONE decision with
+    /// three values, and a flat list gave a Yolk amount the same weight as "see everything
+    /// they own".
+    @ViewBuilder private var friendMenu: some View {
+        if case .friend(let f) = subject {
+            YolkMenu {
+                YolkMenuRow(glyph: .cards, title: "see what they've found",
+                            detail: (f.found?.count).map { "\($0) found" }) {
+                    Haptics.shared.select()
+                    showActions = false
+                    showCollection = true
+                }
+                YolkMenuDivider()
+                YolkMenuRow(glyph: .swap, title: "offer a swap",
+                            detail: "they have to say yes") {
+                    Haptics.shared.select()
+                    showActions = false
+                    swapping = true
+                }
+                YolkMenuDivider()
+
+                VStack(alignment: .leading, spacing: YolkSpace.sm) {
+                    HStack(spacing: 7) {
+                        YolkGlyph(kind: .gift, size: 15)
+                        Text("gift \(Currency.name.lowercased())")
+                            .font(YolkType.bodySmall.weight(.semibold))
+                    }
+                    .foregroundStyle(YolkColor.inkSoft)
+
+                    HStack(spacing: YolkSpace.sm) {
+                        ForEach(subject.giftAmounts, id: \.self) { amount in
+                            Button {
+                                Haptics.shared.select()
+                                showActions = false
+                                sendGift(amount)
+                            } label: {
+                                Text("\(amount)")
+                                    .font(YolkType.body.weight(.bold))
+                                    .foregroundStyle(YolkColor.ink)
+                                    .frame(maxWidth: .infinity).padding(.vertical, 11)
+                                    .background(YolkColor.shell2, in: Capsule())
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(giftBusy)
+                        }
+                    }
+                    Text("it comes out of your own \(Currency.name.lowercased()).")
+                        .font(.caption2).foregroundStyle(YolkColor.muted)
+                }
+                .padding(.horizontal, YolkSpace.md)
+                .padding(.vertical, 12)
+            }
+        }
+    }
+
+    /// Opens the drawn menu. See `friendMenu`.
     private var swapButton: some View {
         Button {
             Haptics.shared.tick()
-            showActions = true
+            withAnimation(.snappy(duration: 0.24)) { showActions = true }
         } label: {
             actionLabel(.swap, giftBusy ? "..." : "swap", filled: false)
                 .foregroundStyle(YolkColor.ink)
