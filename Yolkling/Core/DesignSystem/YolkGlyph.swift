@@ -33,6 +33,16 @@ struct YolkGlyph: View {
         case wave
         /// A small yolk, for anything that means "your creature".
         case yolk
+        /// A dashed path ending in a dot: went somewhere, came back.
+        case wander
+        /// Two yolks side by side.
+        case friends
+        /// Two arrows, one up one down.
+        case sort
+        /// A tick, for the chosen option in a list.
+        case check
+        /// A pennant, for reporting.
+        case flag
     }
 
     var body: some View {
@@ -134,6 +144,61 @@ struct YolkGlyph: View {
                     .rotated(by: 0.16)
                     .translatedBy(x: -0.54 * s, y: -0.6 * s))
                 ctx.stroke(tilted, with: ink, style: style)
+
+            case .wander:
+                // A dashed path with a dot at the end. Dashed rather than solid because
+                // the point is that you did not see the journey, only that it happened.
+                var path = Path()
+                path.move(to: p(0.12, 0.74))
+                path.addCurve(to: p(0.70, 0.30),
+                              control1: p(0.30, 0.86), control2: p(0.44, 0.20))
+                ctx.stroke(path, with: ink,
+                           style: StrokeStyle(lineWidth: w, lineCap: .round,
+                                              dash: [0.055 * s, 0.075 * s]))
+                ctx.fill(Path(ellipseIn: CGRect(x: 0.68 * s, y: 0.20 * s,
+                                                width: 0.19 * s, height: 0.19 * s)),
+                         with: ink)
+
+            case .friends:
+                // Two yolks, the far one smaller and set back.
+                ctx.stroke(Path(ellipseIn: CGRect(x: 0.46 * s, y: 0.20 * s,
+                                                  width: 0.38 * s, height: 0.38 * s)),
+                           with: ink, style: style)
+                // Filled with the shell so the near one occludes the far one cleanly
+                // rather than the two outlines crossing into a figure eight.
+                let near = Path(ellipseIn: CGRect(x: 0.14 * s, y: 0.30 * s,
+                                                  width: 0.46 * s, height: 0.46 * s))
+                ctx.fill(near, with: .color(YolkColor.shell))
+                ctx.stroke(near, with: ink, style: style)
+
+            case .sort:
+                var up = Path()
+                up.move(to: p(0.32, 0.82)); up.addLine(to: p(0.32, 0.20))
+                up.move(to: p(0.19, 0.34)); up.addLine(to: p(0.32, 0.18))
+                up.addLine(to: p(0.45, 0.34))
+                ctx.stroke(up, with: ink, style: style)
+                var down = Path()
+                down.move(to: p(0.68, 0.18)); down.addLine(to: p(0.68, 0.80))
+                down.move(to: p(0.55, 0.66)); down.addLine(to: p(0.68, 0.82))
+                down.addLine(to: p(0.81, 0.66))
+                ctx.stroke(down, with: ink, style: style)
+
+            case .check:
+                var tick = Path()
+                tick.move(to: p(0.20, 0.52)); tick.addLine(to: p(0.42, 0.73))
+                tick.addLine(to: p(0.80, 0.28))
+                ctx.stroke(tick, with: ink, style: style)
+
+            case .flag:
+                var pole = Path()
+                pole.move(to: p(0.26, 0.14)); pole.addLine(to: p(0.26, 0.88))
+                ctx.stroke(pole, with: ink, style: style)
+                var pennant = Path()
+                pennant.move(to: p(0.26, 0.18))
+                pennant.addLine(to: p(0.78, 0.32))
+                pennant.addLine(to: p(0.26, 0.48))
+                pennant.closeSubpath()
+                ctx.stroke(pennant, with: ink, style: style)
 
             case .yolk:
                 ctx.stroke(Path(ellipseIn: CGRect(x: 0.18 * s, y: 0.16 * s,

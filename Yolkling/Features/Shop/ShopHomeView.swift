@@ -39,6 +39,8 @@ struct ShopHomeView: View {
     @State private var searchText: String = ""
     @State private var showOwned: Bool = false
     @State private var sortOrder: SortOrder = .newest
+    /// Our own menu rather than a native one, so the rows can be drawn. See `sortMenu`.
+    @State private var showSort = false
     private let baseStyle: CreatureStyle
     private let basePattern: BodyPattern
 
@@ -133,17 +135,11 @@ struct ShopHomeView: View {
                 .padding(.horizontal, 10).padding(.vertical, 7)
                 .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 10))
 
-                Menu {
-                    ForEach(SortOrder.allCases) { order in
-                        Button {
-                            sortOrder = order
-                        } label: {
-                            Label(order.rawValue, systemImage: sortOrder == order ? "checkmark" : "")
-                        }
-                    }
+                Button {
+                    Haptics.shared.tick()
+                    withAnimation(.snappy(duration: 0.24)) { showSort = true }
                 } label: {
-                    Image(systemName: "arrow.up.arrow.down")
-                        .font(.subheadline.weight(.medium))
+                    YolkGlyph(kind: .sort, size: 17)
                         .foregroundStyle(YolkColor.ink)
                         .frame(width: 36, height: 32)
                         .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 10))
@@ -704,4 +700,24 @@ struct ShopHomeView: View {
         Haptics.shared.tick()
         withAnimation(.spring) { tryOn = nil }
     }
+
+    /// Sort options, with a tick on the one in force.
+    ///
+    /// The native version put a `checkmark` symbol in the label and an EMPTY string for
+    /// the others, which SwiftUI renders as blank space — so unselected rows sat indented
+    /// against nothing. A drawn glyph slot is either a tick or genuinely absent.
+    private var sortMenu: some View {
+        YolkMenu(width: 230) {
+            ForEach(Array(SortOrder.allCases.enumerated()), id: \.element.id) { i, order in
+                if i > 0 { YolkMenuDivider() }
+                YolkMenuRow(glyph: sortOrder == order ? .check : nil,
+                            title: order.rawValue) {
+                    Haptics.shared.select()
+                    showSort = false
+                    sortOrder = order
+                }
+            }
+        }
+    }
+
 }

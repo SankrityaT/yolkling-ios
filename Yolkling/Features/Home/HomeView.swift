@@ -10,6 +10,8 @@ struct HomeView: View {
 
     /// `YOLK_PROBE=<itemID>` — draws the ownership probe overlay. Debug-only seam.
     @State private var probeID: String?
+    /// Our own menu rather than a native one, so the rows can be drawn. See `visitMenu`.
+    @State private var showVisitMenu = false
     private let injected: HatchedCreature?
     private let player: Player?
     @State private var vibeIndex: Int
@@ -276,6 +278,29 @@ struct HomeView: View {
             if showTutorial { HomeTutorial(name: heading, onDone: finishTutorial) }
         }
         .overlay(alignment: .top) { probeOverlay }
+        .yolkMenu(isPresented: $showVisitMenu, alignment: .bottom, anchor: .top) {
+            visitMenu.padding(.bottom, YolkSpace.lg)
+        }
+    }
+
+    /// One card, two destinations. Wandering is the once-a-day ritual and it goes first;
+    /// friends are always there.
+    private var visitMenu: some View {
+        YolkMenu {
+            YolkMenuRow(glyph: .wander, title: "let it wander",
+                        detail: "somewhere new, once a day") {
+                Haptics.shared.select()
+                showVisitMenu = false
+                showDrift = true
+            }
+            YolkMenuDivider()
+            YolkMenuRow(glyph: .friends, title: "visit a friend",
+                        detail: "see their room") {
+                Haptics.shared.select()
+                showVisitMenu = false
+                showFriends = true
+            }
+        }
     }
 
     /// One screenshot-legible line answering the only questions that matter for the
@@ -673,12 +698,13 @@ struct HomeView: View {
                 // One card, two destinations, rather than adding a fourth card to a
                 // screen that already has too many. Wandering is the once-a-day ritual;
                 // friends are always there.
-                Menu {
-                    Button { showDrift = true } label: { Label("let it wander", systemImage: "wind") }
-                    Button { showFriends = true } label: { Label("visit a friend", systemImage: "person.2.fill") }
+                Button {
+                    Haptics.shared.tick()
+                    withAnimation(.snappy(duration: 0.24)) { showVisitMenu = true }
                 } label: {
                     careCardLabel("visit", reward: 5, icon: "person.2.fill", done: false)
                 }
+                .buttonStyle(.plain)
             }
             .padding(.horizontal, YolkSpace.lg)
 

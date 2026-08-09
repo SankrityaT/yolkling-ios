@@ -28,6 +28,7 @@ struct VisitView: View {
     @State private var showCollection = false
     @State private var showActions = false
     @State private var showBlock = false
+    @State private var showGift = false
     /// Strangers require a successful drift before any action is allowed.
     @State private var landed = false
 
@@ -67,6 +68,9 @@ struct VisitView: View {
         // every device, and it still grows out of the button's edge.
         .yolkMenu(isPresented: $showActions, alignment: .bottom, anchor: .top) {
             friendMenu.padding(.bottom, YolkSpace.lg)
+        }
+        .yolkMenu(isPresented: $showGift, alignment: .bottom, anchor: .top) {
+            strangerGiftMenu.padding(.bottom, YolkSpace.lg)
         }
         .yolkMenu(isPresented: $showBlock, alignment: .topTrailing) {
             YolkMenu(width: 230) {
@@ -258,15 +262,29 @@ struct VisitView: View {
     }
 
     private var giftMenu: some View {
-        Menu {
-            ForEach(subject.giftAmounts, id: \.self) { amount in
-                Button("\(amount) \(Currency.name)") { sendGift(amount) }
-            }
+        Button {
+            Haptics.shared.tick()
+            withAnimation(.snappy(duration: 0.24)) { showGift = true }
         } label: {
             actionLabel(.gift, giftBusy ? "..." : "gift", filled: false)
                 .foregroundStyle(YolkColor.ink)
         }
+        .buttonStyle(.plain)
         .disabled(giftBusy)
+    }
+
+    /// A stranger gets one fixed amount, once a day, so this is one row rather than three.
+    private var strangerGiftMenu: some View {
+        YolkMenu(width: 250) {
+            ForEach(subject.giftAmounts, id: \.self) { amount in
+                YolkMenuRow(glyph: .gift, title: "gift \(amount) \(Currency.name.lowercased())",
+                            detail: "it comes out of your own") {
+                    Haptics.shared.select()
+                    showGift = false
+                    sendGift(amount)
+                }
+            }
+        }
     }
 
     /// Drawn glyphs, not emoji.

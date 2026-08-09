@@ -16,6 +16,9 @@ struct PostcardCompose: View {
     @State private var category: PostcardVocabulary.Category = .warmth
     @State private var sending = false
     @State private var dialog: YolkDialog?
+    /// Which note's menu is open. Per-row state, because the menu belongs to a card in a
+    /// list and a single bool could not say which one.
+    @State private var menuFor: Postcard?
 
     var body: some View {
         VStack(alignment: .leading, spacing: YolkSpace.md) {
@@ -109,6 +112,9 @@ struct PostcardInbox: View {
     @State var store: SocialStore
     @Environment(\.dismiss) private var dismiss
     @State private var dialog: YolkDialog?
+    /// Which note's menu is open. Per-row state, because the menu belongs to a card in a
+    /// list and a single bool could not say which one.
+    @State private var menuFor: Postcard?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -136,8 +142,34 @@ struct PostcardInbox: View {
             }
         }
         .background(YolkColor.shell)
+        .yolkMenu(isPresented: Binding(get: { menuFor != nil },
+                                       set: { if !$0 { menuFor = nil } }),
+                  alignment: .center) {
+            if let card = menuFor { moderationMenu(card) }
+        }
         .yolkDialog($dialog)
         .task { await store.markInboxRead() }
+    }
+
+    /// Guideline 1.2 requires a way to report content and block the sender. Notes are
+    /// composed from a fixed vocabulary so there should be nothing to report, but "should
+    /// be" is not a compliance argument, and reports are what prove the vocabulary holds.
+    private func moderationMenu(_ card: Postcard) -> some View {
+        YolkMenu(width: 250) {
+            YolkMenuRow(glyph: .flag, title: "report this note",
+                        detail: "we'll look at it", destructive: true) {
+                Haptics.shared.warn()
+                menuFor = nil
+                report(card)
+            }
+            YolkMenuDivider()
+            YolkMenuRow(glyph: nil, title: "block \(card.senderName)",
+                        detail: "they can't reach you again", destructive: true) {
+                Haptics.shared.warn()
+                menuFor = nil
+                block(card)
+            }
+        }
     }
 
     private func row(_ card: Postcard) -> some View {
@@ -150,15 +182,16 @@ struct PostcardInbox: View {
                 // the sender. Notes are composed from a fixed vocabulary so there should
                 // be nothing to report — but "should be" isn't a compliance argument, and
                 // reports are what prove the vocabulary is holding.
-                Menu {
-                    Button("report this note", role: .destructive) { report(card) }
-                    Button("block \(card.senderName)", role: .destructive) { block(card) }
+                Button {
+                    Haptics.shared.tick()
+                    withAnimation(.snappy(duration: 0.22)) { menuFor = card }
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(YolkColor.muted)
                         .padding(.leading, 6)
                 }
+                .buttonStyle(.plain)
             }
             Text(card.message).font(YolkType.body).foregroundStyle(YolkColor.inkSoft)
         }
