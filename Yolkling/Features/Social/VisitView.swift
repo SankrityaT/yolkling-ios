@@ -13,6 +13,9 @@ struct VisitView: View {
     /// Your own outfit, carried through so a swap can be previewed on your creature.
     /// Stranger visits never reach the trade sheet, so it's optional there.
     var myOutfit: [Cosmetic] = []
+    /// Species YOU have found, so their collection can mark what is new to you. That
+    /// difference is the whole reason to look at somebody else's cards.
+    var myDiscovered: Set<String> = []
     let onReward: (Int) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -22,6 +25,7 @@ struct VisitView: View {
     @State private var dialog: YolkDialog?
     @State private var giftBusy = false
     @State private var swapping = false
+    @State private var showCollection = false
     /// Strangers require a successful drift before any action is allowed.
     @State private var landed = false
 
@@ -45,6 +49,12 @@ struct VisitView: View {
             if case .friend(let f) = subject {
                 TradeSheet(store: store, friend: f, vibe: vibe,
                            wallet: wallet, myOutfit: myOutfit)
+                    .presentationDetents([.large])
+            }
+        }
+        .sheet(isPresented: $showCollection) {
+            if case .friend(let f) = subject {
+                FriendCollectionView(friend: f, mine: myDiscovered)
                     .presentationDetents([.large])
             }
         }
@@ -152,6 +162,13 @@ struct VisitView: View {
     private var swapButton: some View {
         Menu {
             Button { swapping = true } label: { Label("offer a swap", systemImage: "arrow.left.arrow.right") }
+            // Sits above the gift amounts on purpose: seeing what they have is what makes
+            // a swap worth proposing, so it should be reachable before you commit to one.
+            if case .friend = subject {
+                Button { showCollection = true } label: {
+                    Label("see what they've found", systemImage: "square.grid.2x2")
+                }
+            }
             ForEach(subject.giftAmounts, id: \.self) { amount in
                 Button("gift \(amount) \(Currency.name)") { sendGift(amount) }
             }

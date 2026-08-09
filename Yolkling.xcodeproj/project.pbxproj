@@ -158,6 +158,7 @@
 		F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F554785860AE53390D69233E /* SupabaseClient.swift */; };
 		F2C5878F99269B2EDA41761C /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FC884495811BB1821AF2CB /* CollectionView.swift */; };
 		F31A3E2F41BFF29944253D77 /* PostcardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593CF31848BF060E5D52D091 /* PostcardCard.swift */; };
+		F6E72741E88E322E12CFF18B /* FriendCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */; };
 		F881D46D850C51D7C10D8613 /* DMMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */; };
 		F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */; };
 		FBD468390A672D74FF782DCA /* CardScratchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9DF2A1897F2D6B597F6A9B /* CardScratchView.swift */; };
@@ -306,6 +307,7 @@
 		EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		EFC6AD7229641595F1324223 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F554785860AE53390D69233E /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
+		F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCollectionView.swift; sourceTree = "<group>"; };
 		F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPattern.swift; sourceTree = "<group>"; };
 		FD20DDA9932DC37F8B2B837F /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusView.swift; sourceTree = "<group>"; };
@@ -517,6 +519,7 @@
 			isa = PBXGroup;
 			children = (
 				6140FCDBA2426893DDB84717 /* DriftSheet.swift */,
+				F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */,
 				22DB14FC98098997269CFE94 /* FriendRoomCard.swift */,
 				7E9E562134085B1FEF2F1E4F /* FriendsView.swift */,
 				5C049B150140A0C2342A398A /* GrowFriendsView.swift */,
@@ -978,6 +981,7 @@
 				4ADF5DECBAE24ABD3C448D5D /* FocusView.swift in Sources */,
 				51E42375AA5DE76C791EA2F5 /* FoundingFlair.swift in Sources */,
 				84E321BD0A5CB442877C103B /* FoundingRevealView.swift in Sources */,
+				F6E72741E88E322E12CFF18B /* FriendCollectionView.swift in Sources */,
 				E7FEADC4EC542107262901AD /* FriendRoomCard.swift in Sources */,
 				B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */,
 				1917B3C4E339BE94E5D6898F /* GrowFriendsView.swift in Sources */,

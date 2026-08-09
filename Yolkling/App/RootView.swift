@@ -80,7 +80,9 @@ struct RootView: View {
                         || CommandLine.arguments.contains("YOLK_VISIT") {
                 VisitView(subject: .friend(SocialPreview.sunny), store: SocialPreview.store,
                           vibe: .matcha, wallet: Wallet(),
-                          myOutfit: SocialPreview.myOutfit, onReward: { _ in })
+                          myOutfit: SocialPreview.myOutfit,
+                          myDiscovered: Set(SpeciesSets.headStart),
+                          onReward: { _ in })
             } else if CommandLine.arguments.contains("YOLK_TRADE") {
                 TradeSheet(store: SocialPreview.store, friend: SocialPreview.sunny, vibe: .yolk,
                            wallet: Wallet(), myOutfit: SocialPreview.myOutfit)
@@ -219,7 +221,11 @@ private enum SocialPreview {
                                       patternRaw: "none", activeFoundingID: nil, moodRaw: "happy",
                                       themeID: "room-beach",
                                       decorIDs: ["decor-bookshelf", "decor-lamp", "decor-cactus", "decor-balloons"],
-                                      outfitIDs: ["crown"]))
+                                      outfitIDs: ["crown"]),
+               found: ["celestial-stardrop", "garden-sprig", "ocean-guppy", "cozy-mochi",
+                       "celestial-ringling", "garden-daisette", "ocean-pearlpup",
+                       "cozy-marshmallow", "celestial-galaxia"],
+               trust_band: "companion")
     }
     /// A stranger's room, for the drift side of VisitView.
     static var drifter: DriftTarget {

@@ -105,8 +105,34 @@ struct Friend: Codable, Sendable, Identifiable {
     let name: String?
     let snapshot: RoomSnapshot?
     var updated_at: String? = nil
+
+    /// Species ids this friend has found. Defaulted, so a friend from an older server
+    /// response (or a preview) decodes as "collection unknown" rather than failing.
+    var found: [String]? = nil
+
+    /// Their trust BAND, never their trust value.
+    ///
+    /// Trust is the most personal number in the app — a reading of how someone has been
+    /// treating themselves — and publishing it to their friends would turn a private thing
+    /// into a scoreboard. The band is already public in another form (it is the line under
+    /// their creature in their room), so it can pick the right laminate for their card
+    /// without anyone learning a figure about them.
+    var trust_band: String? = nil
+
     var id: String { user_id }
     var displayName: String { (name?.isEmpty == false ? name : nil) ?? "a friend" }
+
+    /// The middle of their band, purely to pick a material. Deliberately NOT a real trust
+    /// value and never shown as one.
+    var bandTrust: Double {
+        switch trust_band {
+        case "warming":   0.32
+        case "friend":    0.57
+        case "companion": 0.80
+        case "devoted":   0.95
+        default:          0.10
+        }
+    }
     var updatedDate: Date? {
         guard let s = updated_at else { return nil }
         return ISO8601DateFormatter().date(from: s)

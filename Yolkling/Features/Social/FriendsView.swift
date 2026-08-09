@@ -76,7 +76,9 @@ struct FriendsView: View {
         .yolkDialog($dialog)
         .sheet(item: $visiting) { f in
             VisitView(subject: .friend(f), store: store, vibe: vibe, wallet: wallet,
-                      myOutfit: mySnapshot.outfit, onReward: onReward)
+                      myOutfit: mySnapshot.outfit,
+                      myDiscovered: Set(player?.discoveredSpeciesIDs ?? []),
+                      onReward: onReward)
                 .presentationDetents([.large])
         }
         .sheet(isPresented: $showInbox) {
