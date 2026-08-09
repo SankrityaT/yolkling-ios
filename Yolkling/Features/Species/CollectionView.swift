@@ -23,6 +23,10 @@ struct CollectionView: View {
 
     /// The species whose card is open full screen.
     @State private var opened: Species?
+    /// Who is currently round at yours, and how to change it. Defaulted so the seams and
+    /// a friend's collection (where you have no room to invite anyone into) still build.
+    var guestID: String? = nil
+    var onSetGuest: ((String?) -> Void)? = nil
 
     private var allSetIDs: [String] { Array(Set(SpeciesSets.all.flatMap { $0.speciesIDs })) }
     private var totalCount: Int { allSetIDs.count }
@@ -54,7 +58,14 @@ struct CollectionView: View {
                 face: .species(sp,
                                number: SpeciesSets.dexNumber(of: sp.id),
                                outOf: SpeciesSets.dexTotal),
-                inviteCode: inviteCode
+                inviteCode: inviteCode,
+                species: sp,
+                isVisiting: guestID == sp.id,
+                // One guest at a time. Asking someone new over sends the last one home,
+                // which needs no extra UI and keeps the room from becoming a lineup.
+                onToggleVisit: onSetGuest.map { set in
+                    { set(guestID == sp.id ? nil : sp.id) }
+                }
             )
         }
     }

@@ -10,6 +10,14 @@ struct CardDetailView: View {
     /// Printed into the shared image. Empty is handled: the card renders without a code
     /// rather than with a dangling `yolkling.com/add/`.
     var inviteCode: String = ""
+    /// The species this card is of, when it is one. Enables "ask them over" — nil on a
+    /// bond card, which is already home.
+    var species: Species? = nil
+    /// Whether this species is currently round at yours.
+    var isVisiting: Bool = false
+    /// Invite or send home. nil hides the button entirely, for the surfaces that have no
+    /// room to put anyone in (a friend's collection).
+    var onToggleVisit: (() -> Void)? = nil
 
     @Environment(\.dismiss) private var dismiss
     @State private var shareURL: URL?
@@ -26,9 +34,12 @@ struct CardDetailView: View {
             Text("tilt your phone to catch the light")
                 .font(.caption2).foregroundStyle(YolkColor.muted)
 
-            shareButton
-                .padding(.horizontal, YolkSpace.lg)
-                .padding(.bottom, YolkSpace.lg)
+            VStack(spacing: YolkSpace.sm) {
+                visitButton
+                shareButton
+            }
+            .padding(.horizontal, YolkSpace.lg)
+            .padding(.bottom, YolkSpace.lg)
         }
         .padding(.top, YolkSpace.md)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -54,6 +65,31 @@ struct CardDetailView: View {
             .buttonStyle(.plain)
         }
         .padding(.horizontal, YolkSpace.lg)
+    }
+
+    /// Ask them round, or send them home.
+    ///
+    /// This is the whole point of the collection existing. A Dex you look at once is a
+    /// catalogue; a species that turns up in your room is a reason to have wanted it. And
+    /// it is deliberately the ONLY thing you can do with a found species — no equipping,
+    /// no levelling, nothing that makes owning more of them strictly better.
+    @ViewBuilder private var visitButton: some View {
+        if let onToggleVisit {
+            Button {
+                Haptics.shared.pop()
+                onToggleVisit()
+            } label: {
+                HStack(spacing: 7) {
+                    YolkGlyph(kind: isVisiting ? .yolk : .friends, size: 16)
+                    Text(isVisiting ? "send them home" : "ask them over")
+                        .font(YolkType.body.weight(.semibold))
+                }
+                .foregroundStyle(isVisiting ? YolkColor.ink : YolkColor.shell)
+                .frame(maxWidth: .infinity).padding(.vertical, 15)
+                .background(isVisiting ? YolkColor.shell2 : YolkColor.ink, in: Capsule())
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     /// Appears only once the PNG exists.

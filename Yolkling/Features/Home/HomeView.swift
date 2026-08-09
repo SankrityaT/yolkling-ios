@@ -58,6 +58,8 @@ struct HomeView: View {
     @State private var demoTrust: Double? = nil   // screenshot seam override
     @State private var demoHour: Int? = nil       // screenshot seam override for time-of-day
     @State private var roomThemeID: String
+    /// Who is round at yours, if anyone. A display choice, not a second creature.
+    @State private var guestSpeciesID: String?
     @State private var showWidgetNudge = false
     @State private var showWidgetHowTo = false
 
@@ -101,6 +103,7 @@ struct HomeView: View {
         _weeklyClaimed = State(initialValue: player?.weeklyClaimed ?? false)
         _discovered = State(initialValue: Set(player?.discoveredSpeciesIDs ?? SpeciesSets.headStart))
         _roomThemeID = State(initialValue: player?.roomThemeID ?? "room-cozy")
+        _guestSpeciesID = State(initialValue: player?.guestSpeciesID)
         _placedByZone = State(initialValue: player?.placedDecorByZone)
     }
 
@@ -163,7 +166,13 @@ struct HomeView: View {
         .sheet(isPresented: $showCollection) {
             CollectionView(discovered: discovered, events: events, vibe: vibe,
                            onGranted: { ids in wallet.grant(ids); persist() },
-                           inviteCode: player?.referralCode ?? "")
+                           inviteCode: player?.referralCode ?? "",
+                           guestID: guestSpeciesID,
+                           onSetGuest: { id in
+                               withAnimation(.snappy) { guestSpeciesID = id }
+                               player?.guestSpeciesID = id
+                               persist()
+                           })
                 .presentationDetents([.large])
         }
         .fullScreenCover(item: $discoveryReveal) { sp in
@@ -362,6 +371,7 @@ struct HomeView: View {
         player.weekCareDays = weekCareDays
         player.weeklyClaimed = weeklyClaimed
         player.roomThemeID = roomThemeID
+        player.guestSpeciesID = guestSpeciesID
         player.placedDecorByZone = placedByZone
         try? context.save()
         pushWalletToServer()
@@ -586,6 +596,13 @@ struct HomeView: View {
     // MARK: Creature
 
     /// The room scene shown on home: the player's applied theme + the decor they own.
+    /// Whoever is round at yours. Resolved from the id rather than stored as a `Species`,
+    /// so a species that leaves the catalog cannot strand a dangling guest.
+    private var guest: Species? {
+        guard let guestSpeciesID else { return nil }
+        return SpeciesCatalog.all.first { $0.id == guestSpeciesID }
+    }
+
     private var homeTheme: RoomTheme { RoomThemes.all.first { $0.id == roomThemeID } ?? RoomThemes.cozy }
 
     /// Pure read: the placed pieces in display order. No mutation here.
@@ -639,7 +656,8 @@ struct HomeView: View {
             // pet it; tap anywhere else in the room to open it full-screen.
             ZStack {
                 RoomView(vibe: vibe, expression: shownExpression, theme: homeTheme,
-                         outfit: wardrobe.outfit, decor: placedDecor, showCreature: false)
+                         outfit: wardrobe.outfit, decor: placedDecor, showCreature: false,
+                         guest: guest)
                     .onTapGesture { Haptics.shared.select(); showRoom = true }
 
                 GeometryReader { geo in
@@ -1259,6 +1277,7 @@ struct HomeView: View {
             persist()
         }
         if let id = arg("YOLK_PROBE") { probeID = id }
+        if let id = arg("YOLK_GUEST") { guestSpeciesID = id }
         // Reconcile immediately, so a test doesn't have to background and foreground.
         if seam("YOLK_RECONCILE") { reconcileWallet() }
     }

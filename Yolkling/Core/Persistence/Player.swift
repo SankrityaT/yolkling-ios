@@ -72,6 +72,14 @@ final class Player {
     /// The room theme the player has applied (owned themes live in the wallet).
     var roomThemeID: String = "room-cozy"
 
+    /// A species you have found who is currently round at yours.
+    ///
+    /// Deliberately NOT a second creature. It has no stats, gains nothing from your care,
+    /// and cannot be made active — this is `roomThemeID`'s neighbour, a display choice,
+    /// not `activeFoundingID`'s. Care means care for the one creature you made; the moment
+    /// a second one benefits from it, owning more is strictly better.
+    var guestSpeciesID: String?
+
     // economy
     var coins: Int
     var ownedItemIDs: [String]

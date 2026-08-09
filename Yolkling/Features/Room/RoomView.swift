@@ -20,9 +20,26 @@ struct RoomView: View {
     /// their yolk waves back). Passed straight through to the YolklingView.
     var waveToken: Int = 0
 
+    /// A species you have found, come round for a bit.
+    ///
+    /// **A guest, not a second pet.** It has no stats, gains nothing from your care, and
+    /// cannot be levelled, equipped or made "active" — care means care for YOUR creature,
+    /// and the moment a second one benefits from it, owning more becomes strictly better
+    /// and the whole app turns into a collection to optimise.
+    ///
+    /// What this fixes is the opposite problem: a Dex of 32 species you look at once and
+    /// never see again. Now they turn up in the room, which is a reason to want them that
+    /// is not a stat.
+    var guest: Species? = nil
+
     /// Where the resident creature sits, as fractions of the room frame (so overlays
     /// can line up a creature exactly with where RoomView would draw one).
     static let creatureSpot = (x: 0.5, y: 0.60, size: 0.42)
+
+    /// Off to one side and further back. Smaller than the resident and set higher in the
+    /// frame, which reads as depth — the guest is across the room, not standing next to
+    /// your creature as an equal.
+    static let guestSpot = (x: 0.20, y: 0.52, size: 0.26)
 
     var body: some View {
         GeometryReader { geo in
@@ -38,6 +55,14 @@ struct RoomView: View {
                     RoomDecorView(kind: d.kind)
                         .frame(width: w * d.sw, height: h * d.sh)
                         .position(x: w * d.px, y: h * d.py)
+                }
+                // Drawn BEFORE the resident, so if the two ever overlap your creature is
+                // in front. Whose room this is should never be in question.
+                if let guest {
+                    YolklingView(vibe: guest.vibe, expression: .content,
+                                 size: h * RoomView.guestSpot.size)
+                        .position(x: w * RoomView.guestSpot.x, y: h * RoomView.guestSpot.y)
+                        .allowsHitTesting(false)   // it is a visitor, not a thing to poke
                 }
                 if showCreature {
                     YolklingView(vibe: vibe, expression: expression, size: h * RoomView.creatureSpot.size, outfit: outfit, waveToken: waveToken)
