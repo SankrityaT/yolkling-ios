@@ -119,6 +119,7 @@
 		C1DED04D454F150D89F0A062 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */; };
 		C2BC5F4B1FA45DC677D46D34 /* YolkMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */; };
 		C480FA56FCB49E46CB06330F /* SeasonalEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEEAB12F5F5DA67AF043023C /* SeasonalEvent.swift */; };
+		C4B9464AFB8CB75445896E50 /* WanderHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67DF3CE64F1960029BBAB1C /* WanderHomeView.swift */; };
 		C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */; };
 		C55C3F43C2A4755813270CBE /* RarityAura.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9B833332453257B1847522 /* RarityAura.swift */; };
 		C5670AB65ECB4D8B04B5808C /* RoomZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7558E421CB8F49D94D63FD7 /* RoomZone.swift */; };
@@ -273,6 +274,7 @@
 		B4438975C80653EBA9197E0C /* YolkCardBack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCardBack.swift; sourceTree = "<group>"; };
 		B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundingRevealView.swift; sourceTree = "<group>"; };
 		B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopHomeView.swift; sourceTree = "<group>"; };
+		B67DF3CE64F1960029BBAB1C /* WanderHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WanderHomeView.swift; sourceTree = "<group>"; };
 		B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
 		B946F4E30EF2C84EE207202E /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		B95E3508A252E211E684703D /* YolklingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingView.swift; sourceTree = "<group>"; };
@@ -528,6 +530,7 @@
 				8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */,
 				B10352955EC8A724ED2AEAC4 /* VisitView.swift */,
 				46E50093F8B5CD1A4FB50FE1 /* WanderArrival.swift */,
+				B67DF3CE64F1960029BBAB1C /* WanderHomeView.swift */,
 				6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */,
 			);
 			path = Social;
@@ -1034,6 +1037,7 @@
 				1174E2755C3353C39FD9A5F5 /* VisitView.swift in Sources */,
 				CB5428C1CCDDEDEEA036D244 /* Wallet.swift in Sources */,
 				AA2F9619CCFEA5395EB5D25F /* WanderArrival.swift in Sources */,
+				C4B9464AFB8CB75445896E50 /* WanderHomeView.swift in Sources */,
 				7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */,
 				115C413B6DCAC129F76CCDB3 /* WhileYouWereAwayStrip.swift in Sources */,
 				2457FC8BE922B4C6358E0241 /* WidgetHowToView.swift in Sources */,

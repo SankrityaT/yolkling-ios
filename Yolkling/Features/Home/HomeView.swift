@@ -165,7 +165,18 @@ struct HomeView: View {
                 .presentationDetents([.large])
         }
         .fullScreenCover(item: $discoveryReveal) { sp in
-            PackRevealView(species: sp)
+            // The creature walks it home rather than the card just materialising. Same
+            // discovery, same scratch, but now something went and got it — which is the
+            // one moment in this app where the creature acts without being asked, and it
+            // used to be completely invisible.
+            WanderHomeView(
+                vibe: vibe,
+                name: heading,
+                face: .species(sp,
+                               discovered: .now,
+                               number: SpeciesSets.dexNumber(of: sp.id),
+                               outOf: SpeciesSets.dexTotal)
+            )
         }
         .sheet(isPresented: $showRoom) {
             DecorateView(vibe: vibe, expression: shownExpression, outfit: wardrobe.outfit,
