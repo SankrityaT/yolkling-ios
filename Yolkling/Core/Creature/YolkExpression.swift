@@ -204,6 +204,92 @@ extension YolkExpression {
         browAngle: -0.05, mouthCurve: 0.06, blush: 0.2,
         bounce: 0.06, energy: 0.35
     )
+
+    // MARK: Vocabulary
+    //
+    // Six more poses. The blend-shape system was always capable of far more than the
+    // fourteen it shipped with — every channel already lerps, `browAngle` already renders,
+    // and adding a pose is adding numbers. The bottleneck was never the machinery, it was
+    // that nobody had written the poses down.
+    //
+    // Each of these changes at least THREE channels away from its nearest neighbour.
+    // Anything less and it reads as the same face slightly adjusted, which is worse than
+    // not having it: a mood the player cannot name is noise.
+
+    /// Working something out. Gaze up and off to one side, one brow raised, mouth small.
+    ///
+    /// The gaze is the whole pose. Looking UP AND AWAY is what humans read as thought
+    /// rather than attention — a creature thinking at you is just staring.
+    static let thinking = YolkExpression(
+        eyeOpenness: 0.66, pupilX: -0.55, pupilY: 0.45, pupilScale: 0.9,
+        browAngle: 0.28, mouthCurve: 0.12, mouthWidth: 0.78,
+        headTilt: -7, bounce: 0.06, energy: 0.4
+    )
+
+    /// A big waking stretch. Tall, eyes squeezed shut, mouth open.
+    ///
+    /// `squashStretch` at its ceiling — the only pose that uses the top of that range, so
+    /// it is unmistakable in silhouette alone, which is what a stretch has to be.
+    static let stretching = YolkExpression(
+        eyeOpenness: 0.12, eyeShape: .happyArc,
+        mouthCurve: 0.5, mouthOpen: 0.75, mouthWidth: 0.9, blush: 0.4,
+        squashStretch: 0.95, bounce: 0, energy: 0.55
+    )
+
+    /// Caught being pleased. Looking down and away, blushing hard, tilted in.
+    ///
+    /// Blush is at 1.0, higher than `affectionate`, because shyness is the one state where
+    /// the cheeks ARE the expression: the eyes are hiding and the mouth is doing very
+    /// little, so nothing else is carrying it.
+    static let shy = YolkExpression(
+        eyeOpenness: 0.34, pupilX: 0.4, pupilY: -0.45, catchlight: 0.8,
+        browAngle: -0.2, mouthCurve: 0.42, mouthWidth: 0.75, blush: 1.0,
+        squashStretch: -0.1, bodyLean: -0.12, headTilt: 12,
+        bounce: 0.08, energy: 0.35
+    )
+
+    /// Up to something. Narrowed eyes, one side of the mouth well up.
+    ///
+    /// `mouthAsymmetry` at 0.8, roughly double `playful`. A symmetric smile cannot be
+    /// mischievous — it reads as delight. The lopsidedness IS the mischief.
+    static let mischief = YolkExpression(
+        eyeOpenness: 0.32, pupilX: 0.25, pupilScale: 0.85,
+        browAngle: 0.45, mouthCurve: 0.55, mouthOpen: 0.12,
+        mouthWidth: 1.08, mouthAsymmetry: 0.8, blush: 0.45,
+        bodyLean: 0.1, headTilt: -5, bounce: 0.18, energy: 0.7
+    )
+
+    /// The breath out after something was fine after all. Eyes shut, shoulders down.
+    ///
+    /// Deliberately NEGATIVE squash: relief is a deflation, and every other happy pose in
+    /// the set is neutral or tall. That contrast is what stops it reading as `calm`.
+    static let relieved = YolkExpression(
+        eyeOpenness: 0.16, eyeShape: .happyArc,
+        browAngle: -0.12, mouthCurve: 0.6, mouthOpen: 0.3, blush: 0.45,
+        squashStretch: -0.4, bounce: 0.05, energy: 0.3
+    )
+
+    /// Braced and ready. Brows down, small firm mouth, squared up.
+    ///
+    /// The only pose with a positive `browAngle` AND a level mouth. Determination and
+    /// annoyance share a brow, so the mouth has to do the disambiguating: a flat-but-not-
+    /// frowning line reads as resolve, and any downward curve at all reads as cross.
+    static let determined = YolkExpression(
+        eyeOpenness: 0.5, pupilScale: 0.88, catchlight: 1,
+        browAngle: 0.6, mouthCurve: 0.05, mouthWidth: 0.85, blush: 0.3,
+        squashStretch: 0.3, bodyLean: 0.14, bounce: 0.1, energy: 0.65
+    )
+
+    /// Every pose, for the preview seam. Order is roughly calm to lively so the grid reads
+    /// as a range rather than a bag.
+    static let all: [(String, YolkExpression)] = [
+        ("content", .content), ("calm", .calm), ("sleepy", .sleepy), ("tired", .tired),
+        ("low", .low), ("unwell", .unwell), ("waiting", .waiting), ("relieved", .relieved),
+        ("shy", .shy), ("thinking", .thinking), ("curious", .curious), ("happy", .happy),
+        ("proud", .proud), ("determined", .determined), ("playful", .playful),
+        ("mischief", .mischief), ("stretching", .stretching), ("surprised", .surprised),
+        ("excited", .excited), ("affectionate", .affectionate), ("smitten", .smitten),
+    ]
 }
 
 // MARK: - Interpolation

@@ -96,6 +96,8 @@ struct RootView: View {
                           myOutfit: SocialPreview.myOutfit, onReward: { _ in })
             } else if CommandLine.arguments.contains("YOLK_HOLO") {
                 HoloPreview()
+            } else if CommandLine.arguments.contains("YOLK_MOODS") {
+                MoodGridPreview()
             } else if ProcessInfo.processInfo.environment["YOLK_INBOX"] != nil {
                 InboxPreview()
             } else if ProcessInfo.processInfo.environment["YOLK_COLORS"] != nil {
@@ -352,6 +354,33 @@ private struct HoloPreview: View {
             .onChange(of: bond) { _, _ in scratchID += 1 }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(YolkColor.shell.ignoresSafeArea())
+    }
+}
+
+/// Dev seam: every expression at once, so a new pose can be checked against the ones it
+/// has to be distinguishable FROM rather than judged on its own.
+///
+/// Rendered `frozenAt` so the grid is one deterministic frame — twenty-one live clocks
+/// would be pointless here, and a still is what makes two similar poses comparable.
+private struct MoodGridPreview: View {
+    private let columns = [GridItem(.adaptive(minimum: 104), spacing: 4)]
+
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: YolkSpace.md) {
+                ForEach(YolkExpression.all, id: \.0) { name, pose in
+                    VStack(spacing: 2) {
+                        YolklingView(vibe: .yolk, expression: pose, size: 76,
+                                     frozenAt: YolklingView.posedT)
+                            .frame(height: 112)
+                        Text(name).font(.caption2.weight(.medium))
+                            .foregroundStyle(YolkColor.inkSoft).lineLimit(1)
+                    }
+                }
+            }
+            .padding(YolkSpace.md)
+        }
         .background(YolkColor.shell.ignoresSafeArea())
     }
 }
