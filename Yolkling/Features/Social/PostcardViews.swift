@@ -16,30 +16,32 @@ struct PostcardCompose: View {
     @State private var category: PostcardVocabulary.Category = .warmth
     @State private var sending = false
     @State private var dialog: YolkDialog?
-    /// Which note's menu is open. Per-row state, because the menu belongs to a card in a
-    /// list and a single bool could not say which one.
-    @State private var menuFor: Postcard?
 
     var body: some View {
         VStack(alignment: .leading, spacing: YolkSpace.md) {
             Text("a kind note to \(subject.displayName)")
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
 
-            Picker("tone", selection: $category) {
-                ForEach(PostcardVocabulary.Category.allCases) { c in
-                    Text(c.title).tag(c)
-                }
-            }
-            .pickerStyle(.segmented)
-            .onChange(of: category) { _, _ in Haptics.shared.tick() }
+            // `YolkSegmented`, not `.pickerStyle(.segmented)`. That is a project rule
+            // (see the type's own doc comment) and this was one of two places still
+            // breaking it. It also fires its own haptic, so the `onChange` went with it.
+            YolkSegmented(selection: $category,
+                          options: PostcardVocabulary.Category.allCases,
+                          label: \.title)
 
+            // GROWS with the sheet. This was pinned to 200pt, so dragging to `.large`
+            // gained half a screen of nothing: the phrase list stayed a 200pt letterbox
+            // with its top and bottom rows clipped mid-pill, and everything under it
+            // floated up leaving a huge dead area. The list is the content — it should
+            // take whatever room there is.
             ScrollView(.vertical, showsIndicators: false) {
                 FlowChips(items: PostcardVocabulary.phrases(in: category).map(\.text)) { picked in
                     phrase = PostcardVocabulary.phrases(in: category).first { $0.text == picked }
                     Haptics.shared.tick()
                 }
+                .padding(.vertical, 2)
             }
-            .frame(maxHeight: 200)
+            .frame(maxHeight: .infinity)
 
             // What's actually going to be sent. Read-only on purpose.
             Text(phrase?.text ?? "pick something to say…")
@@ -65,7 +67,6 @@ struct PostcardCompose: View {
                  ? "one note per stranger, per day. no reward — that's the point."
                  : "kindness earns a few \(Currency.name), capped so it stays genuine.")
                 .font(.caption2).foregroundStyle(YolkColor.muted)
-            Spacer(minLength: 0)
         }
         .padding(YolkSpace.lg)
         .background(YolkColor.shell)

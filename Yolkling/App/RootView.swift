@@ -328,13 +328,13 @@ private struct HoloPreview: View {
                 Slider(value: $trust, in: 0...1)
                     .padding(.horizontal, YolkSpace.lg)
             } else {
-                Picker("", selection: $pick) {
-                    ForEach(rarities.indices, id: \.self) { i in
-                        Text(rarities[i].rawValue).tag(i)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, YolkSpace.lg)
+                // Project rule: `YolkSegmented`, never the system segmented control.
+                // Dev seams are still screens somebody looks at, and this one exists
+                // specifically to judge how things look.
+                YolkSegmented(selection: $pick,
+                              options: Array(rarities.indices),
+                              label: { rarities[$0].rawValue })
+                    .padding(.horizontal, YolkSpace.lg)
             }
 
             HStack(spacing: YolkSpace.sm) {
