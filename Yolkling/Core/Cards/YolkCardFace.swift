@@ -51,9 +51,9 @@ struct YolkCardFace: Sendable {
         var id: String { label }
         var label: String
         var value: String
-        /// A small SF Symbol. Kept optional so a stat can be pure type when the icon
-        /// would be noise.
-        var icon: String?
+        /// A drawn glyph, not an SF Symbol. Kept optional so a stat can be pure type
+        /// when the icon would be noise.
+        var icon: YolkGlyph.Kind?
     }
 
     /// The laminate. Rarity picks it for a found species; trust picks it for the one you
@@ -102,10 +102,10 @@ extension YolkCardFace {
         f.finish = .forTrust(trust)
         f.flavour = TrustStage.from(trust: trust).label
         f.stats = [
-            .init(label: "days", value: "\(careDays)", icon: "sun.max.fill"),
-            .init(label: "trust", value: "\(Int((trust * 100).rounded()))%", icon: "heart.fill"),
-            .init(label: "focus", value: focusText(focusMinutes), icon: "moon.stars.fill"),
-            .init(label: "met", value: "\(speciesFound)", icon: "square.grid.2x2.fill"),
+            .init(label: "days", value: "\(careDays)", icon: .cared),
+            .init(label: "trust", value: "\(Int((trust * 100).rounded()))%", icon: .trust),
+            .init(label: "focus", value: focusText(focusMinutes), icon: .focus),
+            .init(label: "met", value: "\(speciesFound)", icon: .cards),
         ]
         f.dateline = "since " + createdAt.formatted(.dateTime.month(.abbreviated).year())
             .lowercased()

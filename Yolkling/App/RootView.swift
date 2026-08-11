@@ -285,10 +285,10 @@ private struct HoloPreview: View {
         var f = YolkCardFace.species(s, discovered: .now, number: 42, outOf: 912)
         f.rarity = r
         f.stats = [
-            .init(label: "streak", value: "12", icon: "flame.fill"),
-            .init(label: "trust", value: "84%", icon: "heart.fill"),
-            .init(label: "cared", value: "47", icon: "hand.raised.fill"),
-            .init(label: "focus", value: "9h", icon: "moon.stars.fill"),
+            .init(label: "streak", value: "12", icon: .streak),
+            .init(label: "trust", value: "84%", icon: .trust),
+            .init(label: "cared", value: "47", icon: .cared),
+            .init(label: "focus", value: "9h", icon: .focus),
         ]
         f.outfit = ["flower", "scarf"].compactMap { id in
             CosmeticCatalog.all.first { $0.id == id }

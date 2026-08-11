@@ -383,15 +383,15 @@ struct YolkCard: View {
     /// actually yours.
     @ViewBuilder private var cornerMark: some View {
         if face.kind == .bond {
-            chip(icon: "heart.fill", text: "yours")
+            chip(icon: .trust, text: "yours")
         } else {
             chip(icon: rarityIcon, text: face.rarity.rawValue)
         }
     }
 
-    private func chip(icon: String, text: String) -> some View {
+    private func chip(icon: YolkGlyph.Kind, text: String) -> some View {
         HStack(spacing: 3 * u) {
-            Image(systemName: icon).font(.system(size: 8 * u, weight: .black))
+            YolkGlyph(kind: icon, size: 9 * u, weight: 0.13)
             Text(text)
                 .font(.system(size: 9 * u, weight: .black, design: .rounded))
         }
@@ -401,13 +401,13 @@ struct YolkCard: View {
         .overlay(Capsule().strokeBorder(.white.opacity(0.6), lineWidth: 1))
     }
 
-    private var rarityIcon: String {
+    private var rarityIcon: YolkGlyph.Kind {
         switch face.rarity {
-        case .common:    "circle.fill"
-        case .rare:      "diamond.fill"
-        case .epic:      "star.fill"
-        case .legendary: "sparkles"
-        case .founding:  "crown.fill"
+        case .common:    .markDot
+        case .rare:      .markDiamond
+        case .epic:      .markStar
+        case .legendary: .markSparkle
+        case .founding:  .markCrown
         }
     }
 
@@ -503,8 +503,7 @@ struct YolkCard: View {
             ForEach(face.stats) { s in
                 HStack(spacing: 4 * u) {
                     if let icon = s.icon {
-                        Image(systemName: icon)
-                            .font(.system(size: 9 * u, weight: .bold))
+                        YolkGlyph(kind: icon, size: 10 * u, weight: 0.12)
                             .foregroundStyle(YolkColor.ink.opacity(0.4))
                             .frame(width: 11 * u)
                     }

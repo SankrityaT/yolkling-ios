@@ -43,6 +43,40 @@ struct YolkGlyph: View {
         case check
         /// A pennant, for reporting.
         case flag
+
+        // MARK: Card stats
+        //
+        // The card is the surface most likely to end up in a screenshot, and it was the
+        // last place still using SF Symbols — a flame, a heart, a raised palm and a
+        // moon, all in Apple's line weight, sitting under hand-drawn linework. The palm
+        // was the worst of them: `hand.raised.fill` is the universal "stop" gesture, so
+        // the stat that counts the days somebody showed up for their creature was
+        // labelled with a halt sign.
+
+        /// A flame, for the care streak.
+        case streak
+        /// A heart, for trust.
+        case trust
+        /// A cupped hand with something held above it. Cradling, not halting.
+        case cared
+        /// A crescent and a spark, for focus minutes.
+        case focus
+
+        // MARK: Rarity marks
+        //
+        // One shape per rarity, escalating in how much they interrupt the eye: a plain
+        // dot you skim past, a crown you cannot.
+
+        /// A small filled dot. Common.
+        case markDot
+        /// A diamond. Rare.
+        case markDiamond
+        /// A five-pointed star. Epic.
+        case markStar
+        /// A four-point sparkle with two smaller ones. Legendary.
+        case markSparkle
+        /// A crown. Founding.
+        case markCrown
     }
 
     var body: some View {
@@ -208,6 +242,118 @@ struct YolkGlyph: View {
                 feet.addEllipse(in: CGRect(x: 0.30 * s, y: 0.74 * s, width: 0.17 * s, height: 0.11 * s))
                 feet.addEllipse(in: CGRect(x: 0.53 * s, y: 0.74 * s, width: 0.17 * s, height: 0.11 * s))
                 ctx.stroke(feet, with: ink, style: style)
+
+            // MARK: Card stats
+
+            case .streak:
+                // Asymmetric on purpose. A symmetric teardrop is a water drop, which is
+                // exactly what the first version of this rendered as — the shoulder on
+                // the left and the lean on the tip are the whole difference between
+                // "flame" and "raindrop" at 10pt.
+                var flame = Path()
+                flame.move(to: p(0.62, 0.05))
+                flame.addQuadCurve(to: p(0.83, 0.55), control: p(0.76, 0.26))
+                flame.addQuadCurve(to: p(0.50, 0.93), control: p(0.87, 0.83))
+                flame.addQuadCurve(to: p(0.17, 0.55), control: p(0.13, 0.83))
+                flame.addQuadCurve(to: p(0.41, 0.29), control: p(0.21, 0.37))
+                // The concave notch back up into the tip. This is the one segment that
+                // distinguishes a flame from a raindrop, so it is drawn hard rather than
+                // subtly — a gentle version of it disappears entirely at 10pt, which is
+                // what the previous two attempts got wrong.
+                flame.addQuadCurve(to: p(0.62, 0.05), control: p(0.38, 0.13))
+                ctx.stroke(flame, with: ink, style: style)
+
+            case .trust:
+                var heart = Path()
+                heart.move(to: p(0.50, 0.86))
+                heart.addCurve(to: p(0.10, 0.40), control1: p(0.20, 0.66), control2: p(0.10, 0.54))
+                heart.addCurve(to: p(0.50, 0.34), control1: p(0.10, 0.20), control2: p(0.40, 0.18))
+                heart.addCurve(to: p(0.90, 0.40), control1: p(0.60, 0.18), control2: p(0.90, 0.20))
+                heart.addCurve(to: p(0.50, 0.86), control1: p(0.90, 0.54), control2: p(0.80, 0.66))
+                ctx.stroke(heart, with: ink, style: style)
+
+            case .cared:
+                // A sprout, not a pair of hands.
+                //
+                // The hands version put a bowl under two upward ticks with a dot between
+                // them, and at 10pt that is a face: the ticks became eyes and the bowl
+                // became a smile. A sprout has no such collision, it is legible small,
+                // and "days I showed up" reading as growth is the app's own thesis.
+                var stem = Path()
+                stem.move(to: p(0.50, 0.90))
+                stem.addQuadCurve(to: p(0.50, 0.42), control: p(0.46, 0.66))
+                ctx.stroke(stem, with: ink, style: style)
+
+                var leaves = Path()
+                // Right leaf.
+                leaves.move(to: p(0.50, 0.54))
+                leaves.addQuadCurve(to: p(0.86, 0.34), control: p(0.76, 0.60))
+                leaves.addQuadCurve(to: p(0.50, 0.54), control: p(0.72, 0.32))
+                // Left leaf, smaller and higher, so the pair is not a mirrored butterfly.
+                leaves.move(to: p(0.50, 0.44))
+                leaves.addQuadCurve(to: p(0.20, 0.26), control: p(0.28, 0.48))
+                leaves.addQuadCurve(to: p(0.50, 0.44), control: p(0.26, 0.24))
+                ctx.stroke(leaves, with: ink, style: style)
+
+            case .focus:
+                // A crescent, drawn as one arc so it stays a crescent at 9pt.
+                var moon = Path()
+                moon.move(to: p(0.66, 0.14))
+                moon.addCurve(to: p(0.66, 0.86), control1: p(0.24, 0.26), control2: p(0.24, 0.74))
+                ctx.stroke(moon, with: ink, style: style)
+                var spark = Path()
+                spark.move(to: p(0.80, 0.20)); spark.addLine(to: p(0.80, 0.40))
+                spark.move(to: p(0.70, 0.30)); spark.addLine(to: p(0.90, 0.30))
+                ctx.stroke(spark, with: ink, style: style)
+
+            // MARK: Rarity marks
+            //
+            // Filled, not stroked. These sit inside a small capsule beside the rarity
+            // word, where an outline at this size turns to mush.
+
+            case .markDot:
+                ctx.fill(Path(ellipseIn: CGRect(x: 0.28 * s, y: 0.28 * s,
+                                                width: 0.44 * s, height: 0.44 * s)), with: ink)
+
+            case .markDiamond:
+                var d = Path()
+                d.move(to: p(0.50, 0.10)); d.addLine(to: p(0.86, 0.50))
+                d.addLine(to: p(0.50, 0.90)); d.addLine(to: p(0.14, 0.50))
+                d.closeSubpath()
+                ctx.fill(d, with: ink)
+
+            case .markStar:
+                var star = Path()
+                for i in 0..<10 {
+                    let a = -CGFloat.pi / 2 + CGFloat(i) * .pi / 5
+                    let r: CGFloat = i.isMultiple(of: 2) ? 0.44 : 0.18
+                    let pt = CGPoint(x: (0.5 + cos(a) * r) * s, y: (0.5 + sin(a) * r) * s)
+                    if i == 0 { star.move(to: pt) } else { star.addLine(to: pt) }
+                }
+                star.closeSubpath()
+                ctx.fill(star, with: ink)
+
+            case .markSparkle:
+                // Concave sides, which is what separates a sparkle from a diamond.
+                var sp = Path()
+                sp.move(to: p(0.50, 0.04))
+                sp.addQuadCurve(to: p(0.96, 0.50), control: p(0.58, 0.42))
+                sp.addQuadCurve(to: p(0.50, 0.96), control: p(0.58, 0.58))
+                sp.addQuadCurve(to: p(0.04, 0.50), control: p(0.42, 0.58))
+                sp.addQuadCurve(to: p(0.50, 0.04), control: p(0.42, 0.42))
+                ctx.fill(sp, with: ink)
+
+            case .markCrown:
+                var crown = Path()
+                crown.move(to: p(0.12, 0.74))
+                crown.addLine(to: p(0.12, 0.28))
+                crown.addLine(to: p(0.31, 0.48))
+                crown.addLine(to: p(0.50, 0.22))
+                crown.addLine(to: p(0.69, 0.48))
+                crown.addLine(to: p(0.88, 0.28))
+                crown.addLine(to: p(0.88, 0.74))
+                crown.closeSubpath()
+                ctx.fill(crown, with: ink)
             }
         }
         .frame(width: size, height: size)
