@@ -143,6 +143,19 @@ struct YolklingView: View {
             .offset(y: -size * 0.14 * e.bounce * (0.5 + 0.5 * breath) - size * 0.16 * celebrateAmt)
 
             ParticleLayer(particle: e.particle, t: t, size: size)
+                // Same problem as the toppers, same fix. The sparkle particle is filled
+                // with `YolkColor.yolk` and the hearts with `YolkColor.pink`, both fixed —
+                // so an excited yellow creature threw yellow sparkles onto a yellow body,
+                // and a pink one threw pink hearts onto pink. The particles drift partly
+                // over the creature and partly over the background, so as with the
+                // toppers only a dark halo separates them from both.
+                // Two rims: a tight one that acts as an outline, and a wider soft one
+                // that lifts the mark off whatever is behind it. A single subtle halo was
+                // not enough — a yolk-yellow sparkle sitting on a yolk-yellow body has
+                // essentially no luminance difference to work with, so the separation has
+                // to come entirely from the rim.
+                .shadow(color: YolkColor.ink.opacity(0.45), radius: size * 0.006)
+                .shadow(color: YolkColor.ink.opacity(0.22), radius: size * 0.022)
                 .offset(y: -size * 0.42)
 
             if let flair = vibe.flair {
@@ -414,6 +427,23 @@ struct YolklingView: View {
     private func topFeature() -> some View {
         TopFeatureView(style: vibe.style, bodyColor: vibe.body, deep: vibe.deep,
                        accent: vibe.accentColor, size: size)
+            // A tight dark halo so the topper's silhouette always reads.
+            //
+            // The toppers are what tell 58 looks apart, and most of them are filled with
+            // `accent` — which resolves to `deep` when the creature has no explicit accent,
+            // i.e. to a slightly darker version of the body. A darker-pink shape on a pink
+            // body has almost nothing to separate it, and the ones with white highlights
+            // vanish outright on a pale creature. The sprout only ever read clearly
+            // because it happens to be green.
+            //
+            // Applied here, at the one call site, rather than as 58 individual colour
+            // fixes: an occlusion edge separates the shape from whatever is behind it
+            // without touching any of the art. It has to work against two very different
+            // backdrops, because a topper peeking over the head is partly on the body and
+            // partly on the cream background — which is exactly what a soft dark halo
+            // does and what a lighter outline would not.
+            .shadow(color: YolkColor.ink.opacity(0.28), radius: size * 0.011)
+            .shadow(color: YolkColor.ink.opacity(0.16), radius: size * 0.03, y: size * 0.006)
     }
 
     /// The shadow reads weight: as the body rises it tightens, lightens and softens.
