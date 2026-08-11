@@ -82,6 +82,7 @@
 		6A5F07B799F0E18D074604F6 /* CareEngines.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38FB1D1C79AAE4A5CC2E1CE /* CareEngines.swift */; };
 		6CCEA71E6A40893115EAD6E7 /* HoloMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775778FA780FB58DC2F96847 /* HoloMaterial.swift */; };
 		7174436B53983F61625E185B /* SwapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C2E9327AAC745CB3DD23D /* SwapPreview.swift */; };
+		721FB15B3A3EB0AB343FFB39 /* OnboardingEntrance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEE2E3B0659BB1DD7BDE97F /* OnboardingEntrance.swift */; };
 		76C65D3DC1A534CEC3160250 /* SyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCD055E27868773534C0E1B /* SyncTests.swift */; };
 		774E938C4B98B2F1E3959A7E /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
 		7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */; };
@@ -128,6 +129,7 @@
 		BA925A3A4FA9DD75958F5189 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6242A91695E361503D3DAA6 /* AppEnvironment.swift */; };
 		BB04580D3125794B8DB6BD99 /* YolklingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE819215FD090FE423F75193 /* YolklingApp.swift */; };
 		BB7652868F1A1B518E9EB1F4 /* PlusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */; };
+		BC14E5E265B053E1C122B149 /* HatchCeremony.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8498A99F51C3F018B45083B4 /* HatchCeremony.swift */; };
 		BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCE5524395404EDA669648 /* YolkColors.swift */; };
 		BD284E721748D9A0590066F4 /* ShopHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */; };
 		C12C0259ED876B5BA58FE8C2 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
@@ -170,6 +172,7 @@
 		EFB372B359CCCC214A44F93E /* CosmeticView+Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */; };
 		F0CD39EDFF070A9DF531E05A /* RoomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A696350A3A3F96048352A62 /* RoomView.swift */; };
 		F0D956D4138C84573620C1A5 /* RoomDecorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF8B2D085E28A73D8547687 /* RoomDecorView.swift */; };
+		F1BB2F225D99F64387F88587 /* OnboardingBackdrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270564D342B0AC858D8BD308 /* OnboardingBackdrop.swift */; };
 		F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F554785860AE53390D69233E /* SupabaseClient.swift */; };
 		F2C5878F99269B2EDA41761C /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FC884495811BB1821AF2CB /* CollectionView.swift */; };
 		F31A3E2F41BFF29944253D77 /* PostcardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593CF31848BF060E5D52D091 /* PostcardCard.swift */; };
@@ -230,6 +233,7 @@
 		0A2F368C2F7CFCEF100548E1 /* YolkCardFace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCardFace.swift; sourceTree = "<group>"; };
 		0A7C0703029E40E6699C7F53 /* Yolkling.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Yolkling.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Garden.swift"; sourceTree = "<group>"; };
+		0DEE2E3B0659BB1DD7BDE97F /* OnboardingEntrance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingEntrance.swift; sourceTree = "<group>"; };
 		0FA2EE3D862627BDDB70A446 /* YolklingWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingWidgetBundle.swift; sourceTree = "<group>"; };
 		10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTutorial.swift; sourceTree = "<group>"; };
 		14C460FAA85BB2A5D657CBE3 /* ScreenTimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeService.swift; sourceTree = "<group>"; };
@@ -240,6 +244,7 @@
 		22DB14FC98098997269CFE94 /* FriendRoomCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRoomCard.swift; sourceTree = "<group>"; };
 		23B5B076C1A639A6479BBB95 /* TrustStageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustStageTests.swift; sourceTree = "<group>"; };
 		245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomTheme.swift; sourceTree = "<group>"; };
+		270564D342B0AC858D8BD308 /* OnboardingBackdrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingBackdrop.swift; sourceTree = "<group>"; };
 		271C78981C0D5681EF94171E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		28194194B325C85B2FB43038 /* CustomizeOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizeOptions.swift; sourceTree = "<group>"; };
 		2878B46B9482D667951C103B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -297,6 +302,7 @@
 		7E9E562134085B1FEF2F1E4F /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
 		8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitSubject.swift; sourceTree = "<group>"; };
 		822B58776D67B8C7AC5DB908 /* TrustStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustStage.swift; sourceTree = "<group>"; };
+		8498A99F51C3F018B45083B4 /* HatchCeremony.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HatchCeremony.swift; sourceTree = "<group>"; };
 		84BAF4635144BD7C85922AB8 /* ShareCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRenderer.swift; sourceTree = "<group>"; };
 		886B48B3C1A83FC87B2FA7DC /* ItemTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTile.swift; sourceTree = "<group>"; };
 		8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Ocean.swift"; sourceTree = "<group>"; };
@@ -735,7 +741,10 @@
 			children = (
 				28194194B325C85B2FB43038 /* CustomizeOptions.swift */,
 				3C8CF8FD294F1454E5591F21 /* EggView.swift */,
+				8498A99F51C3F018B45083B4 /* HatchCeremony.swift */,
 				5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */,
+				270564D342B0AC858D8BD308 /* OnboardingBackdrop.swift */,
+				0DEE2E3B0659BB1DD7BDE97F /* OnboardingEntrance.swift */,
 				7E7AFB40028E43F26BD38206 /* OnboardingView.swift */,
 				74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */,
 			);
@@ -1126,6 +1135,7 @@
 				B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */,
 				1917B3C4E339BE94E5D6898F /* GrowFriendsView.swift in Sources */,
 				0364CA692D518EF8AAF0F8B0 /* Haptics.swift in Sources */,
+				BC14E5E265B053E1C122B149 /* HatchCeremony.swift in Sources */,
 				ED4E74BB4114F9EA58A24D8C /* HatchModel.swift in Sources */,
 				E8D0C3C3964CD981CBFACC61 /* HealthService.swift in Sources */,
 				6CCEA71E6A40893115EAD6E7 /* HoloMaterial.swift in Sources */,
@@ -1134,6 +1144,8 @@
 				0934185C7FCCBB0433E403E5 /* ItemTile.swift in Sources */,
 				8CFEA4E65FD7AA9F81025A05 /* Mood.swift in Sources */,
 				339169F8EB3C2F3BEAB56081 /* MoodCheckInView.swift in Sources */,
+				F1BB2F225D99F64387F88587 /* OnboardingBackdrop.swift in Sources */,
+				721FB15B3A3EB0AB343FFB39 /* OnboardingEntrance.swift in Sources */,
 				23B68D582EA550BE1B5B2088 /* OnboardingView.swift in Sources */,
 				7D316A3F6CA5988E2356DA7C /* PackRevealView.swift in Sources */,
 				18776CC0F5C8239A1AB75CFD /* Player.swift in Sources */,

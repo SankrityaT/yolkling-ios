@@ -11,73 +11,86 @@ struct OnboardingView: View {
     var onFinish: (HatchedCreature) -> Void
     @State private var model = HatchModel()
 
+    /// The namespace the hero creature travels through.
+    ///
+    /// Onboarding builds ten separate `YolklingView`s, one per step, and used to crossfade
+    /// between them — so the creature the player is making blinked out of existence and a
+    /// new one faded in at every single step. Tagging each step's creature with the same
+    /// `matchedGeometryEffect` id makes SwiftUI drive the frame from one layout to the
+    /// next, so it travels and resizes instead of dying. It is the same object the whole
+    /// way through, which is the entire point of a flow where you are making something.
+    @Namespace private var hero
+
     var body: some View {
         ZStack {
-            YolkColor.shell.ignoresSafeArea()
+            OnboardingBackdrop(tint: model.vibe.body)
 
             Group {
                 switch model.step {
                 case .welcome:
-                    WelcomeView {
-                        withAnimation(.easeInOut(duration: 0.4)) { model.begin() }
+                    WelcomeView(hero: hero) {
+                        withAnimation(.onboardingStep) { model.begin() }
                     }
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
 
                 case .quiz:
-                    VibeQuizView(model: model) {
-                        withAnimation(.easeInOut(duration: 0.4)) { model.goToCustomize() }
+                    VibeQuizView(model: model, hero: hero) {
+                        withAnimation(.onboardingStep) { model.goToCustomize() }
                     }
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
 
                 case .customize:
-                    CustomizeView(model: model) {
-                        withAnimation(.easeInOut(duration: 0.4)) { model.goToHatching() }
+                    CustomizeView(hero: hero, model: model) {
+                        withAnimation(.onboardingStep) { model.goToHatching() }
                     }
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
 
                 case .hatching:
-                    HatchRevealView(vibe: model.vibe) {
-                        withAnimation(.easeInOut(duration: 0.4)) { model.goToNaming() }
+                    HatchRevealView(hero: hero, vibe: model.vibe) {
+                        withAnimation(.onboardingStep) { model.goToNaming() }
                     }
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
 
                 case .naming:
                     NamingView(
+                        hero: hero,
                         vibe: model.vibe,
                         suggestions: model.nameSuggestions,
-                        onName: { name in withAnimation(.easeInOut(duration: 0.4)) { _ = model.name(name) } }
+                        onName: { name in withAnimation(.onboardingStep) { _ = model.name(name) } }
                     )
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
 
                 case .gift:
-                    GiftView(vibe: model.vibe) {
-                        withAnimation(.easeInOut(duration: 0.4)) { model.goToHealth() }
+                    GiftView(hero: hero, vibe: model.vibe) {
+                        withAnimation(.onboardingStep) { model.goToHealth() }
                     }
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
 
                 case .health:
-                    HealthPrimingView(vibe: model.vibe) {
-                        withAnimation(.easeInOut(duration: 0.4)) { model.goToFocus() }
+                    HealthPrimingView(hero: hero, vibe: model.vibe) { granted in
+                        model.recordHealth(granted)
+                        withAnimation(.onboardingStep) { model.goToFocus() }
                     }
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
 
                 case .focus:
-                    FocusPrimingView(vibe: model.vibe) {
-                        withAnimation(.easeInOut(duration: 0.4)) { model.goToScreenTime() }
+                    FocusPrimingView(hero: hero, vibe: model.vibe) {
+                        withAnimation(.onboardingStep) { model.goToScreenTime() }
                     }
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
 
                 case .screenTime:
-                    ScreenTimePrimingView(vibe: model.vibe) {
-                        withAnimation(.easeInOut(duration: 0.4)) { model.goToIntro() }
+                    ScreenTimePrimingView(hero: hero, vibe: model.vibe) { granted in
+                        model.recordScreenTime(granted)
+                        withAnimation(.onboardingStep) { model.goToIntro() }
                     }
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
 
                 case .intro:
-                    ClosetIntroView(vibe: model.vibe) {
+                    ClosetIntroView(hero: hero, vibe: model.vibe) {
                         if let creature = model.finalCreature { onFinish(creature) }
                     }
-                    .transition(.opacity)
+                    .transition(.onboardingStep)
                 }
             }
         }
@@ -95,6 +108,7 @@ struct OnboardingView: View {
 // MARK: - Customize (the one creation screen)
 
 private struct CustomizeView: View {
+    let hero: Namespace.ID
     let model: HatchModel
     var onContinue: () -> Void
 
@@ -104,14 +118,34 @@ private struct CustomizeView: View {
                 TypewriterText(text: "make your yolkling", font: YolkType.heading, color: YolkColor.ink)
                     .padding(.top, YolkSpace.md)
 
-                // An egg in the chosen colour — the creature stays a reveal.
-                EggView(color: model.vibe.body, size: 165)
+                // **The creature, live — not an egg.**
+                //
+                // This screen is called "make your yolkling" and offers eight different
+                // looks, and it used to preview an egg. You picked a look and the only
+                // thing that changed was a 44pt thumbnail; the subject of the screen was
+                // opaque, literally. That is the whole reason it did not feel intuitive.
+                //
+                // The egg was here to protect the hatch reveal, but the quiz one screen
+                // earlier already shows the creature forming as you answer — so the
+                // secret was spent before this screen was ever reached. It cost the
+                // creation screen its feedback loop and protected nothing.
+                //
+                // The reveal is now where it belongs: the hatch is a *ceremony*, not an
+                // information reveal. You know what is in the egg. Watching it come out
+                // is still the payoff, the same way you know what is in a wrapped present.
+                YolklingView(vibe: model.vibe, expression: .happy, size: 165)
                     .frame(height: 200)
+                    .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
 
                 sectionLabel("pick a look")
-                // The eight base looks are wider than a phone row. Give them their own
-                // horizontal scroll context so the row's intrinsic width is bounded to
-                // the viewport and can never poison the colour grid + labels below it.
+                // Horizontal, because there are dozens of looks — a grid of them pushed
+                // the colour picker clean off the bottom of the screen, which is worse
+                // than the problem it was trying to fix.
+                //
+                // What actually made this unintuitive was the hard clip at the right
+                // edge: a creature sliced in half by the screen reads as a layout bug,
+                // not as "there is more this way". The fade says the row continues, which
+                // is the only thing the player needed to know.
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: YolkSpace.sm) {
                         ForEach(CreatureStyle.allCases) { style in
@@ -121,11 +155,19 @@ private struct CustomizeView: View {
                             }
                         }
                     }
-                    // Vertical room so the bouncy select animation (which overshoots
-                    // past 1.0) isn't clipped by the ScrollView's bounds.
+                    // Vertical room so the bouncy select animation (which overshoots past
+                    // 1.0) isn't clipped by the ScrollView's bounds.
                     .padding(.horizontal, 2)
                     .padding(.vertical, 8)
                 }
+                .mask(
+                    LinearGradient(stops: [
+                        .init(color: .clear, location: 0),
+                        .init(color: .black, location: 0.04),
+                        .init(color: .black, location: 0.90),
+                        .init(color: .clear, location: 1),
+                    ], startPoint: .leading, endPoint: .trailing)
+                )
 
                 sectionLabel("pick a color")
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5), spacing: 14) {
@@ -169,8 +211,11 @@ private struct StyleButton: View {
             YolklingView(vibe: Vibe(id: style.id, name: style.label, body: color, deep: color, style: style),
                          expression: .content, size: 44)
                 .frame(width: 64, height: 84)
-                .background(selected ? YolkColor.shell2 : .clear, in: RoundedRectangle(cornerRadius: 16))
-                .overlay(RoundedRectangle(cornerRadius: 16).stroke(YolkColor.ink, lineWidth: selected ? 2.5 : 0))
+                .background(selected ? YolkColor.shell2 : .clear, in: RoundedRectangle(cornerRadius: 18))
+                // Same ring weight as the colour swatch below. Two selection grammars on
+                // one screen makes the player learn the control twice.
+                .overlay(RoundedRectangle(cornerRadius: 18).stroke(YolkColor.ink, lineWidth: selected ? 3 : 0))
+                .scaleEffect(selected ? 1.04 : 1)
         }
         .buttonStyle(.plain)
     }
@@ -196,30 +241,24 @@ private struct Swatch: View {
 // MARK: - The hatch reveal
 
 private struct HatchRevealView: View {
+    let hero: Namespace.ID
     let vibe: Vibe
     var onContinue: () -> Void
 
-    @State private var hatched = false
-    @State private var gathering = false
-    @State private var eggSquash = false
-    @State private var sparkle = false
     @State private var showButton = false
-    @State private var expr: YolkExpression = .surprised
 
     var body: some View {
         VStack(spacing: YolkSpace.lg) {
             Spacer(minLength: 0)
 
             ZStack {
-                if hatched {
-                    if sparkle { SparkleBurst(size: 260) }
-                    YolklingView(vibe: vibe, expression: expr, size: 215)
-                        .transition(.scale(scale: 0.15).combined(with: .opacity))
-                } else {
-                    EggView(color: vibe.body, size: 195, gathering: gathering)
-                        .scaleEffect(x: eggSquash ? 1.12 : 1, y: eggSquash ? 0.82 : 1, anchor: .bottom)
-                        .transition(.scale.combined(with: .opacity))
+                if showButton { SparkleBurst(size: 260) }
+                HatchCeremony(vibe: vibe, size: 215) {
+                    // Landed on the frame the shell actually gives, not guessed at.
+                    Haptics.shared.pop()
+                    withAnimation(.easeOut(duration: 0.45).delay(0.55)) { showButton = true }
                 }
+                .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
             }
             .frame(maxWidth: .infinity, minHeight: 300)
 
@@ -236,22 +275,6 @@ private struct HatchRevealView: View {
                 HatchButton("meet them", action: onContinue).opacity(showButton ? 1 : 0)
             }
         }
-        .task { await choreograph() }
-    }
-
-    private func choreograph() async {
-        try? await Task.sleep(for: .seconds(0.5))
-        withAnimation(.easeInOut(duration: 0.5)) { gathering = true }
-        try? await Task.sleep(for: .seconds(0.9))
-        withAnimation(.easeIn(duration: 0.16)) { eggSquash = true }
-        try? await Task.sleep(for: .seconds(0.16))
-        sparkle = true
-        Haptics.shared.pop()
-        withAnimation(.bouncy(duration: 0.7, extraBounce: 0.42)) { hatched = true }
-        try? await Task.sleep(for: .seconds(0.5))
-        withAnimation(.spring(response: 0.5, dampingFraction: 0.66)) { expr = .happy }
-        try? await Task.sleep(for: .seconds(0.5))
-        withAnimation(.easeOut(duration: 0.4)) { showButton = true }
     }
 }
 
@@ -265,8 +288,7 @@ private struct SparkleBurst: View {
         ZStack {
             ForEach(0..<count, id: \.self) { i in
                 let angle = Double(i) / Double(count) * 2 * .pi
-                Image(systemName: "sparkle")
-                    .font(.system(size: size * 0.08))
+                YolkGlyph(kind: .markSparkle, size: size * 0.085)
                     .foregroundStyle(YolkColor.yolk)
                     .offset(x: go ? cos(angle) * size * 0.5 : 0, y: go ? sin(angle) * size * 0.5 : 0)
                     .opacity(go ? 0 : 1)
@@ -280,6 +302,7 @@ private struct SparkleBurst: View {
 // MARK: - Naming ritual
 
 private struct NamingView: View {
+    let hero: Namespace.ID
     let vibe: Vibe
     let suggestions: [String]
     var onName: (String) -> Void
@@ -294,6 +317,7 @@ private struct NamingView: View {
         ScrollView {
             VStack(spacing: YolkSpace.lg) {
                 YolklingView(vibe: vibe, expression: expr, size: 170)
+                .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
                     .frame(height: 210)
 
                 TypewriterText(text: "what will you call them?", font: YolkType.heading, color: YolkColor.ink)
@@ -348,6 +372,7 @@ private struct NamingView: View {
 // MARK: - Welcome gift (Yolks)
 
 private struct GiftView: View {
+    let hero: Namespace.ID
     let vibe: Vibe
     var onContinue: () -> Void
     @State private var pop = false
@@ -356,6 +381,7 @@ private struct GiftView: View {
         VStack(spacing: YolkSpace.lg) {
             Spacer()
             YolklingView(vibe: vibe, expression: .excited, size: 175)
+                .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
                 .frame(height: 225)
             VStack(spacing: YolkSpace.sm) {
                 TypewriterText(text: "a welcome gift", font: YolkType.heading, color: YolkColor.ink)
@@ -386,6 +412,7 @@ private struct GiftView: View {
 // MARK: - Closet intro (how to customize)
 
 private struct ClosetIntroView: View {
+    let hero: Namespace.ID
     let vibe: Vibe
     var onDone: () -> Void
 
@@ -397,6 +424,7 @@ private struct ClosetIntroView: View {
         VStack(spacing: YolkSpace.lg) {
             Spacer()
             YolklingView(vibe: vibe, expression: .happy, size: 165, outfit: teaser)
+                .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
                 .frame(height: 215)
             VStack(spacing: YolkSpace.md) {
                 TypewriterText(text: "make them yours", font: YolkType.heading, color: YolkColor.ink)
@@ -423,6 +451,7 @@ private struct ClosetIntroView: View {
 // MARK: - Welcome / how it works
 
 private struct WelcomeView: View {
+    let hero: Namespace.ID
     var onBegin: () -> Void
 
     var body: some View {
@@ -430,12 +459,21 @@ private struct WelcomeView: View {
             Spacer()
             YolklingView(vibe: .yolk, expression: .happy, size: 150)
                 .frame(height: 185)
+                .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
             TypewriterText(text: "meet yolkling", font: YolkType.title, color: YolkColor.ink)
+            // The four promises arrive one at a time rather than as a block, so the eye
+            // reads them in the order they were written. `after:` holds the sequence back
+            // until the title has finished typing itself out — a stagger that races the
+            // headline just looks like a slow layout.
             VStack(alignment: .leading, spacing: YolkSpace.md) {
                 point("heart.fill", "a one of a kind creature that warms up to you when you take care of YOURSELF")
+                    .yolkEntrance(0, after: 0.35)
                 point("figure.walk", "your steps and sleep earn its trust")
+                    .yolkEntrance(1, after: 0.35)
                 point("hand.wave.fill", "care for yourself and it learns to wave, celebrates your wins, becomes truly yours")
+                    .yolkEntrance(2, after: 0.35)
                 point("person.2.fill", "and your creatures visit each other")
+                    .yolkEntrance(3, after: 0.35)
             }
             Spacer()
         }
@@ -463,13 +501,19 @@ private struct WelcomeView: View {
 // MARK: - Permission priming (warm pre-permission, never a cold prompt)
 
 private struct HealthPrimingView: View {
+    let hero: Namespace.ID
     let vibe: Vibe
-    var onContinue: () -> Void
+    /// Reports whether Health was actually granted.
+    var onContinue: (Bool) -> Void
+
+    @State private var health = HealthService()
+    @State private var asking = false
 
     var body: some View {
         VStack(spacing: YolkSpace.lg) {
             Spacer()
             YolklingView(vibe: vibe, expression: .happy, size: 150)
+                .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
                 .frame(height: 185)
             TypewriterText(text: "your real life earns their trust", font: YolkType.heading, color: YolkColor.ink)
             TypewriterText(text: "your steps and sleep are how your yolkling learns to trust you. connect Health so it can feel your day and grow with you. your steps and sleep stay on your device. we never send them anywhere.",
@@ -480,8 +524,23 @@ private struct HealthPrimingView: View {
         .safeAreaInset(edge: .bottom) {
             BottomBar {
                 VStack(spacing: YolkSpace.xs) {
-                    HatchButton("connect health", action: onContinue)
-                    SecondaryButton("maybe later", action: onContinue)
+                    // This used to call `onContinue` — the same closure as "maybe later".
+                    // The screen asked for Health and then simply moved on without ever
+                    // requesting it; the real prompt did not appear until the player
+                    // found the card on the home screen days later.
+                    HatchButton(asking ? "asking…" : "connect health") {
+                        guard !asking else { return }
+                        asking = true
+                        Task {
+                            let ok = await health.connect()
+                            asking = false
+                            // Continue either way. A declined permission is an answer,
+                            // not a dead end, and onboarding must never trap anyone.
+                            onContinue(ok)
+                        }
+                    }
+                    .disabled(asking)
+                    SecondaryButton("maybe later") { onContinue(false) }
                 }
             }
         }
@@ -489,6 +548,7 @@ private struct HealthPrimingView: View {
 }
 
 private struct FocusPrimingView: View {
+    let hero: Namespace.ID
     let vibe: Vibe
     var onContinue: () -> Void
 
@@ -496,6 +556,7 @@ private struct FocusPrimingView: View {
         VStack(spacing: YolkSpace.lg) {
             Spacer()
             YolklingView(vibe: vibe, expression: .calm, size: 150)
+                .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
                 .frame(height: 185)
             TypewriterText(text: "off your phone, on with life", font: YolkType.heading, color: YolkColor.ink)
             TypewriterText(text: "start a focus session and your yolkling rests and glows while you're away. the less you scroll, the more they thrive. miss a day and they just wait for you, never guilt.",
@@ -515,13 +576,19 @@ private struct FocusPrimingView: View {
 }
 
 private struct ScreenTimePrimingView: View {
+    let hero: Namespace.ID
     let vibe: Vibe
-    var onContinue: () -> Void
+    /// Reports whether Screen Time was actually granted.
+    var onContinue: (Bool) -> Void
+
+    @State private var screenTime = ScreenTimeService()
+    @State private var asking = false
 
     var body: some View {
         VStack(spacing: YolkSpace.lg) {
             Spacer()
             YolklingView(vibe: vibe, expression: .content, size: 150)
+                .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
                 .frame(height: 185)
             TypewriterText(text: "time away is time well spent", font: YolkType.heading, color: YolkColor.ink)
             TypewriterText(text: "let your yolkling feel the hours you spend off your phone, and it grows a little livelier. it only ever sees how long, never what you were doing. turn it on now or later, from home.",
@@ -532,8 +599,20 @@ private struct ScreenTimePrimingView: View {
         .safeAreaInset(edge: .bottom) {
             BottomBar {
                 VStack(spacing: YolkSpace.xs) {
-                    HatchButton("sounds good", action: onContinue)
-                    SecondaryButton("maybe later", action: onContinue)
+                    HatchButton(asking ? "asking…" : "turn it on") {
+                        guard !asking else { return }
+                        asking = true
+                        Task {
+                            // Fails gracefully on the simulator and without the
+                            // entitlement — `connect()` returns false and the flow carries
+                            // on with the off-phone pillar left in its locked state.
+                            let ok = await screenTime.connect()
+                            asking = false
+                            onContinue(ok)
+                        }
+                    }
+                    .disabled(asking)
+                    SecondaryButton("maybe later") { onContinue(false) }
                 }
             }
         }

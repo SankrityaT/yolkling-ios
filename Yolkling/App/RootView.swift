@@ -164,6 +164,11 @@ struct RootView: View {
             equippedItemIDs: []
         )
         player.discoveredSpeciesIDs = SpeciesSets.headStart
+        // Carried from the priming steps, which now actually request these rather than
+        // just talking about them. Without this the home screen would show "connect
+        // health" to somebody who had just granted it thirty seconds earlier.
+        player.healthConnected = creature.healthConnected
+        player.screenTimeConnected = creature.screenTimeConnected
         context.insert(player)
     }
 

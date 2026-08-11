@@ -18,6 +18,10 @@ final class HatchModel {
     /// Which mood it hatches in. The quiz sets this; direct picking leaves it happy.
     var startingMood: Mood = .happy
 
+    /// Set by the priming steps once the system prompt has actually been answered.
+    var healthConnected = false
+    var screenTimeConnected = false
+
     /// The live identity built from the current picks.
     var vibe: Vibe {
         Vibe(
@@ -53,6 +57,22 @@ final class HatchModel {
     }
 
     func goToIntro() { step = .intro }
+
+    /// Record what the player actually answered on a priming screen.
+    ///
+    /// `finalCreature` is built at naming, which happens two steps before either
+    /// permission is asked for, so these write back onto it rather than being read at
+    /// construction time. Declining is a real answer and is stored as one — the flow
+    /// continues either way, and nothing here blocks onboarding on a permission.
+    func recordHealth(_ granted: Bool) {
+        healthConnected = granted
+        finalCreature?.healthConnected = granted
+    }
+
+    func recordScreenTime(_ granted: Bool) {
+        screenTimeConnected = granted
+        finalCreature?.screenTimeConnected = granted
+    }
 
     private func makeCreature(named name: String) -> HatchedCreature? {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
