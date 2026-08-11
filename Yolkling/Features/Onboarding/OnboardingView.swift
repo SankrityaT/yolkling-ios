@@ -137,37 +137,65 @@ private struct CustomizeView: View {
                     .frame(height: 200)
                     .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
 
-                sectionLabel("pick a look")
+                // The label carries the current pick's name. With 58 unlabelled
+                // thumbnails, "which one am I on" was otherwise a question you could only
+                // answer by hunting for the ring.
+                HStack(alignment: .firstTextBaseline) {
+                    sectionLabel("pick a look")
+                    Text(model.style.label)
+                        .font(YolkType.bodySmall)
+                        .foregroundStyle(YolkColor.inkSoft)
+                        .padding(.top, YolkSpace.xs)
+                        .contentTransition(.opacity)
+                }
+
                 // Horizontal, because there are dozens of looks — a grid of them pushed
                 // the colour picker clean off the bottom of the screen, which is worse
                 // than the problem it was trying to fix.
                 //
-                // What actually made this unintuitive was the hard clip at the right
-                // edge: a creature sliced in half by the screen reads as a layout bug,
-                // not as "there is more this way". The fade says the row continues, which
-                // is the only thing the player needed to know.
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: YolkSpace.sm) {
-                        ForEach(CreatureStyle.allCases) { style in
-                            StyleButton(style: style, color: model.vibe.body, selected: model.style == style) {
-                                Haptics.shared.select()
-                                withAnimation(.bouncy(duration: 0.5, extraBounce: 0.3)) { model.selectStyle(style) }
+                // What made this unintuitive was the hard clip at the right edge: a
+                // creature sliced in half by the screen reads as a layout bug, not as
+                // "there is more this way". The fade says the row continues.
+                ScrollViewReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: YolkSpace.sm) {
+                            ForEach(CreatureStyle.allCases) { style in
+                                StyleButton(style: style, color: model.vibe.body, selected: model.style == style) {
+                                    Haptics.shared.select()
+                                    withAnimation(.bouncy(duration: 0.5, extraBounce: 0.3)) { model.selectStyle(style) }
+                                }
+                                .id(style)
                             }
                         }
+                        // Vertical room so the bouncy select animation (which overshoots
+                        // past 1.0) isn't clipped by the ScrollView's bounds.
+                        .padding(.horizontal, 2)
+                        .padding(.vertical, 8)
                     }
-                    // Vertical room so the bouncy select animation (which overshoots past
-                    // 1.0) isn't clipped by the ScrollView's bounds.
-                    .padding(.horizontal, 2)
-                    .padding(.vertical, 8)
+                    .mask(
+                        LinearGradient(stops: [
+                            .init(color: .clear, location: 0),
+                            .init(color: .black, location: 0.04),
+                            .init(color: .black, location: 0.90),
+                            .init(color: .clear, location: 1),
+                        ], startPoint: .leading, endPoint: .trailing)
+                    )
+                    // Keep the selection on screen.
+                    //
+                    // The quiz picks a look for you, so this screen frequently opened
+                    // scrolled to the start with the actual selection somewhere off to
+                    // the right — the row showed a ring on nothing and there was no way
+                    // to tell what you had without swiping through 58 items looking for
+                    // it. Centring on appear is the fix; centring on change matters too,
+                    // because the edge fade would otherwise leave a freshly tapped item
+                    // half-faded at the boundary.
+                    .onAppear { proxy.scrollTo(model.style, anchor: .center) }
+                    .onChange(of: model.style) { _, style in
+                        withAnimation(.easeInOut(duration: 0.35)) {
+                            proxy.scrollTo(style, anchor: .center)
+                        }
+                    }
                 }
-                .mask(
-                    LinearGradient(stops: [
-                        .init(color: .clear, location: 0),
-                        .init(color: .black, location: 0.04),
-                        .init(color: .black, location: 0.90),
-                        .init(color: .clear, location: 1),
-                    ], startPoint: .leading, endPoint: .trailing)
-                )
 
                 sectionLabel("pick a color")
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5), spacing: 14) {
