@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: "Onest";
+    src: url("file:///Users/sankiii/conductor/workspaces/yolkling-v1/manila/Yolkling/Resources/Fonts/Onest-VF.ttf") format("truetype");
+    font-weight: 100 900;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #FBF6EC;
+    font-family: "Onest", -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+  .caption {
+    flex: 0 0 auto;
+    width: 85%;
+    padding-top: 5.2%;
+    padding-bottom: 2.4%;
+    text-align: center;
+  }
+  .caption h1 {
+    font-size: 108px;
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -3px;
+    color: #2A241B;
+  }
+  .accent {
+    display: block;
+    width: 132px;
+    height: 14px;
+    border-radius: 8px;
+    margin: 46px auto 0;
+    background: var(--accent, #FFC23B);
+  }
+  .stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 4%;
+  }
+  .device {
+    border-radius: 66px;
+    box-shadow: 0 50px 110px rgba(42, 36, 27, 0.18);
+    overflow: hidden;
+    background: #000;
+    outline: 3px solid rgba(42,36,27,0.06);
+  }
+  .device img { display: block; height: 100%; width: auto; }
+</style>
+</head>
+<body>
+  <div class="caption"><h1 id="cap"></h1><span class="accent" id="acc"></span></div>
+  <div class="stage"><div class="device" id="dev"><img id="shot"></div></div>
+  <script>
+    const p = new URLSearchParams(location.search);
+    const W = parseInt(p.get("w") || "1320", 10);
+    const H = parseInt(p.get("h") || "2868", 10);
+    document.body.style.width = W + "px";
+    document.body.style.height = H + "px";
+    document.getElementById("cap").textContent = p.get("caption") || "";
+    document.getElementById("acc").style.setProperty("--accent", p.get("accent") || "#FFC23B");
+    const img = document.getElementById("shot");
+    const dev = document.getElementById("dev");
+    img.src = p.get("img") || "";
+
+    // Fit the device image inside the remaining vertical space (after the caption),
+    // keeping the raw screenshot's aspect ratio exactly — no distortion at any size.
+    function fit() {
+      const cap = document.querySelector(".caption");
+      const avail = H - cap.offsetHeight - Math.round(H * 0.06);
+      img.style.height = Math.max(100, avail) + "px";
+      // width follows aspect; cap at 88% of canvas just in case
+      const maxW = Math.round(W * 0.88);
+      if (dev.offsetWidth > maxW) { img.style.height = "auto"; img.style.width = maxW + "px"; }
+    }
+    window.__ready = (async () => {
+      try { await document.fonts.ready; } catch (e) {}
+      if (img.complete) fit(); else await new Promise(r => { img.onload = r; img.onerror = r; });
+      fit();
+    })();
+  </script>
+</body>
+</html>

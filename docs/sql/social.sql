@@ -87,7 +87,11 @@ returns jsonb language sql security definer as $$
   ) order by rs.updated_at desc nulls last), '[]'::jsonb)
   from public.friendships f
   left join public.room_snapshots rs on rs.user_id = f.friend_id
-  where f.user_id = p_user;
+  where f.user_id = p_user
+    and not exists (
+      select 1 from public.blocks b
+      where (b.user_id = p_user and b.blocked_id = f.friend_id)
+         or (b.user_id = f.friend_id and b.blocked_id = p_user));
 $$;
 
 -- 6) publish_room: upsert your own snapshot (called when your look/room changes).
@@ -142,6 +146,10 @@ returns jsonb language sql security definer as $$
   from public.postcards p
   left join public.room_snapshots rs on rs.user_id = p.from_id
   where p.to_id = p_user
+    and not exists (
+      select 1 from public.blocks b
+      where (b.user_id = p_user and b.blocked_id = p.from_id)
+         or (b.user_id = p.from_id and b.blocked_id = p_user))
   limit 50;
 $$;
 

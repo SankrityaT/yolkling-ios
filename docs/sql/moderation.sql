@@ -76,3 +76,8 @@ notify pgrst, 'reload schema';
 -- feedback rows carrying the deleted user's id. delete_account disassociates them
 -- instead. Left in place rather than dropped, in case something still calls it.
 -- ---------------------------------------------------------------------------
+--
+-- Deliberately NOT recreated by this file. It exists on the live database and is left
+-- alone there, but a fresh environment rebuilt from docs/sql/ should not grow a second
+-- deletion path — account.sql's delete_account is the one the client calls
+-- (SupabaseClient.deleteAccount → "delete_account"), and it is the correct one.

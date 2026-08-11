@@ -140,23 +140,6 @@ final class SocialStore {
         return r
     }
 
-    // MARK: Moderation
-
-    @discardableResult
-    func block(_ targetID: String) async -> Bool {
-        let ok = await client.blockUser(userID: userID, blocked: targetID)
-        if ok {
-            driftTargets.removeAll { $0.user_id == targetID }
-            await load()
-        }
-        return ok
-    }
-
-    @discardableResult
-    func report(postcardID: Int, reason: String) async -> Bool {
-        await client.reportPostcard(userID: userID, postcardID: postcardID, reason: reason)
-    }
-
     func addFriend(code: String) async -> AddFriendResult {
         let r = await client.addFriend(code: code.uppercased(), userID: userID)
         if r.ok { await load() }
@@ -171,6 +154,34 @@ final class SocialStore {
     func markInboxRead() async {
         await client.markPostcardsRead(userID: userID)
         await load()
+    }
+
+    // MARK: Moderation (App Store 1.2 - required for user-generated postcards).
+
+    /// Block a sender: removes the friendship both ways and hides their notes.
+    /// Optimistically drops every surface they appear on, then refreshes from the server.
+    ///
+    /// `driftTargets` matters as much as `inbox` here: blocking someone whose room your
+    /// creature could still wander into would leave them one postcard away from you.
+    @discardableResult
+    func block(_ otherID: String) async -> Bool {
+        inbox.removeAll { $0.from_id == otherID }
+        friends.removeAll { $0.user_id == otherID }
+        driftTargets.removeAll { $0.user_id == otherID }
+        let ok = await client.blockUser(userID: userID, blocked: otherID)
+        await load()
+        return ok
+    }
+
+    /// Report an objectionable postcard for review.
+    @discardableResult
+    func report(postcardID: Int, reason: String) async -> Bool {
+        await client.reportPostcard(userID: userID, postcardID: postcardID, reason: reason)
+    }
+
+    @discardableResult
+    func report(_ card: Postcard, reason: String = "objectionable") async -> Bool {
+        await report(postcardID: card.id, reason: reason)
     }
 
     // MARK: Living Friends tab - waves, visits, gifts, lastVisited tracking.

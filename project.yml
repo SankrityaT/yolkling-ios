@@ -6,7 +6,7 @@ options:
   createIntermediateGroups: true
 settings:
   base:
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
     SWIFT_VERSION: "6.0"
     SWIFT_APPROACHABLE_CONCURRENCY: YES
@@ -34,6 +34,7 @@ targets:
       - Yolkling
     dependencies:
       - target: YolklingWidgets
+      - target: YolklingScreenTimeReport
       # App target ONLY. YolklingWidgets cherry-picks sources out of Yolkling/, so
       # anything in Core/Creature, Core/Cosmetics, Core/Rooms, Core/Widget,
       # Core/DesignSystem or SocialModels.swift compiles into the widget too — and the
@@ -86,11 +87,46 @@ targets:
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: YolklingWidgets/YolklingWidgets.entitlements
         SKIP_INSTALL: YES
+  YolklingScreenTimeReport:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - ScreenTimeReport
+      - path: Yolkling/Core/Health/ScreenTimeShare.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling.ScreenTimeReport
+        PRODUCT_NAME: YolklingScreenTimeReport
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: ScreenTimeReport/Info.plist
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: ScreenTimeReport/ScreenTimeReport.entitlements
+        SKIP_INSTALL: YES
+  YolklingTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - YolklingTests
+    dependencies:
+      - target: Yolkling
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.YolklingTests
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
 schemes:
   Yolkling:
     build:
       targets:
         Yolkling: all
+        YolklingTests: [test]
     run:
       config: Debug
-      storeKitConfiguration: Yolkling.storekit
+    test:
+      config: Debug
+      targets:
+        - YolklingTests

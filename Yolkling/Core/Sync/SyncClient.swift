@@ -51,6 +51,51 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
 
     init() {}
 
+    /// Decode field by field, falling back to each property's default.
+    ///
+    /// This CANNOT be left to synthesis. Swift's synthesized decoder does not consult
+    /// property initializers — a missing key on a non-optional throws `keyNotFound`
+    /// regardless of the default written above it. So the resilience this type's comment
+    /// promises did not exist: the moment a field was added here, every backup written by
+    /// an older build stopped decoding *in full*, and `PlayerBackup.pull`'s `try?` turned
+    /// that into a silent nil. The caller reads nil as "no backup saved" and moves on, so
+    /// the failure mode was a creature that quietly did not come back.
+    ///
+    /// Forward compatibility matters just as much: an OLDER app decoding a NEWER backup
+    /// ignores keys it doesn't know rather than failing, which is what lets someone with
+    /// two devices on different versions keep both.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        // The defaults live on the properties; this is how we read them without
+        // touching `self` before it is initialised.
+        let d = PlayerSnapshot()
+        func get<T: Decodable>(_ key: CodingKeys, _ fallback: T) -> T {
+            ((try? c.decodeIfPresent(T.self, forKey: key)) ?? nil) ?? fallback
+        }
+        name              = get(.name, d.name)
+        colorHex          = get(.colorHex, d.colorHex)
+        styleRaw          = get(.styleRaw, d.styleRaw)
+        startingMoodRaw   = get(.startingMoodRaw, d.startingMoodRaw)
+        accentHex         = try? c.decodeIfPresent(Int.self, forKey: .accentHex)
+        patternRaw        = get(.patternRaw, d.patternRaw)
+        foundingOwnedIDs  = get(.foundingOwnedIDs, d.foundingOwnedIDs)
+        activeFoundingID  = try? c.decodeIfPresent(String.self, forKey: .activeFoundingID)
+        discoveredSpeciesIDs = get(.discoveredSpeciesIDs, d.discoveredSpeciesIDs)
+        careStreak        = get(.careStreak, d.careStreak)
+        lastCareDate      = try? c.decodeIfPresent(Date.self, forKey: .lastCareDate)
+        restTokens        = get(.restTokens, d.restTokens)
+        weekStart         = try? c.decodeIfPresent(Date.self, forKey: .weekStart)
+        weekCareDays      = get(.weekCareDays, d.weekCareDays)
+        weeklyClaimed     = get(.weeklyClaimed, d.weeklyClaimed)
+        roomThemeID       = get(.roomThemeID, d.roomThemeID)
+        placedDecorByZone = try? c.decodeIfPresent([String: String].self, forKey: .placedDecorByZone)
+        coins             = get(.coins, d.coins)
+        ownedItemIDs      = get(.ownedItemIDs, d.ownedItemIDs)
+        equippedItemIDs   = get(.equippedItemIDs, d.equippedItemIDs)
+        trust             = get(.trust, d.trust)
+        createdAt         = get(.createdAt, d.createdAt)
+    }
+
     @MainActor
     init(_ p: Player) {
         name = p.name
@@ -158,8 +203,19 @@ extension JSONEncoder {
     }
 }
 
+// Cloud backup SHIPPED on this branch — the comment that stood here described it as
+// future work. See PlayerBackup above and docs/sql/backup.sql.
 extension JSONDecoder {
     static var backup: JSONDecoder {
         let d = JSONDecoder(); d.dateDecodingStrategy = .iso8601; return d
     }
 }
+/*
+// SupabaseSyncClient (the cloud implementation) is built once we have the
+// yolkling Supabase project access + the Sign in with Apple identity. It maps
+// PlayerSnapshot to the `app_users` / `inventory` rows (see docs/sql/rewards.sql)
+// over the Supabase client, keyed by appleUserID. Reconciliation: last-write-wins
+// by updatedAt, with the server authoritative for friendship state. Privacy: raw
+// wellness signals stay on-device; only creature/economy state syncs. (A future
+// Core/Crypto layer could E2E-encrypt synced content; not claimed until it ships.)
+*/

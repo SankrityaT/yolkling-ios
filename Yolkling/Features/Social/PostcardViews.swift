@@ -111,6 +111,7 @@ struct PostcardCompose: View {
 /// The received kind notes. Marked read on open.
 struct PostcardInbox: View {
     @State var store: SocialStore
+    @State private var toast: String?
     @Environment(\.dismiss) private var dismiss
     @State private var dialog: YolkDialog?
     /// Which note's menu is open. Per-row state, because the menu belongs to a card in a
@@ -149,6 +150,21 @@ struct PostcardInbox: View {
             if let card = menuFor { moderationMenu(card) }
         }
         .yolkDialog($dialog)
+        .overlay(alignment: .bottom) {
+            if let toast {
+                Text(toast)
+                    .font(YolkType.bodySmall).foregroundStyle(YolkColor.shell)
+                    .padding(.horizontal, YolkSpace.md).padding(.vertical, 10)
+                    .background(YolkColor.ink, in: Capsule())
+                    .padding(.bottom, YolkSpace.lg)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .task {
+                        try? await Task.sleep(for: .seconds(2.4))
+                        withAnimation { self.toast = nil }
+                    }
+            }
+        }
+        .animation(.easeInOut, value: toast)
         .task { await store.markInboxRead() }
     }
 

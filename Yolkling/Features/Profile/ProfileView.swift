@@ -19,8 +19,8 @@ struct ProfileView: View {
     @State private var showDeleteConfirm = false
     @State private var deleting = false
     @State private var showFeedback = false
-    @State private var showPlus = false
     @State private var showHowTo = false
+    @State private var showPlus = false
     private var subs: SubscriptionStore { .shared }
     @State private var notifyOn = YolkNotifications.isEnabled
     @State private var notifyTime = Calendar.current.date(
@@ -233,6 +233,7 @@ struct ProfileView: View {
     /// and a flaky network must not trap them in an account they've asked to delete.
     /// The server row is idempotently deletable, so a retry costs nothing.
     private func deleteAccount() {
+        guard !deleting else { return }
         deleting = true
         Task {
             let uid = player?.backendUserID ?? InstallID.current

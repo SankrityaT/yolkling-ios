@@ -2,11 +2,30 @@
 
 Keep the App Store submission turnkey. Update as features land.
 
+## turnkey submission docs (start here)
+- **`metadata/APP-STORE-LISTING.md`** — every App Store Connect field, labeled and
+  ready to paste, with verified character counts for each limited field.
+- **`SUBMISSION-CHECKLIST.md`** — ordered runbook from repo to submitted, including
+  the "what only you (the human) can do" items (file the Family Controls entitlement
+  first, confirm the privacy + content-policy pages are live, archive + submit with
+  your signing identity).
+
 ## screenshots
 Captured at **iPhone 16 Pro Max, 6.9", 1320 x 2868**, the size App Store Connect requires (it scales down for smaller iPhones, so this one size covers every iPhone).
-- `screenshots/home-vibe-0..4.png` — the home creature in all five vibes (one of a kind, recolorable). 5 shots.
+- `screenshots/home-vibe-0..4.png` — the home creature in all five vibes (one of a kind, recolorable). 5 raw shots.
 
-As more screens ship (the hatch onboarding, care/today, friends + visits, the store), capture those too for a fuller 3 to 10 shot set that tells the story. Best-practice order: hero creature, the hatch moment, "grows when you live well", a friend visit + postcard, the store.
+### marketing set (8 shots: raw capture then composite)
+The submission ships an **8-shot marketing set** built in two stages: raw simulator
+capture, then an HTML/CSS composite that frames each raw shot with a caption and
+background. The compositor and its template are added by a later step:
+- `screenshots/compose.mjs` — _(placeholder, to be created)_ takes the raw captures
+  and renders the framed 1320 x 2868 marketing shots.
+- `screenshots/template/frame.html` — _(placeholder, to be created)_ the HTML/CSS
+  frame (caption, device background) the compositor renders.
+
+Story order for the 8: hero creature, the hatch moment, grow by living, put the
+phone down (focus Live Activity), check in, shop/closet, a friend visit + postcard,
+the Dex.
 
 ### regenerate the screenshots (one command)
 The app has a screenshot seam, `SIMCTL_CHILD_YOLK_VIBE` picks the starting vibe. To recapture after a build:
@@ -28,19 +47,19 @@ done
 - 13" iPad: only if we ship iPad later.
 
 ## metadata checklist (App Store Connect)
-- App name: **Yolkling**
-- Subtitle: e.g. "a little creature that's secretly you"
-- Description: from the landing-page voice, honest, every claim must map to a shipped feature (see CLAIMS.md)
-- Keywords: virtual pet, creature, cozy, self care, tamagotchi, wellbeing, screen time, companion, pet
-- Support URL: https://yolkling.com
-- Marketing URL: https://yolkling.com
-- **Privacy Policy URL: https://yolkling.com/privacy** (must match the in-app link, App Review rejects mismatches)
-- Category: Lifestyle or Health & Fitness (decide closer to launch)
-- Age rating: 4+
-- Privacy nutrition label: minimal, no tracking, no ATT (see docs/research/02-security-privacy.md)
-- Bundle id: com.Sankritya.Yolkling
+The canonical, copy-paste values live in **`metadata/APP-STORE-LISTING.md`** (with
+verified character counts). Quick reference only:
+- App name: **Yolkling** · Subtitle: **a cozy pet that grows with you** (30/30)
+- Keywords (no spaces): `virtualpet,creature,cozy,selfcare,tamagotchi,wellbeing,companion,habit,collect,focus,mood,pet,egg` (97/100)
+- Category: **Lifestyle** (primary), **Health & Fitness** (secondary)
+- Support / Marketing URL: https://yolkling.com · Privacy: https://yolkling.com/privacy
+- Age rating: 4+ · Bundle id: com.Sankritya.Yolkling
+- Full description, What's New, App Review notes, and App Privacy answers: see the
+  listing doc.
 
 ## still needed before submission
-- A real 1024 x 1024 app icon (the yolk). Currently a placeholder.
-- Screenshots of the remaining feature screens as they ship.
-- The privacy nutrition label answers + PrivacyInfo.xcprivacy in the build.
+- ✅ **App icon — DONE.** Real designed yolk at 1024 x 1024 (no longer a placeholder).
+- The 8-shot marketing set rendered through `screenshots/compose.mjs` (pipeline
+  above), plus any remaining feature screens as they ship.
+- `PrivacyInfo.xcprivacy` in the build; its declarations must match the App Privacy
+  answers in `metadata/APP-STORE-LISTING.md`.

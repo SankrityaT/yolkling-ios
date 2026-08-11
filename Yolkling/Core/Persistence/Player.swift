@@ -119,6 +119,10 @@ final class Player {
     /// instead of the connect prompt).
     var healthConnected: Bool = false
 
+    /// Whether the player opted into Screen Time (Family Controls), so the off-phone
+    /// pillar reads their real time away instead of the gentle "soon" state.
+    var screenTimeConnected: Bool = false
+
     /// How much the yolk trusts you (0...1). It rises ONLY when you take care of
     /// YOURSELF (check-ins, the grow-by-living bonus), never from petting it. At
     /// enough trust the yolk waves hello and warms up to you.
