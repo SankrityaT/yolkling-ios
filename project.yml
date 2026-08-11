@@ -25,6 +25,12 @@ packages:
   RevenueCat:
     url: https://github.com/RevenueCat/purchases-ios
     from: "5.0.0"
+  # The shared creature layer (rendering + identity + cosmetics + design tokens).
+  # Replaces the old "widget cherry-picks sources out of Yolkling/" arrangement for
+  # everything creature-shaped, and is what the watch app builds against.
+  # See Packages/YolklingCore/README.md.
+  YolklingCore:
+    path: Packages/YolklingCore
 targets:
   Yolkling:
     type: application
@@ -35,10 +41,12 @@ targets:
     dependencies:
       - target: YolklingWidgets
       - target: YolklingScreenTimeReport
-      # App target ONLY. YolklingWidgets cherry-picks sources out of Yolkling/, so
-      # anything in Core/Creature, Core/Cosmetics, Core/Rooms, Core/Widget,
-      # Core/DesignSystem or SocialModels.swift compiles into the widget too — and the
-      # widget must never see RevenueCat. Keep all SDK use inside Core/Subscription/.
+      - target: YolklingWatch
+      - package: YolklingCore
+      # App target ONLY. YolklingWidgets still cherry-picks sources out of Yolkling/
+      # (Core/Rooms, Core/Widget, SocialModels.swift, ...), so those files compile into
+      # the widget too — and the widget must never see RevenueCat. Keep all SDK use
+      # inside Core/Subscription/.
       - package: RevenueCat
       # Customer Center: one-tap cancel / refund / plan change, in-app.
       - package: RevenueCat
@@ -65,18 +73,20 @@ targets:
     platform: iOS
     deploymentTarget: "18.0"
     sources:
+      # The creature layer (Core/Creature, Core/Cosmetics, colour/spacing/type tokens,
+      # CustomizeOptions) used to be cherry-picked from Yolkling/ here; it now comes in
+      # once through the YolklingCore package instead.
       - YolklingWidgets
       - path: Yolkling/Core/Focus/FocusActivityAttributes.swift
       - path: Yolkling/Core/DesignSystem
         excludes:
           - TypewriterText.swift
-      - Yolkling/Core/Creature
-      - Yolkling/Core/Cosmetics
       - Yolkling/Core/Rooms
       - Yolkling/Core/Widget
       - path: Yolkling/Core/Networking/SocialModels.swift
-      - path: Yolkling/Features/Onboarding/CustomizeOptions.swift
       - path: Yolkling/Features/Room/RoomView.swift
+    dependencies:
+      - package: YolklingCore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling.Widgets
@@ -104,6 +114,36 @@ targets:
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: ScreenTimeReport/ScreenTimeReport.entitlements
         SKIP_INSTALL: YES
+  # The Apple Watch companion app: a single-target watchOS app (no separate
+  # extension target — that split died with watchOS 9). Embedded in the iOS app
+  # via the target dependency above, so installing Yolkling offers the watch app.
+  # It renders the creature entirely from YolklingCore and receives state from
+  # the phone over WatchConnectivity (see docs/WATCH_APP.md).
+  YolklingWatch:
+    type: application
+    platform: watchOS
+    deploymentTarget: "11.0"
+    sources:
+      - YolklingWatch
+    dependencies:
+      - package: YolklingCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling.watchkitapp
+        PRODUCT_NAME: YolklingWatch
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_WKApplication: YES
+        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: com.Sankritya.Yolkling
+        INFOPLIST_KEY_CFBundleDisplayName: Yolkling
+        # Base settings pin SUPPORTED_PLATFORMS to iphoneos for every other target;
+        # this one really is a watch app.
+        SUPPORTED_PLATFORMS: "watchos watchsimulator"
+        SDKROOT: watchos
+        TARGETED_DEVICE_FAMILY: "4"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES
   YolklingTests:
     type: bundle.unit-test
     platform: iOS
@@ -112,6 +152,7 @@ targets:
       - YolklingTests
     dependencies:
       - target: Yolkling
+      - package: YolklingCore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.YolklingTests
