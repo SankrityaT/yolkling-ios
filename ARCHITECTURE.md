@@ -18,23 +18,29 @@ Synthesized from the four research docs in `docs/research/`. This is the source 
 
 ## structure (feature-first)
 ```
+Packages/
+  YolklingCore/   local SPM package: the shared creature layer (Creature, Cosmetics,
+                  colour/spacing/type tokens, CreaturePalette, watch sync contract).
+                  Depended on by app + widget + watch + tests; never imports
+                  RevenueCat / HealthKit / SwiftData / Supabase. See its README.
 Yolkling/
   App/            YolklingApp, AppRoot, environment wiring
   Core/
     Configuration/   AppEnvironment (public URLs + anon key), fail-fast validation
-    DesignSystem/    Colors (egg palette), Typography, Spacing, components
-    Creature/        Vibe, YolklingView (Shape + PhaseAnimator), parts
+    DesignSystem/    app-only components (YolkDialog, YolkMenu, ...); tokens live in YolklingCore
     Persistence/     SwiftData @Model schemas, ModelContainerFactory, @ModelActor
     Crypto/          client-side encryption for E2E content
     Networking/      Supabase client wrapper
     Health/          HealthKit adapter (wellness signals)
     Sync/            local-first outbox + sync actor
+    Watch/           WatchPublisher (phone -> watch WatchConnectivity push)
   Features/
     Onboarding/  Hatch (vibe -> creature), Sign in with Apple
     Home/        the creature, today's care, focus session
     Friends/     friend graph, creature visits, postcards
     Store/       cosmetics (StoreKit 2)
     Settings/    privacy, account, data export/delete
+YolklingWatch/    the watchOS companion app (creature on the wrist, docs/WATCH_APP.md)
 ```
 
 ## navigation
