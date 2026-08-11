@@ -27,9 +27,20 @@ context compaction. If you are an agent picking this project back up, read this 
 
 ## Verification
 
-- **No XCTest** in this project. Verify with `xcodebuild` (must say `** BUILD SUCCEEDED **`)
-  plus the `YOLK_*` screenshot seams in `App/RootView.swift` + `HomeView.applyScreenshotSeams()`.
-- **No git.** Build + screenshot is the gate; there is no rollback.
+- **Swift Testing** (`import Testing`, `@Test`/`@Suite`), in the `YolklingTests` target.
+  Not XCTest — this file said "no XCTest in this project" long enough that the sentence
+  was read as "no tests", which was wrong in both directions. Run with
+  `xcodebuild ... -scheme Yolkling test`; it must say `** TEST SUCCEEDED **`.
+  Cover pure logic (wallet arithmetic, streak rules, snapshot decoding). Views are
+  covered by the screenshot seams instead, not by tests.
+- Verify with `xcodebuild` (must say `** BUILD SUCCEEDED **`) plus the `YOLK_*` screenshot
+  seams in `App/RootView.swift` + `HomeView.applyScreenshotSeams()`.
+- **Build all four targets**, not just the app: `Yolkling`, `YolklingWidgets`,
+  `YolklingScreenTimeReport`, `YolklingTests`. The widget cherry-picks sources out of
+  `Yolkling/`, so a design-system change can break it while the app still compiles.
+- **Haptics and Screen Time cannot be verified here.** Neither runs on the simulator.
+  Anything touching them is written-and-unverified until it has been on a device; say so
+  rather than reporting it as working.
 - SourceKit cross-file "cannot find type X" diagnostics are stale-index NOISE here; trust
   `xcodebuild`.
 - Build/screenshot devices (never erase/uninstall): Yolk-SE `8A2D0BC5-24C2-4AF7-914D-3E2D02866EA1`,

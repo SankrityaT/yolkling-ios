@@ -29,8 +29,8 @@ Legend: ✅ ships · 🟡 partial, stated honestly · ⬜ not built · ✂️ cu
 | Claim | Status | Detail |
 |---|---|---|
 | steps and sleep feed the creature | ✅ | HealthKit reads both. |
-| "doomscroll → sleepy" / phone time | ⬜ | **Gated on Apple's Family Controls entitlement**, requested 2026-08-08, 2 to 4 week approval. Ships as a post-launch update. `ScreenTimeService` is a stub returning `available == false`; `HomeView.livingStatSoon` renders the locked placeholder honestly. |
-| "the only app that wants you off your phone" | 🟡 | Focus sessions deliver this today. The full claim needs the Screen Time half. **Do not market the strong version yet.** |
+| "doomscroll → sleepy" / phone time | 🟡 | **Built, and gated on approval rather than on code.** `ScreenTimeService` is real: FamilyControls authorization, a `DeviceActivityReport` extension (`YolklingScreenTimeReport`) that writes today's off-phone hours to the App Group, and an onboarding step that asks. It is NOT a stub any more, and this table said it was for weeks after it shipped. What is still outstanding is outside the repo: Apple must grant the Family Controls entitlement (requested 2026-08-08, 2 to 4 week approval), and it cannot run on the simulator at all. Until both hold, `available` stays false and `HomeView.livingStatSoon` renders the locked placeholder honestly, so the app is correct either way. **Unverified on a real device.** |
+| "the only app that wants you off your phone" | 🟡 | Focus sessions deliver this today, and the Screen Time half is now written. **Still do not market the strong version**: it has never once run on hardware, so "our highest-earning players have the least screen time" remains a design intent and not a measurement. |
 | the trust arc | ✅ | Trust rises only from caring for *yourself* (check-in, grow-by-living), never from petting. Decays with neglect, floored at 0.12 so it can't hit zero. |
 
 ### Social
@@ -57,7 +57,7 @@ Legend: ✅ ships · 🟡 partial, stated honestly · ⬜ not built · ✂️ cu
 | Claim | Status | Detail |
 |---|---|---|
 | "a little shop of hats, rooms and rare colours" | ✅ | **88 cosmetics**, **17 room themes**, **34 decor pieces**, **21 colour swatches** (15 rare, 6 epic). All three halves of the claim now ship. Rooms and rare colours were marked ⬜ here for months after they were built. |
-| "earn coins just by living well" | 🟡 | Check-in and focus sessions ✅. Real wellness signals are the Screen Time gap above. |
+| "earn coins just by living well" | 🟡 | Check-in, focus sessions and HealthKit steps/sleep ✅. The off-phone earner is written but unproven on hardware (above). |
 | "no gacha, no loot boxes, no tricks" | ✅ | Cash never touches a random roll. Randomness sits only behind packs you *earn*. |
 | rarity is found, finish is bought | ✅ *(rule)* / ⬜ *(shop)* | The rule is settled and enforced by design: money never changes what a card *is*. The finish shop itself is not built. |
 | seasons | ✅ | Machinery ships and is server-flippable without a build. One spring set of 6 grant-only cosmetics exists. More art does not. |
@@ -86,15 +86,17 @@ Legend: ✅ ships · 🟡 partial, stated honestly · ⬜ not built · ✂️ cu
 
 ## Gaps that still block launch
 
-1. **Nothing.** The blocking list is empty for the first time. What remains is either
-   entitlement-gated (Screen Time), deliberately post-launch, or not-yet-reachable
-   polish (cards).
+1. **Nothing in the code.** What remains is outside it: Apple granting the Family
+   Controls entitlement, and one pass on a real device — Screen Time and every haptic
+   in the app (the scratch texture, the card's sweet-spot tick) are simulator-invisible
+   by construction, so they are written and unverified rather than verified.
 2. Before submitting, walk this table and confirm every line of live marketing copy maps
    to a ✅. Anything else gets softened or cut.
 
 ## Not blocking, but stated so nobody markets it early
 
-- Screen Time / phone-time signals (entitlement pending)
+- Screen Time / phone-time signals (built; entitlement pending, never run on hardware)
+- Haptics (written throughout; the simulator cannot produce them, so none are verified)
 - "two minutes a day" as a positioning line (drift and stranger gifting are genuinely
   capped; trading and packs are not yet)
 - Holo cards being user-reachable
