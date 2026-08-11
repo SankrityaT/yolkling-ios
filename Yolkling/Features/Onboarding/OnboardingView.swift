@@ -494,13 +494,13 @@ private struct WelcomeView: View {
             // until the title has finished typing itself out — a stagger that races the
             // headline just looks like a slow layout.
             VStack(alignment: .leading, spacing: YolkSpace.md) {
-                point("heart.fill", "a one of a kind creature that warms up to you when you take care of YOURSELF")
+                point(.trust, "a one of a kind creature that warms up to you when you take care of YOURSELF")
                     .yolkEntrance(0, after: 0.35)
-                point("figure.walk", "your steps and sleep earn its trust")
+                point(.steps, "your steps and sleep earn its trust")
                     .yolkEntrance(1, after: 0.35)
-                point("hand.wave.fill", "care for yourself and it learns to wave, celebrates your wins, becomes truly yours")
+                point(.wave, "care for yourself and it learns to wave, celebrates your wins, becomes truly yours")
                     .yolkEntrance(2, after: 0.35)
-                point("person.2.fill", "and your creatures visit each other")
+                point(.friends, "and your creatures visit each other")
                     .yolkEntrance(3, after: 0.35)
             }
             Spacer()
@@ -511,12 +511,11 @@ private struct WelcomeView: View {
         }
     }
 
-    private func point(_ icon: String, _ text: String) -> some View {
+    private func point(_ icon: YolkGlyph.Kind, _ text: String) -> some View {
         HStack(alignment: .top, spacing: YolkSpace.md) {
-            Image(systemName: icon)
-                .font(.title3)
+            YolkGlyph(kind: icon, size: 21, weight: 0.1)
                 .foregroundStyle(YolkColor.yolkDeep)
-                .frame(width: 30)
+                .frame(width: 30, height: 24)
             Text(text)
                 .font(YolkType.body)
                 .foregroundStyle(YolkColor.inkSoft)

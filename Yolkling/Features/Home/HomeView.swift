@@ -573,7 +573,7 @@ struct HomeView: View {
     private var topBar: some View {
         HStack {
             pill {
-                Image(systemName: "flame.fill").foregroundStyle(Color(hex: 0xFF8A3D))
+                YolkGlyph(kind: .streak, size: 16, weight: 0.115).foregroundStyle(Color(hex: 0xFF8A3D))
                 if careStreak == 0 {
                     // A brand-new player used to be greeted by "0 days" — a scoreboard
                     // opening at nil. Endowed progress (MONETIZATION.md lever 3) says
@@ -586,7 +586,7 @@ struct HomeView: View {
                     Text(careStreak == 1 ? "day" : "days").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                 }
                 if restTokens > 0 {
-                    Image(systemName: "leaf.fill").font(.caption2).foregroundStyle(Color(hex: 0x9AC77E))
+                    YolkGlyph(kind: .leaf, size: 13, weight: 0.115).foregroundStyle(Color(hex: 0x9AC77E))
                 }
             }
             Spacer()
@@ -726,8 +726,8 @@ struct HomeView: View {
                 .padding(.horizontal, YolkSpace.lg)
 
             HStack(spacing: YolkSpace.sm) {
-                careCard("check in", reward: 10, icon: "heart.fill", done: checkedInToday) { showCheckIn = true }
-                careCard("focus", reward: 20, icon: "moon.stars.fill") { showFocus = true }
+                careCard("check in", reward: 10, icon: .trust, done: checkedInToday) { showCheckIn = true }
+                careCard("focus", reward: 20, icon: .focus) { showFocus = true }
                 // One card, two destinations, rather than adding a fourth card to a
                 // screen that already has too many. Wandering is the once-a-day ritual;
                 // friends are always there.
@@ -735,7 +735,7 @@ struct HomeView: View {
                     Haptics.shared.tick()
                     withAnimation(.snappy(duration: 0.24)) { showVisitMenu = true }
                 } label: {
-                    careCardLabel("visit", reward: 5, icon: "person.2.fill", done: false)
+                    careCardLabel("visit", reward: 5, icon: .friends, done: false)
                 }
                 .buttonStyle(.plain)
             }
@@ -807,12 +807,12 @@ struct HomeView: View {
                     }
                 }
                 HStack(spacing: YolkSpace.sm) {
-                    livingStat(icon: "figure.walk", value: "\(health.steps)", label: "steps", hit: health.steps >= stepGoal)
-                    livingStat(icon: "moon.zzz.fill", value: String(format: "%.1fh", health.sleepHours), label: "sleep", hit: health.sleepHours >= 7)
+                    livingStat(icon: .steps, value: "\(health.steps)", label: "steps", hit: health.steps >= stepGoal)
+                    livingStat(icon: .sleep, value: String(format: "%.1fh", health.sleepHours), label: "sleep", hit: health.sleepHours >= 7)
                     if screenTime.available, let off = screenTime.offScreenHours {
-                        livingStat(icon: "iphone", value: String(format: "%.0fh", off), label: "off phone", hit: screenTime.hitGoal)
+                        livingStat(icon: .phone, value: String(format: "%.0fh", off), label: "off phone", hit: screenTime.hitGoal)
                     } else {
-                        Button { connectScreenTime() } label: { livingStatSoon(icon: "iphone", label: "off phone") }
+                        Button { connectScreenTime() } label: { livingStatSoon(icon: .phone, label: "off phone") }
                             .buttonStyle(.plain)
                     }
                 }
@@ -846,9 +846,11 @@ struct HomeView: View {
         }
     }
 
-    private func livingStat(icon: String, value: String, label: String, hit: Bool) -> some View {
+    private func livingStat(icon: YolkGlyph.Kind, value: String, label: String, hit: Bool) -> some View {
         HStack(spacing: 8) {
-            Image(systemName: icon).font(.system(size: 15)).foregroundStyle(hit ? YolkColor.mint : YolkColor.muted)
+            YolkGlyph(kind: icon, size: 17, weight: 0.1)
+                .foregroundStyle(hit ? YolkColor.mint : YolkColor.muted)
+                .frame(width: 17, height: 17)
             VStack(alignment: .leading, spacing: 0) {
                 Text(value).font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                 Text(label).font(.caption2).foregroundStyle(YolkColor.muted)
@@ -862,9 +864,11 @@ struct HomeView: View {
 
     /// A gated pillar (Screen Time): present so the surface is ready the moment the
     /// Family Controls entitlement lands, shown as a gentle "soon" until then.
-    private func livingStatSoon(icon: String, label: String) -> some View {
+    private func livingStatSoon(icon: YolkGlyph.Kind, label: String) -> some View {
         HStack(spacing: 8) {
-            Image(systemName: "lock.fill").font(.system(size: 12)).foregroundStyle(YolkColor.muted.opacity(0.7))
+            YolkGlyph(kind: .lock, size: 15, weight: 0.1)
+                .foregroundStyle(YolkColor.muted.opacity(0.7))
+                .frame(width: 15, height: 15)
             VStack(alignment: .leading, spacing: 0) {
                 Text("soon").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.muted)
                 Text(label).font(.caption2).foregroundStyle(YolkColor.muted)
@@ -1058,7 +1062,7 @@ struct HomeView: View {
         .padding(.horizontal, YolkSpace.lg)
     }
 
-    private func careCard(_ title: String, reward: Int, icon: String, done: Bool = false, action: @escaping () -> Void) -> some View {
+    private func careCard(_ title: String, reward: Int, icon: YolkGlyph.Kind, done: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) { careCardLabel(title, reward: reward, icon: icon, done: done) }
             .buttonStyle(.plain)
     }
@@ -1072,11 +1076,11 @@ struct HomeView: View {
     /// path". The Yolks still arrive; they're just a consequence of caring rather than
     /// the reason printed next to it. `reward` stays in the signature because the caller
     /// still uses it to credit the wallet.
-    private func careCardLabel(_ title: String, reward: Int, icon: String, done: Bool) -> some View {
+    private func careCardLabel(_ title: String, reward: Int, icon: YolkGlyph.Kind, done: Bool) -> some View {
         VStack(spacing: 8) {
-            Image(systemName: done ? "checkmark.circle.fill" : icon)
-                .font(.title2)
+            YolkGlyph(kind: done ? .check : icon, size: 26, weight: 0.1)
                 .foregroundStyle(done ? Color(hex: 0x73C57A) : YolkColor.ink)
+                .frame(width: 26, height: 26)
             Text(done ? "done" : title)
                 .font(YolkType.bodySmall)
                 .foregroundStyle(done ? YolkColor.muted : YolkColor.ink)
@@ -1090,11 +1094,11 @@ struct HomeView: View {
 
     private var bottomNav: some View {
         HStack(spacing: 0) {
-            navItem("house.fill", label: "Home", active: true) { showRoom = true }
-            navItem("bag.fill", label: "Shop", active: false) { showWardrobe = true }
-            navItem("square.grid.2x2.fill", label: "Dex", active: false) { showCollection = true }
-            navItem("person.2.fill", label: "Friends", active: false) { showFriends = true }
-            navItem("person.crop.circle.fill", label: "You", active: false) { showProfile = true }
+            navItem(.home, label: "Home", active: true) { showRoom = true }
+            navItem(.shop, label: "Shop", active: false) { showWardrobe = true }
+            navItem(.grid, label: "Dex", active: false) { showCollection = true }
+            navItem(.friends, label: "Friends", active: false) { showFriends = true }
+            navItem(.person, label: "You", active: false) { showProfile = true }
         }
         .padding(.top, YolkSpace.sm)
         .padding(.horizontal, YolkSpace.md)
@@ -1103,12 +1107,14 @@ struct HomeView: View {
         }
     }
 
-    private func navItem(_ icon: String, label: String, active: Bool, action: @escaping () -> Void) -> some View {
+    private func navItem(_ icon: YolkGlyph.Kind, label: String, active: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(spacing: 3) {
-                Image(systemName: icon)
-                    .font(.title3)
+                // Slightly heavier stroke when active. A tab bar cannot use fill-vs-outline
+                // to show selection the way SF Symbols do, so weight and colour carry it.
+                YolkGlyph(kind: icon, size: 22, weight: active ? 0.105 : 0.085)
                     .foregroundStyle(active ? YolkColor.ink : YolkColor.muted)
+                    .frame(width: 22, height: 22)
                 Text(label)
                     .font(.system(size: 10, weight: active ? .semibold : .regular))
                     .foregroundStyle(active ? YolkColor.ink : YolkColor.muted)
