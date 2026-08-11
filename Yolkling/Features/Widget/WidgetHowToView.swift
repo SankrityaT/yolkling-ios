@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A short, warm how-to for adding the home screen widget. Shown from the one-time
 /// home nudge and from a permanent Profile row.

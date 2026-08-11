@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 import AuthenticationServices
 import RevenueCatUI
+import YolklingCore
 
 /// The profile sheet: your creature, and Sign in with Apple to save + sync
 /// across devices. The flow is wired and ready; it only *completes* once the

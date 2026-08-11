@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Holds the live social state for the friends surface: your code, your friends
 /// (with their pet-house snapshots), and your postcard inbox. Thin wrapper over

@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Creation, kept short and direct: pick a colour, pick a base look, then a
 /// little hatch reveal, then name it. The creature stays hidden in the egg so

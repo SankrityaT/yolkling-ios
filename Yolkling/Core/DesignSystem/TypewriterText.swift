@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Reveals text one character at a time with a soft haptic tick as it types.
 /// Reserves the full layout up front (a hidden copy) so the container height

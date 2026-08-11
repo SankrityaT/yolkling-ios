@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A yolkling as a collectible card — the kind you tilt toward the light.
 ///

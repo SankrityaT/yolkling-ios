@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Draws a single room decor piece into the frame it is given (`pw` x `ph`). All
 /// shapes are pure SwiftUI vectors, offsets/sizes are fractions of the piece frame.

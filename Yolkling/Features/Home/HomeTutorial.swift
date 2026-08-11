@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A short, warm first-run tour over the home screen that teaches the actual loop:
 /// this is your yolk, your real day feeds it, caring for yourself earns its trust.

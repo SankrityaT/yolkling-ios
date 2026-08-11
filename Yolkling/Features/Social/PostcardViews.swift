@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Compose a kind note to a friend by PICKING what your yolkling says — there is no
 /// free-text field, by design. See `PostcardVocabulary` for the reasoning.

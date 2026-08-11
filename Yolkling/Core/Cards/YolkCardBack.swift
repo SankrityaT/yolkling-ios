@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The back of a card: dotted stock, and the yolkling mark pressed into it.
 ///

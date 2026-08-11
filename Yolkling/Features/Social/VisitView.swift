@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Stand in someone's room: their creature and their decorations, reconstructed from the
 /// snapshot they published. You can wave, leave a composed note, or gift Yolks.

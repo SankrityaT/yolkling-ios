@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreImage.CIFilterBuiltins
+import YolklingCore
 
 /// A pure SwiftUI view that renders a QR code for `text` using CoreImage.
 /// Interpolation is disabled so the code stays crisp at any size.

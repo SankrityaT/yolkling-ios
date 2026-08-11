@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The Yolkling+ paywall. Free play is never gated — this is the supporter tier
 /// ("only if you love it, it keeps the servers on"). Clear price, restore, and

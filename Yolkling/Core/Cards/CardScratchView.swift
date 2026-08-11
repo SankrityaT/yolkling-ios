@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Scratch the card to find out what you got.
 ///

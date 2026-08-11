@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A room's palette: wall gradient, floor, and an accent (rug/decor). A theme is
 /// bought with Yolks (like a cosmetic). The room itself is code-drawn (RoomView);

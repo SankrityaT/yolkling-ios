@@ -1,4 +1,5 @@
 import Testing
+import YolklingCore
 @testable import Yolkling
 
 /// Exercises `Wallet`: the welcome grant, earning clamp, buy/purchase guards, the
