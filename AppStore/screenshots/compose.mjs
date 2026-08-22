@@ -24,12 +24,12 @@ const sizes = [
 const shots = [
   { file: "01-hero.png",   caption: "a little yolk that's yours", accent: "#FFC23B" },
   { file: "02-hatch.png",  caption: "hatch one of a kind",        accent: "#7B5CF0" },
-  { file: "03-health.png", caption: "it grows when you live well", accent: "#73E0AE" },
+  { file: "03-health.png", caption: "your real life feeds it",     accent: "#73E0AE" },
   { file: "04-focus.png",  caption: "it glows while you're away", accent: "#8FD0FF" },
   { file: "05-dex.png",    caption: "collect a whole flock",      accent: "#FF94C2" },
   { file: "06-closet.png", caption: "earn it, then dress it up",  accent: "#FFD25A" },
   { file: "07-visit.png",  caption: "visit your friends' yolks",  accent: "#7B5CF0" },
-  { file: "08-inbox.png",  caption: "send a little kindness",     accent: "#FF94C2" },
+  { file: "08-card.png",   caption: "tilt it to catch the light", accent: "#FF94C2" },
 ];
 
 const browser = await chromium.launch();
