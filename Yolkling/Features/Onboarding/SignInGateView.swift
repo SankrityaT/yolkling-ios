@@ -100,9 +100,16 @@ struct SignInGateView: View {
         case .failure(let err):
             // A cancellation is not an error worth shouting about; the person simply
             // changed their mind and the button is still right there.
-            if (err as NSError).code == ASAuthorizationError.canceled.rawValue { return }
+            let code = (err as NSError).code
+            if code == ASAuthorizationError.canceled.rawValue { return }
             Haptics.shared.warn()
-            error = "sign in didn't complete. \(err.localizedDescription)"
+            // Never the raw description. Dismissing the system "sign in to your Apple
+            // Account" prompt surfaces error 1000, and the localizedDescription for it
+            // is "com.apple.AuthenticationServices.AuthorizationError error 1000." —
+            // a string that tells a person nothing and looks like the app broke.
+            error = code == ASAuthorizationError.unknown.rawValue
+                ? "you'll need to be signed in to an Apple Account on this phone first. Settings, then tap your name at the top."
+                : "that didn't go through. give it another go in a moment."
         }
     }
 }
