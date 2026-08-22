@@ -165,6 +165,7 @@
 		E7F706F6C64BFA3E0175609C /* Species+Cozy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096CDDB0222B5437F850166C /* Species+Cozy.swift */; };
 		E7FEADC4EC542107262901AD /* FriendRoomCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DB14FC98098997269CFE94 /* FriendRoomCard.swift */; };
 		E8D0C3C3964CD981CBFACC61 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF65067E79FAEAB6D81D2EF4 /* HealthService.swift */; };
+		E97A43A371F896EDA18B89C8 /* SignInGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CED4E300F9DEB0A7A51E33 /* SignInGateView.swift */; };
 		EAB5803EDCB8DCC6C88906B5 /* Mood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E67B727AE71BD4028C618FB /* Mood.swift */; };
 		EB5206DA5E4CA7790D03C424 /* Cosmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */; };
 		EBBB3A6F92782CE6D4471FAF /* RarityAura.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9B833332453257B1847522 /* RarityAura.swift */; };
@@ -312,6 +313,7 @@
 		8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Species+Ocean.swift"; sourceTree = "<group>"; };
 		8DCD055E27868773534C0E1B /* SyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncTests.swift; sourceTree = "<group>"; };
 		942DFA5CF79A002209692D9D /* ScreenTimeReportHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeReportHost.swift; sourceTree = "<group>"; };
+		95CED4E300F9DEB0A7A51E33 /* SignInGateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInGateView.swift; sourceTree = "<group>"; };
 		974C6D0127079C7B7DCD5F95 /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMMono-Medium.ttf"; sourceTree = "<group>"; };
 		9F16803B4B290C5582A6C301 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -752,6 +754,7 @@
 				270564D342B0AC858D8BD308 /* OnboardingBackdrop.swift */,
 				0DEE2E3B0659BB1DD7BDE97F /* OnboardingEntrance.swift */,
 				7E7AFB40028E43F26BD38206 /* OnboardingView.swift */,
+				95CED4E300F9DEB0A7A51E33 /* SignInGateView.swift */,
 				74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */,
 			);
 			path = Onboarding;
@@ -1184,6 +1187,7 @@
 				E18BDFE35398DB24D678E54C /* ShareCardRenderer.swift in Sources */,
 				CC95E3840269A681FB2E0953 /* SharePreview.swift in Sources */,
 				BD284E721748D9A0590066F4 /* ShopHomeView.swift in Sources */,
+				E97A43A371F896EDA18B89C8 /* SignInGateView.swift in Sources */,
 				370441F2076020435ED5FD7C /* SocialModels.swift in Sources */,
 				B6F1A002A4884531D733EF46 /* SocialStore.swift in Sources */,
 				E7F706F6C64BFA3E0175609C /* Species+Cozy.swift in Sources */,

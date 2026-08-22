@@ -24,6 +24,11 @@ struct RootView: View {
     /// still true on the second call — local state is what actually closes the window.
     @State private var saving = false
 
+    /// The Apple user id from the sign-in gate, held until there is a Player to put it
+    /// on. Not persisted separately: the Player is the record, and until one exists
+    /// there is nothing to attach an identity to.
+    @State private var pendingAppleUserID: String?
+
     // Launch ARGUMENTS as well as env vars: SIMCTL_CHILD_* propagates unreliably through
     // `simctl launch`, while --args always arrives. The App Store screenshot pipeline
     // will want this too.
@@ -119,8 +124,18 @@ struct RootView: View {
             } else if screenshotMode {
                 HomeView()
             } else if let player = players.first {
+                // An existing creature is never held hostage. Someone who made one on a
+                // build where sign-in was optional keeps their yolkling and is asked in
+                // Profile instead — locking them out of something they already made,
+                // to enforce a rule added afterwards, would be the worst thing this app
+                // could do to a person.
                 HomeView(injected: creature(from: player), player: player)
                     .transition(.opacity)
+            } else if pendingAppleUserID == nil {
+                SignInGateView { userID in
+                    withAnimation(.easeInOut(duration: 0.4)) { pendingAppleUserID = userID }
+                }
+                .transition(.opacity)
             } else {
                 OnboardingView { creature in
                     withAnimation(.easeInOut(duration: 0.5)) { save(creature) }
@@ -164,6 +179,10 @@ struct RootView: View {
             equippedItemIDs: []
         )
         player.discoveredSpeciesIDs = SpeciesSets.headStart
+        // The identity from the gate. Set at creation so the very first `persist()`
+        // pushes a backup, rather than the creature existing unbacked until the player
+        // happens to wander into Profile.
+        player.appleUserID = pendingAppleUserID
         // Carried from the priming steps, which now actually request these rather than
         // just talking about them. Without this the home screen would show "connect
         // health" to somebody who had just granted it thirty seconds earlier.
