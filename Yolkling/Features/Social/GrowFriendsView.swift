@@ -12,6 +12,7 @@ struct GrowFriendsView: View {
     @State private var dialog: YolkDialog?
     @State private var showQR = false
     @State private var showScanner = false
+    @Environment(DeepLinkRouter.self) private var deepLink
 
     private var inviteURL: URL {
         URL(string: "https://yolkling.com/add/\(myCode)")!
@@ -84,6 +85,7 @@ struct GrowFriendsView: View {
             .ignoresSafeArea()
             .presentationDetents([.large])
         }
+        .task { await consumePendingDeepLink() }
     }
 
     // MARK: - Subviews
@@ -127,6 +129,15 @@ struct GrowFriendsView: View {
     }
 
     private func addFriendFromScan(_ code: String) async {
+        let r = await store.addFriend(code: code)
+        handleResult(r, clearCode: false)
+    }
+
+    /// A code arrived via a tapped invite link (Universal Link). Same path as a
+    /// scanned QR: submit it once, then clear it so it can't refire.
+    private func consumePendingDeepLink() async {
+        guard let code = deepLink.pendingFriendCode else { return }
+        deepLink.pendingFriendCode = nil
         let r = await store.addFriend(code: code)
         handleResult(r, clearCode: false)
     }

@@ -120,6 +120,7 @@
 		D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
 		DC6715049B14E1C73DC19A60 /* DMMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C7A696ACFBC053E0809E12F /* DMMono-Regular.ttf */; };
 		DC93A5811E3A4E2B08CD8B49 /* CustomizeOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28194194B325C85B2FB43038 /* CustomizeOptions.swift */; };
+		DDC0F662B76E4E1092630307 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = B131D4784C6F93A8715A0632 /* DeepLink.swift */; };
 		E261AFCE62FB64987CEDB149 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2878B46B9482D667951C103B /* HomeView.swift */; };
 		E3FB760D2CB53242FC1E4C8E /* RoomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */; };
 		E6AD6071FF213AC002F4DCAE /* WidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DC24772B748D797777AB22 /* WidgetPublisher.swift */; };
@@ -257,6 +258,7 @@
 		AF4187DA7A92439863DAF815 /* YolklingWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YolklingWidgets.entitlements; sourceTree = "<group>"; };
 		B00E5F0B2E4AE46F432F74D6 /* RewardsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsTests.swift; sourceTree = "<group>"; };
 		B10352955EC8A724ED2AEAC4 /* VisitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitView.swift; sourceTree = "<group>"; };
+		B131D4784C6F93A8715A0632 /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLink.swift; sourceTree = "<group>"; };
 		B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundingRevealView.swift; sourceTree = "<group>"; };
 		B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopHomeView.swift; sourceTree = "<group>"; };
 		B882A1710147434DD16C02B3 /* ScreenTimeReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeReport.swift; sourceTree = "<group>"; };
@@ -470,6 +472,7 @@
 		684BB008FD7E864BC109F25D /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				B131D4784C6F93A8715A0632 /* DeepLink.swift */,
 				02B3C10F5C7A1D79618B0B35 /* SocialModels.swift */,
 				F554785860AE53390D69233E /* SupabaseClient.swift */,
 			);
@@ -913,6 +916,7 @@
 				C7461608412DBBB8EB030FA8 /* CreatureStyle.swift in Sources */,
 				DC93A5811E3A4E2B08CD8B49 /* CustomizeOptions.swift in Sources */,
 				CD3BDC853E4D567D4ECD735D /* DecorateView.swift in Sources */,
+				DDC0F662B76E4E1092630307 /* DeepLink.swift in Sources */,
 				3D8D81A66570893FDA60562E /* EggView.swift in Sources */,
 				133CACDDE3224416D9DE9BDB /* FeedbackView.swift in Sources */,
 				934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */,

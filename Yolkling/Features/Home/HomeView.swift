@@ -38,6 +38,7 @@ struct HomeView: View {
     @State private var placedByZone: [String: String]? = nil
     @State private var health = HealthService()
     @State private var screenTime = ScreenTimeService()
+    @Environment(DeepLinkRouter.self) private var deepLink
     @State private var waveToken = 0
     @State private var celebrateToken = 0
     @State private var showTutorial = false
@@ -193,7 +194,8 @@ struct HomeView: View {
             }
         }
         .yolkDialog($dialog)
-        .onAppear { applyScreenshotSeams(); applyTrustDecay(); restoreHealth(); restoreScreenTime(); pushWalletToServer(); helloWaveIfTrusted(); maybeShowTutorial(); migratePlacedDecorIfNeeded(); maybeShowWidgetNudge() }
+        .onAppear { applyScreenshotSeams(); applyTrustDecay(); restoreHealth(); restoreScreenTime(); pushWalletToServer(); helloWaveIfTrusted(); maybeShowTutorial(); migratePlacedDecorIfNeeded(); maybeShowWidgetNudge(); checkPendingDeepLink() }
+        .onChange(of: deepLink.pendingFriendCode) { _, code in if code != nil { showFriends = true } }
         .onChange(of: wallet.coins) { _, _ in persist() }
         .onChange(of: wallet.owned) { _, _ in persist() }
         .onChange(of: wardrobe.equipped) { _, _ in persist() }
@@ -897,8 +899,15 @@ struct HomeView: View {
     private func restoreScreenTime() {
         if player?.screenTimeConnected == true { screenTime.resume() }
     }
+
+    /// A Universal Link tapped before Home existed (cold launch, e.g. from onboarding)
+    /// leaves a code waiting; catch it here too, not just via onChange.
+    private func checkPendingDeepLink() {
+        if deepLink.pendingFriendCode != nil { showFriends = true }
+    }
 }
 
 #Preview {
     HomeView()
+        .environment(DeepLinkRouter())
 }
