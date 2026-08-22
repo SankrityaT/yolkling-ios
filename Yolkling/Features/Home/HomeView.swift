@@ -159,16 +159,21 @@ struct HomeView: View {
             // writes today's off-phone figure to the App Group for us to read back.
             if screenTime.status == .approved { ScreenTimeReportHost() }
         }
-        .sheet(isPresented: $showWardrobe) {
+        // Full screen, not a half sheet.
+        //
+        // Shop is a TAB destination. Tapping a tab and getting a card that stops halfway
+        // up the screen, with the previous screen dimmed behind it, contradicts what a
+        // tab bar means: these are peer places you go, not modals you summon. It also
+        // wasted a third of the screen on a browsing surface, which is the one kind of
+        // screen that wants every pixel.
+        .fullScreenCover(isPresented: $showWardrobe) {
             ShopHomeView(vibe: vibe, store: wardrobe, wallet: wallet,
                          originalBodyHex: originalBodyHex, originalAccentHex: player?.accentHex,
                          onColor: applyColor)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.hidden)
         }
         .sheet(isPresented: $showProfile) {
             ProfileView(vibe: vibe, name: heading, player: player)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
         }
         .sheet(isPresented: $showReferral) {
             ReferralView(vibe: vibe, player: player) { bonus in
