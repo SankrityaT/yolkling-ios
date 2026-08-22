@@ -7,7 +7,7 @@ import Foundation
 /// here. The app reads it back to gently feed the creature. Compiled into BOTH
 /// the app and the extension targets.
 enum ScreenTimeShare {
-    static let appGroup = "group.com.Sankritya.Yolkling"
+    static let appGroup = "group.com.yolkling.ios"
     static let offHoursKey = "yolk.screen.offHours"
     static let updatedKey = "yolk.screen.updatedAt"
 

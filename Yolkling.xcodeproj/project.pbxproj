@@ -1276,7 +1276,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.Widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.Widgets;
 				PRODUCT_NAME = YolklingWidgets;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1297,7 +1297,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.Widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.Widgets;
 				PRODUCT_NAME = YolklingWidgets;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1392,7 +1392,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.ScreenTimeReport;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.ScreenTimeReport;
 				PRODUCT_NAME = YolklingScreenTimeReport;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1412,7 +1412,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.YolklingTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.Tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yolkling.app/Yolkling";
@@ -1431,7 +1431,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.YolklingTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.Tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yolkling.app/Yolkling";
@@ -1451,7 +1451,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.ScreenTimeReport;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.ScreenTimeReport;
 				PRODUCT_NAME = YolklingScreenTimeReport;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1481,7 +1481,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios;
 				PRODUCT_NAME = Yolkling;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1510,7 +1510,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios;
 				PRODUCT_NAME = Yolkling;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;

@@ -38,7 +38,7 @@ struct QRScannerView: UIViewControllerRepresentable {
 final class ScannerViewController: UIViewController {
     var onScan: ((String) -> Void)?
 
-    private let captureQueue = DispatchQueue(label: "com.Sankritya.Yolkling.scannerQueue")
+    private let captureQueue = DispatchQueue(label: "com.yolkling.ios.scannerQueue")
     private var session: AVCaptureSession?
     private var previewLayer: AVCaptureVideoPreviewLayer?
     /// Guards against firing onScan more than once per presentation.

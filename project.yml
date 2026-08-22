@@ -1,6 +1,6 @@
 name: Yolkling
 options:
-  bundleIdPrefix: com.Sankritya
+  bundleIdPrefix: com.yolkling
   deploymentTarget:
     iOS: "18.0"
   createIntermediateGroups: true
@@ -48,7 +48,7 @@ targets:
         product: RevenueCatUI
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios
         PRODUCT_NAME: Yolkling
         CODE_SIGN_ENTITLEMENTS: Yolkling/Yolkling.entitlements
         GENERATE_INFOPLIST_FILE: YES
@@ -82,7 +82,7 @@ targets:
       - path: Yolkling/Features/Room/RoomView.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling.Widgets
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios.Widgets
         PRODUCT_NAME: YolklingWidgets
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: YolklingWidgets/Info.plist
@@ -99,7 +99,7 @@ targets:
       - path: Yolkling/Core/Health/ScreenTimeShare.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling.ScreenTimeReport
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios.ScreenTimeReport
         PRODUCT_NAME: YolklingScreenTimeReport
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: ScreenTimeReport/Info.plist
@@ -117,7 +117,7 @@ targets:
       - target: Yolkling
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.YolklingTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios.Tests
         GENERATE_INFOPLIST_FILE: YES
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
