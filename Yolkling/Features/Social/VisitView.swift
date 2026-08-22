@@ -46,7 +46,7 @@ struct VisitView: View {
         .background(YolkColor.shell)
         .sheet(isPresented: $composing) {
             PostcardCompose(subject: subject, store: store, vibe: vibe, onReward: onReward)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
         }
         .sheet(isPresented: $swapping) {
             if case .friend(let f) = subject {

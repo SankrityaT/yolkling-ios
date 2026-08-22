@@ -30,7 +30,12 @@ struct ProfileView: View {
 
     var body: some View {
         VStack(spacing: YolkSpace.lg) {
-            Capsule().fill(YolkColor.line).frame(width: 40, height: 5).padding(.top, YolkSpace.sm)
+            // Was a drag grabber, which means nothing in a full-screen presentation.
+            HStack {
+                YolkCloseButton { dismiss() }
+                Spacer()
+            }
+            .padding(.top, YolkSpace.sm)
 
             YolklingView(vibe: vibe, expression: .happy, size: 130)
                 .frame(height: 160)
@@ -113,7 +118,7 @@ struct ProfileView: View {
         .background(YolkColor.shell)
         .sheet(isPresented: $showFeedback) {
             FeedbackView(vibe: vibe, userID: player?.backendUserID ?? InstallID.current)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
         }
         .sheet(isPresented: $showPlus) {
             PlusView(store: subs, vibe: vibe).presentationDetents([.large])

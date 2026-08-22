@@ -171,9 +171,8 @@ struct HomeView: View {
                          originalBodyHex: originalBodyHex, originalAccentHex: player?.accentHex,
                          onColor: applyColor)
         }
-        .sheet(isPresented: $showProfile) {
+        .fullScreenCover(isPresented: $showProfile) {
             ProfileView(vibe: vibe, name: heading, player: player)
-                .presentationDetents([.large])
         }
         .sheet(isPresented: $showReferral) {
             ReferralView(vibe: vibe, player: player) { bonus in
@@ -182,7 +181,7 @@ struct HomeView: View {
             }
             .presentationDetents([.large])
         }
-        .sheet(isPresented: $showCollection) {
+        .fullScreenCover(isPresented: $showCollection) {
             CollectionView(discovered: discovered, events: events, vibe: vibe,
                            onGranted: { ids in wallet.grant(ids); persist() },
                            inviteCode: player?.referralCode ?? "",
@@ -192,7 +191,6 @@ struct HomeView: View {
                                player?.guestSpeciesID = id
                                persist()
                            })
-                .presentationDetents([.large])
         }
         .fullScreenCover(item: $discoveryReveal) { sp in
             // The creature walks it home rather than the card just materialising. Same
@@ -208,18 +206,16 @@ struct HomeView: View {
                                outOf: SpeciesSets.dexTotal)
             )
         }
-        .sheet(isPresented: $showRoom) {
+        .fullScreenCover(isPresented: $showRoom) {
             DecorateView(vibe: vibe, expression: shownExpression, outfit: wardrobe.outfit,
                          wallet: wallet, placed: $placedByZone, themeID: $roomThemeID,
                          onChange: { player?.placedDecorByZone = placedByZone; persist() })
-                .presentationDetents([.large])
         }
-        .sheet(isPresented: $showFriends) {
+        .fullScreenCover(isPresented: $showFriends) {
             FriendsView(store: SocialStore(userID: backendUserID, myCode: player?.referralCode ?? ""),
                         vibe: vibe, player: player, myName: heading, mySnapshot: mySnapshot(),
                         wallet: wallet,
                         onReward: { amt in wallet.earn(amt); persist() })
-                .presentationDetents([.large])
         }
         .sheet(item: $wandered) { target in
             WanderArrival(target: target, vibe: vibe,

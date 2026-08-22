@@ -136,6 +136,7 @@
 		C12C0259ED876B5BA58FE8C2 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
 		C1DED04D454F150D89F0A062 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */; };
 		C2BC5F4B1FA45DC677D46D34 /* YolkMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */; };
+		C35B7A70AC799406886E8051 /* YolkCloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E28EF370E18DD9AE7BD181 /* YolkCloseButton.swift */; };
 		C480FA56FCB49E46CB06330F /* SeasonalEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEEAB12F5F5DA67AF043023C /* SeasonalEvent.swift */; };
 		C4B9464AFB8CB75445896E50 /* WanderHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67DF3CE64F1960029BBAB1C /* WanderHomeView.swift */; };
 		C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */; };
@@ -364,6 +365,7 @@
 		EFC6AD7229641595F1324223 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F554785860AE53390D69233E /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
 		F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkGlyph.swift; sourceTree = "<group>"; };
+		F6E28EF370E18DD9AE7BD181 /* YolkCloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCloseButton.swift; sourceTree = "<group>"; };
 		F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCollectionView.swift; sourceTree = "<group>"; };
 		F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPattern.swift; sourceTree = "<group>"; };
 		FD20DDA9932DC37F8B2B837F /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
@@ -808,6 +810,7 @@
 				10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */,
 				2878B46B9482D667951C103B /* HomeView.swift */,
 				E2E2092639E1FE04CE2057DA /* LivingTile.swift */,
+				F6E28EF370E18DD9AE7BD181 /* YolkCloseButton.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -1208,6 +1211,7 @@
 				8D25FD82B5D02C23463C3A46 /* YolkCard.swift in Sources */,
 				8AB5D8F4D1CD51841F5F8A02 /* YolkCardBack.swift in Sources */,
 				B230DDE4DA3A2793C38B4C11 /* YolkCardFace.swift in Sources */,
+				C35B7A70AC799406886E8051 /* YolkCloseButton.swift in Sources */,
 				D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */,
 				BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */,
 				B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */,

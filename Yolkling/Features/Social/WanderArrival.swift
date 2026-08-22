@@ -72,7 +72,7 @@ struct WanderArrival: View {
         .background(YolkColor.shell)
         .sheet(isPresented: $composing) {
             PostcardCompose(subject: .stranger(target), store: store, vibe: vibe, onReward: onReward)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
         }
         .task { await renderCard() }
     }
