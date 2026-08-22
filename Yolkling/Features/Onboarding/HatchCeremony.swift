@@ -124,9 +124,21 @@ struct HatchCeremony: View {
         .rotationEffect(.degrees(pose.shake * 3.2), anchor: .bottom)
     }
 
+    /// The shell colour. Deliberately NOT `vibe.body`.
+    ///
+    /// It was, and the moment the shell split the two halves were the exact same colour
+    /// as the creature coming out of them - so a mint creature emerged from a mint shell
+    /// and the whole reveal read as one indistinct blob. A shell that matches its
+    /// contents cannot reveal anything.
+    ///
+    /// Mixed heavily toward the eggshell cream instead, which keeps "your colour" while
+    /// giving the creature something to be distinct from. Real shells are chalky and
+    /// paler than the yolk inside, so this is also just what an egg looks like.
+    private var shellColor: Color { YolkColor.shell.mix(with: vibe.body, by: 0.34) }
+
     private var eggBody: some View {
         EggShape()
-            .fill(vibe.body)
+            .fill(shellColor)
             .overlay(
                 RadialGradient(colors: [.white.opacity(0.55), .clear],
                                center: UnitPoint(x: 0.36, y: 0.28),
@@ -138,6 +150,9 @@ struct HatchCeremony: View {
                                startRadius: size * 0.28, endRadius: size * 0.6)
             )
             .clipShape(EggShape())
+            // A rim, so a pale shell still has an edge against a pale background and
+            // the broken halves read as pieces of something rather than as smudges.
+            .overlay(EggShape().stroke(vibe.deep.opacity(0.35), lineWidth: max(1, size * 0.008)))
     }
 
     // MARK: Side effects

@@ -60,25 +60,36 @@ struct LivingTile: View {
     }
 
     private var content: some View {
-        HStack(spacing: 8) {
-            YolkGlyph(kind: glyph, size: 17, weight: 0.1)
+        // Three tiles across a 375pt screen leaves roughly 86pt each once padding is
+        // taken out, and the glyph eats a fifth of that. Tight enough that the sizes
+        // below are chosen for the SE and merely comfortable everywhere larger.
+        HStack(spacing: 6) {
+            YolkGlyph(kind: glyph, size: 15, weight: 0.1)
                 .foregroundStyle(hit ? tint : YolkColor.muted)
-                .frame(width: 17, height: 17)
+                .frame(width: 15, height: 15)
             VStack(alignment: .leading, spacing: 0) {
                 Text(shown)
                     .font(isEmpty ? YolkType.bodySmall.weight(.semibold)
                                   : YolkType.body.weight(.semibold))
                     .foregroundStyle(isEmpty ? YolkColor.muted : YolkColor.ink)
                     .contentTransition(.numericText())
+                    // Three tiles across leaves very little width, and without this a
+                    // word like "counting" broke across two lines mid-word ("countin /
+                    // g"), which reads as a rendering fault rather than a long word.
+                    // Scales a long way before it will truncate. lineLimit alone only
+                    // converted the wrap into an ellipsis - "let's go" became "let's…"
+                    // on an SE, which is not better than wrapping, just quieter about it.
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.55)
                 Text(label)
                     .font(.caption2)
                     .foregroundStyle(YolkColor.muted)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.85)
+                    .minimumScaleFactor(0.55)
             }
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, 12).padding(.vertical, 9)
+        .padding(.horizontal, 9).padding(.vertical, 9)
         .frame(maxWidth: .infinity)
         .background(alignment: .bottom) { vessel }
         .clipShape(RoundedRectangle(cornerRadius: 18))

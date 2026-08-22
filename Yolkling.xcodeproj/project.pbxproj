@@ -39,6 +39,7 @@
 		2457FC8BE922B4C6358E0241 /* WidgetHowToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45701349448C8131182AD13C /* WidgetHowToView.swift */; };
 		262E1FF02C82FE14972FB107 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95D3E4FE309120014CA4B4F /* DeepLink.swift */; };
 		2AC2BDCF6B0A54ABC0D5F635 /* SpeciesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C4E64C5781F3C8518BCB9B /* SpeciesTests.swift */; };
+		2C469F395804CE251D5A723B /* TutorialSpotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF269F8705D1C1273019B7C /* TutorialSpotlight.swift */; };
 		2CAAC08C69E1616E53A9DE93 /* SpeciesSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4374987F9853748A1166C1BA /* SpeciesSet.swift */; };
 		2DD5ED2695A90EFCD302A043 /* WidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DC24772B748D797777AB22 /* WidgetPublisher.swift */; };
 		2E5A1E21EB4608C0ED24796B /* CreatureStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8223D82853775F0621924C5 /* CreatureStyle.swift */; };
@@ -241,6 +242,7 @@
 		14C460FAA85BB2A5D657CBE3 /* ScreenTimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeService.swift; sourceTree = "<group>"; };
 		14FCBBEBD1D5464C4A735893 /* FoundingFlair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundingFlair.swift; sourceTree = "<group>"; };
 		1A696350A3A3F96048352A62 /* RoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomView.swift; sourceTree = "<group>"; };
+		1BF269F8705D1C1273019B7C /* TutorialSpotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialSpotlight.swift; sourceTree = "<group>"; };
 		1DCBEF321B406CD08787A8AD /* DecorateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecorateView.swift; sourceTree = "<group>"; };
 		1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkExpression.swift; sourceTree = "<group>"; };
 		22DB14FC98098997269CFE94 /* FriendRoomCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRoomCard.swift; sourceTree = "<group>"; };
@@ -810,6 +812,7 @@
 				10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */,
 				2878B46B9482D667951C103B /* HomeView.swift */,
 				E2E2092639E1FE04CE2057DA /* LivingTile.swift */,
+				1BF269F8705D1C1273019B7C /* TutorialSpotlight.swift */,
 				F6E28EF370E18DD9AE7BD181 /* YolkCloseButton.swift */,
 			);
 			path = Home;
@@ -1195,6 +1198,7 @@
 				56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */,
 				DAAC52882B232B1980F924A5 /* TradeSheet.swift in Sources */,
 				CF37128F7CA33BB9DE42746D /* TrustStage.swift in Sources */,
+				2C469F395804CE251D5A723B /* TutorialSpotlight.swift in Sources */,
 				8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */,
 				52AAB71891CABF5B96820C3F /* Vibe.swift in Sources */,
 				EE8A541C3D503283B576EFE5 /* VibeQuiz.swift in Sources */,

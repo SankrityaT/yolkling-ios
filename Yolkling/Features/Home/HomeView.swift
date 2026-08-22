@@ -311,8 +311,26 @@ struct HomeView: View {
         }
         .task { if router.pending != nil { showFriends = true } }
         .onChange(of: router.pending) { _, link in if link != nil { showFriends = true } }
-        .overlay {
-            if showTutorial { HomeTutorial(name: heading, onDone: finishTutorial) }
+        // Anchors resolved here, at the root, so the tutorial gets real on-screen
+        // frames rather than guessing at proportions of the screen height.
+        .overlayPreferenceValue(TutorialAnchorKey.self) { anchors in
+            // `ignoresSafeArea` on the reader, not just the scrim.
+            //
+            // The proxy resolves anchors in ITS OWN coordinate space. Inset by the top
+            // safe area, every rect it produced came out shifted up by the height of the
+            // status bar, so the spotlight hole sat above the control it was meant to be
+            // highlighting. The scrim already ignored the safe area, which is exactly why
+            // the two disagreed.
+            GeometryReader { proxy in
+                if showTutorial {
+                    HomeTutorial(
+                        name: heading,
+                        anchors: anchors.mapValues { proxy[$0] },
+                        onDone: finishTutorial
+                    )
+                }
+            }
+            .ignoresSafeArea()
         }
         .overlay(alignment: .top) { probeOverlay }
         .yolkMenu(isPresented: $showVisitMenu, alignment: .bottom, anchor: .top) {
@@ -709,9 +727,11 @@ struct HomeView: View {
                         .foregroundStyle(YolkColor.ink)
                 }
                 .buttonStyle(.plain).padding(YolkSpace.md)
+                .tutorialTarget(.decorate)
             }
             .frame(height: heroHeight)
             .padding(.horizontal, YolkSpace.lg)
+            .tutorialTarget(.creature)
 
             // The creature's own line, promoted to be the thing you actually read.
             //
@@ -753,13 +773,14 @@ struct HomeView: View {
                 }
                 .buttonStyle(.plain)
             }
+            .tutorialTarget(.careRow)
             .padding(.horizontal, YolkSpace.lg)
 
             // Three kinds of thing used to stack here as equal-weight cards: things you
             // DO, a thing to SET UP, and passive STATUS. That flat hierarchy is what made
             // the panel read as a dashboard. Now they're separated by kind and by weight.
             if health.available, health.authorized {
-                livingCard.padding(.horizontal, YolkSpace.lg)   // real data, earns a card
+                livingCard.padding(.horizontal, YolkSpace.lg).tutorialTarget(.living)   // real data, earns a card
             } else if health.available, shouldOfferHealth {
                 healthPrompt.padding(.horizontal, YolkSpace.lg) // earned, and dismissible
             }
