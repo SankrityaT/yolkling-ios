@@ -276,7 +276,20 @@ struct HomeView: View {
             // when a surprise is worth the most and when "while you were away" is
             // literally true. Deliberately after the season refresh so a slow network
             // can't hold up the moment.
-            if wandered == nil {
+            //
+            // Gated on having actually looked after yourself recently, for two reasons.
+            //
+            // The design one: the creature going out is supposed to be EARNED. Care for
+            // yourself, your creature has a good day, it comes home with something. An
+            // ungated roll fired the instant onboarding finished, so a brand-new player
+            // was told their yolkling "wandered off" before they had done a single thing
+            // — which makes "while you were away" a lie and buries the first run under a
+            // modal.
+            //
+            // The correctness one: the server's nightly roll (roll_nightly_drifts) gates
+            // on lastCareDate inside drift_care_window(). The client rolling on a looser
+            // rule than the server means the two disagree about who is eligible.
+            if wandered == nil, hasCaredRecently {
                 let social = SocialStore(userID: backendUserID, myCode: player?.referralCode ?? "")
                 wandered = await social.wanderIfDue()
             }
@@ -809,8 +822,20 @@ struct HomeView: View {
                 HStack(spacing: YolkSpace.sm) {
                     livingStat(icon: .steps, value: "\(health.steps)", label: "steps", hit: health.steps >= stepGoal)
                     livingStat(icon: .sleep, value: String(format: "%.1fh", health.sleepHours), label: "sleep", hit: health.sleepHours >= 7)
+                    // Three states, not two. `available` requires BOTH approval AND a
+                    // figure from the report extension, so a player who had just granted
+                    // Screen Time fell into the same branch as one who had never been
+                    // asked: a padlock, the word "soon", and a button that re-requested a
+                    // permission they had already given and then visibly did nothing.
+                    // Granting something and watching the UI not acknowledge it is worse
+                    // than not being asked.
                     if screenTime.available, let off = screenTime.offScreenHours {
                         livingStat(icon: .phone, value: String(format: "%.0fh", off), label: "off phone", hit: screenTime.hitGoal)
+                    } else if screenTime.status == .approved {
+                        // Approved, but the extension has not produced a figure yet. Not
+                        // tappable: there is nothing left to ask for, and a button that
+                        // does nothing is the bug being fixed.
+                        livingStatWaiting(label: "off phone")
                     } else {
                         Button { connectScreenTime() } label: { livingStatSoon(icon: .phone, label: "off phone") }
                             .buttonStyle(.plain)
@@ -853,6 +878,29 @@ struct HomeView: View {
                 .frame(width: 17, height: 17)
             VStack(alignment: .leading, spacing: 0) {
                 Text(value).font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
+                Text(label).font(.caption2).foregroundStyle(YolkColor.muted)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 12).padding(.vertical, 8)
+        .frame(maxWidth: .infinity)
+        .background(YolkColor.shell, in: RoundedRectangle(cornerRadius: 14))
+    }
+
+    /// Authorised, but no figure yet.
+    ///
+    /// Distinct from the "soon" pillar on purpose. That one means "you have not turned
+    /// this on"; this one means "you have, and it is counting". The first off-phone
+    /// figure cannot exist until the report extension has had a day to produce one, so
+    /// the copy says that rather than leaving someone tapping a padlock wondering what
+    /// they got wrong.
+    private func livingStatWaiting(label: String) -> some View {
+        HStack(spacing: 8) {
+            YolkGlyph(kind: .phone, size: 15, weight: 0.1)
+                .foregroundStyle(YolkColor.muted)
+                .frame(width: 15, height: 15)
+            VStack(alignment: .leading, spacing: 0) {
+                Text("counting").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.inkSoft)
                 Text(label).font(.caption2).foregroundStyle(YolkColor.muted)
             }
             Spacer()
@@ -953,6 +1001,16 @@ struct HomeView: View {
     private func helloWaveIfTrusted() {
         guard trustStage.waves else { return }
         Task { try? await Task.sleep(for: .seconds(0.6)); waveToken += 1 }
+    }
+
+    /// Whether the player has cared for themselves inside the drift window.
+    ///
+    /// Mirrors `drift_care_window()` in docs/sql/drift_cron.sql, which is 2 days. A
+    /// player who has never cared has no `lastCareDate` at all and is not eligible,
+    /// which is what keeps the wander from firing the moment onboarding ends.
+    private var hasCaredRecently: Bool {
+        guard let last = player?.lastCareDate else { return false }
+        return Date().timeIntervalSince(last) < 2 * 24 * 60 * 60
     }
 
     /// Trust eases back when you drift from caring for YOURSELF. Deliberately gentle:
