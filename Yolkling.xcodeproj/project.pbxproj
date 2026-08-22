@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0364CA692D518EF8AAF0F8B0 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 271C78981C0D5681EF94171E /* Haptics.swift */; };
 		03B787A52BC86AF96B68F016 /* FocusSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */; };
+		03BAB92472079E790686F81F /* LivingTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E2092639E1FE04CE2057DA /* LivingTile.swift */; };
 		06CFCBF306F3A0FDCAFD2653 /* SpeciesGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D92FE830A5B71AC26B90E21 /* SpeciesGalleryView.swift */; };
 		0761A9E428F716F629E0E8A8 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9E64CF6D045ACC42F06467FE /* RevenueCatUI */; };
 		07718ACB92EB92E7631816A2 /* CosmeticView+Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = E696A83AE5A5C3CE13F2EF8E /* CosmeticView+Spring.swift */; };
@@ -350,6 +351,7 @@
 		DC9DF2A1897F2D6B597F6A9B /* CardScratchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScratchView.swift; sourceTree = "<group>"; };
 		DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeStore.swift; sourceTree = "<group>"; };
 		DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkMotion.swift; sourceTree = "<group>"; };
+		E2E2092639E1FE04CE2057DA /* LivingTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivingTile.swift; sourceTree = "<group>"; };
 		E3E3DAFC3357CF16EDB765B2 /* FocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusView.swift; sourceTree = "<group>"; };
 		E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkSpacing.swift; sourceTree = "<group>"; };
 		E55E15A3191441EF6DD5D2C0 /* YolkCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCard.swift; sourceTree = "<group>"; };
@@ -805,6 +807,7 @@
 			children = (
 				10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */,
 				2878B46B9482D667951C103B /* HomeView.swift */,
+				E2E2092639E1FE04CE2057DA /* LivingTile.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -1142,6 +1145,7 @@
 				F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */,
 				E261AFCE62FB64987CEDB149 /* HomeView.swift in Sources */,
 				0934185C7FCCBB0433E403E5 /* ItemTile.swift in Sources */,
+				03BAB92472079E790686F81F /* LivingTile.swift in Sources */,
 				8CFEA4E65FD7AA9F81025A05 /* Mood.swift in Sources */,
 				339169F8EB3C2F3BEAB56081 /* MoodCheckInView.swift in Sources */,
 				F1BB2F225D99F64387F88587 /* OnboardingBackdrop.swift in Sources */,

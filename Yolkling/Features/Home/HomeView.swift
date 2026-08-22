@@ -820,25 +820,51 @@ struct HomeView: View {
                     }
                 }
                 HStack(spacing: YolkSpace.sm) {
-                    livingStat(icon: .steps, value: "\(health.steps)", label: "steps", hit: health.steps >= stepGoal)
-                    livingStat(icon: .sleep, value: String(format: "%.1fh", health.sleepHours), label: "sleep", hit: health.sleepHours >= 7)
-                    // Three states, not two. `available` requires BOTH approval AND a
-                    // figure from the report extension, so a player who had just granted
-                    // Screen Time fell into the same branch as one who had never been
-                    // asked: a padlock, the word "soon", and a button that re-requested a
-                    // permission they had already given and then visibly did nothing.
-                    // Granting something and watching the UI not acknowledge it is worse
-                    // than not being asked.
+                    LivingTile(glyph: .steps,
+                               value: health.steps > 0 ? "\(health.steps)" : nil,
+                               label: "steps",
+                               progress: Double(health.steps) / Double(stepGoal),
+                               hit: health.steps >= stepGoal,
+                               emptyWord: "let's go",
+                               tint: YolkColor.mint)
+
+                    LivingTile(glyph: .sleep,
+                               value: health.sleepHours > 0 ? String(format: "%.1fh", health.sleepHours) : nil,
+                               label: "sleep",
+                               progress: health.sleepHours / 7,
+                               hit: health.sleepHours >= 7,
+                               emptyWord: "tonight",
+                               tint: YolkColor.sky)
+
+                    // Three states, not two. `available` needs BOTH approval AND a figure
+                    // from the report extension, so someone who had just granted Screen
+                    // Time landed in the same branch as someone never asked: a padlock,
+                    // the word "soon", and a button that re-requested a permission they
+                    // had already given and then visibly did nothing.
                     if screenTime.available, let off = screenTime.offScreenHours {
-                        livingStat(icon: .phone, value: String(format: "%.0fh", off), label: "off phone", hit: screenTime.hitGoal)
+                        // Below half an hour there is no figure worth printing: early in
+                        // the day "off phone" is legitimately near zero, and "0.0h" under
+                        // a success outline celebrates nothing while reading as a fault.
+                        // The budget is still intact, so the tile stays warm and waits.
+                        LivingTile(glyph: .phone,
+                                   value: off >= 0.5 ? String(format: "%.1fh", off) : nil,
+                                   label: "off phone",
+                                   progress: screenTime.offScreenProgress,
+                                   hit: screenTime.hitGoal && off >= 1,
+                                   emptyWord: "counting",
+                                   tint: YolkColor.grape)
                     } else if screenTime.status == .approved {
-                        // Approved, but the extension has not produced a figure yet. Not
-                        // tappable: there is nothing left to ask for, and a button that
-                        // does nothing is the bug being fixed.
-                        livingStatWaiting(label: "off phone")
+                        // Approved, but no figure yet. Deliberately not tappable: there
+                        // is nothing left to ask for, and a button that does nothing is
+                        // the bug being fixed.
+                        LivingTile(glyph: .phone, value: nil, label: "off phone",
+                                   progress: 0, hit: false,
+                                   emptyWord: "counting", tint: YolkColor.grape)
                     } else {
-                        Button { connectScreenTime() } label: { livingStatSoon(icon: .phone, label: "off phone") }
-                            .buttonStyle(.plain)
+                        LivingTile(glyph: .phone, value: nil, label: "off phone",
+                                   progress: 0, hit: false,
+                                   emptyWord: "turn on", tint: YolkColor.grape,
+                                   onTap: { connectScreenTime() })
                     }
                 }
                 if livingHasReward {
@@ -1333,8 +1359,21 @@ struct HomeView: View {
         if seam("YOLK_ROOM_SHEET") { showRoom = true }
         if env["YOLK_FRIENDS"] != nil { showFriends = true }
         #if DEBUG
-        if let h = env["YOLK_HEALTH"] { health.mock(high: h != "low") }
-        if let s = env["YOLK_SCREENTIME"] { screenTime.mock(offHours: s == "low" ? 8 : 21) }
+        // Value seams read a launch ARGUMENT as well as an env var. `SIMCTL_CHILD_*`
+        // propagates unreliably through `simctl launch`, so an env-only seam silently
+        // does nothing and you end up "verifying" a state you never actually rendered.
+        func seamValue(_ key: String) -> String? {
+            if let v = env[key] { return v }
+            return CommandLine.arguments
+                .first { $0.hasPrefix("\(key)=") }
+                .map { String($0.dropFirst(key.count + 1)) }
+        }
+        if let h = seamValue("YOLK_HEALTH") { health.mock(high: h != "low") }
+        if let s = seamValue("YOLK_SCREENTIME") {
+            // A number is taken literally, so any fill level can be rendered.
+            screenTime.mock(usedHours: Double(s) ?? (s == "low" ? 6 : 1.5))
+        }
+        if let st = seamValue("YOLK_STEPS"), let n = Int(st) { health.mockSteps(n) }
         if env["YOLK_TRUST"] != nil { demoTrust = 1; Task { try? await Task.sleep(for: .seconds(0.5)); waveToken += 1 } }
         if let h = env["YOLK_HOUR"], let hr = Int(h) { demoHour = hr }
         if env["YOLK_TUTORIAL"] != nil { Task { try? await Task.sleep(for: .seconds(0.6)); withAnimation { showTutorial = true } } }
