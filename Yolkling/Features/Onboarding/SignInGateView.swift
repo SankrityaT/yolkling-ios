@@ -20,7 +20,17 @@ struct SignInGateView: View {
     /// Called with the stable Apple user id once sign-in succeeds.
     var onSignedIn: (String) -> Void
 
-    @State private var error: String?
+    /// What went wrong, if anything. Typed rather than a string, because the two cases
+    /// need different UI: one is fixable in Settings and the other is worth retrying.
+    private enum Failure: Equatable {
+        /// No Apple Account on the device. Nothing to retry; they have to go to Settings.
+        case noAppleAccount
+        /// Anything else. Usually transient.
+        case failed
+    }
+
+    @State private var failure: Failure?
+    @State private var signingIn = false
 
     var body: some View {
         ZStack {
@@ -37,6 +47,12 @@ struct SignInGateView: View {
                         .font(YolkType.title)
                         .foregroundStyle(YolkColor.ink)
                         .multilineTextAlignment(.center)
+                        // Without `fixedSize` a Text in a height-constrained stack
+                        // truncates rather than wraps: on an SE this headline came out as
+                        // "first, so they can…", which is a worse first impression than
+                        // no headline at all.
+                        .fixedSize(horizontal: false, vertical: true)
+                        .minimumScaleFactor(0.8)
                         .yolkEntrance(0)
 
                     Text("your yolkling lives on your phone, and signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day. it is also how friends find you.")
@@ -52,15 +68,14 @@ struct SignInGateView: View {
                     .font(YolkType.bodySmall)
                     .foregroundStyle(YolkColor.muted)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, YolkSpace.lg)
                     .yolkEntrance(2)
 
-                if let error {
-                    Text(error)
-                        .font(YolkType.bodySmall)
-                        .foregroundStyle(Color(hex: 0xE05A6E))
-                        .multilineTextAlignment(.center)
+                if let failure {
+                    errorCard(failure)
                         .padding(.horizontal, YolkSpace.lg)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
 
                 Spacer()
@@ -87,29 +102,77 @@ struct SignInGateView: View {
         }
     }
 
+    /// The failure, presented as something a person can act on.
+    ///
+    /// Was a line of red text containing Apple's `localizedDescription`, which for the
+    /// commonest failure reads "com.apple.AuthenticationServices.AuthorizationError
+    /// error 1000." — a string that names no problem and offers no way out, shown at the
+    /// exact moment someone is deciding whether this app is worth their time.
+    ///
+    /// A dead end is the real bug here, not the wording: this screen is the only way
+    /// into the app, so a person who cannot sign in has nowhere to go. The Settings
+    /// button is the way out.
+    @ViewBuilder
+    private func errorCard(_ failure: Failure) -> some View {
+        VStack(alignment: .leading, spacing: YolkSpace.sm) {
+            Text(failure == .noAppleAccount
+                 ? "this phone isn't signed in to an Apple Account"
+                 : "that didn't go through")
+                .font(YolkType.body.weight(.semibold))
+                .foregroundStyle(YolkColor.ink)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(failure == .noAppleAccount
+                 ? "Yolkling uses it to keep your yolkling safe. open Settings, tap your name at the top, and sign in, then come back."
+                 : "it happens. give it another go in a moment.")
+                .font(YolkType.bodySmall)
+                .foregroundStyle(YolkColor.inkSoft)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if failure == .noAppleAccount {
+                Button {
+                    Haptics.shared.tick()
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    Text("open Settings")
+                        .font(YolkType.bodySmall.weight(.semibold))
+                        .foregroundStyle(YolkColor.shell)
+                        .padding(.horizontal, YolkSpace.md).padding(.vertical, 9)
+                        .background(YolkColor.ink, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(YolkSpace.md)
+        .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
+    }
+
     private func handle(_ result: Result<ASAuthorization, Error>) {
+        signingIn = false
         switch result {
         case .success(let auth):
             guard let credential = auth.credential as? ASAuthorizationAppleIDCredential else {
-                error = "sign in didn't complete. please try again."
+                withAnimation(.snappy) { failure = .failed }
                 return
             }
             Haptics.shared.reward()
-            error = nil
+            withAnimation(.snappy) { failure = nil }
             onSignedIn(credential.user)
         case .failure(let err):
             // A cancellation is not an error worth shouting about; the person simply
             // changed their mind and the button is still right there.
             let code = (err as NSError).code
-            if code == ASAuthorizationError.canceled.rawValue { return }
+            if code == ASAuthorizationError.canceled.rawValue {
+                withAnimation(.snappy) { failure = nil }
+                return
+            }
             Haptics.shared.warn()
-            // Never the raw description. Dismissing the system "sign in to your Apple
-            // Account" prompt surfaces error 1000, and the localizedDescription for it
-            // is "com.apple.AuthenticationServices.AuthorizationError error 1000." —
-            // a string that tells a person nothing and looks like the app broke.
-            error = code == ASAuthorizationError.unknown.rawValue
-                ? "you'll need to be signed in to an Apple Account on this phone first. Settings, then tap your name at the top."
-                : "that didn't go through. give it another go in a moment."
+            withAnimation(.snappy) {
+                failure = code == ASAuthorizationError.unknown.rawValue ? .noAppleAccount : .failed
+            }
         }
     }
 }

@@ -677,10 +677,30 @@ private struct BottomBar<Content: View>: View {
     var body: some View {
         content
             .padding(.horizontal, YolkSpace.lg)
-            .padding(.top, YolkSpace.sm)
+            .padding(.top, YolkSpace.lg)
             .padding(.bottom, YolkSpace.xs)
             .frame(maxWidth: .infinity)
-            .background(YolkColor.shell)
+            // A fade, not a flat fill.
+            //
+            // This was `.background(YolkColor.shell)`: an opaque cream band across the
+            // bottom of every onboarding screen. Behind a static cream background nobody
+            // noticed, but the backdrop is an animated mesh now, so the band read as a
+            // hard white strip pasted over it — most obviously during the hatch, where it
+            // sits empty for five seconds waiting for a button to fade in.
+            //
+            // The fill existed so scrolling content stays legible passing underneath. A
+            // gradient does that job without drawing an edge: opaque where the button is,
+            // gone by the top of the bar, so the mesh runs continuously behind it.
+            .background(
+                LinearGradient(
+                    stops: [
+                        .init(color: YolkColor.shell.opacity(0), location: 0),
+                        .init(color: YolkColor.shell.opacity(0.85), location: 0.45),
+                        .init(color: YolkColor.shell, location: 1),
+                    ],
+                    startPoint: .top, endPoint: .bottom
+                )
+            )
     }
 }
 
