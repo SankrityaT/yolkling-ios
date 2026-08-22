@@ -13,9 +13,15 @@ Bundle id: `com.Sankritya.Yolkling` · Version: `1.0.0`
 ## App Name
 
 ```
-Yolkling
+Yolkling: Grow by Living
 ```
-(8 / 30 characters)
+(24 / 30 characters)
+
+The bare "Yolkling" was taken by a never-submitted app record on the original
+developer account, and Apple will not delete a record that was never approved.
+The home-screen name is unaffected: that comes from `CFBundleDisplayName` and
+still reads "Yolkling". Rename to the bare word if the reservation is ever
+released.
 
 ---
 
@@ -33,9 +39,9 @@ a cozy pet that grows with you
 Editable after release without a new build. Use it for the launch.
 
 ```
-free forever. hatch a one of a kind creature, then grow it by living well: steps, sleep, and time off your phone. collect, decorate, and visit friends.
+free to play, all of it. hatch a one of a kind creature, then grow it by living well: steps, sleep, and time off your phone. collect, decorate, visit friends.
 ```
-(151 / 170 characters)
+(156 / 170 characters)
 
 ---
 
@@ -46,7 +52,7 @@ Leads with the locked one-liner from docs/PITCH.md, verbatim. Paste as-is.
 ```
 Yolkling is a virtual pet that grows when you take care of yourself in real life. Your steps, sleep, and time off your phone feed your yolk, and you collect new yolks and dress them up.
 
-it is free. all of it. no in-app purchases, no ads, no real money anywhere. the only currency is Yolks, and you earn those just by showing up for yourself.
+free to play, all of it. no ads, and the only currency is Yolks, which you earn by showing up for yourself. Yolks are never for sale: there is no way to buy them at any price.
 
 hatch
 your yolk is one of a kind. pick its color and its look, watch it hatch, and it is yours. there are 219 named species to discover across five families, so the one you start with is just the first.
@@ -64,7 +70,10 @@ friends, done kindly
 add friends with a share code or a QR scan, let their yolks visit yours, and send postcards back and forth. invite a friend with your founding-flock code and you both get a founding species. no feeds, no follower counts, no likes. just the people you actually know.
 
 honest by design
-no ads. no tracking. no in-app purchases. your mood history and your day stay on your device. there is a home-screen widget so your yolk is one glance away, and a real account you own, with the controls to match.
+no ads. no tracking. your mood history and your day stay on your device. there is a home-screen widget so your yolk is one glance away, and a real account you own, with the controls to match.
+
+if you want to support it
+there is one optional subscription, Yolkling Plus. it adds a supporter glow on your yolk and a small handful of Yolks each month, and that is all it does. every species, every hat, every feature is reachable without it. the only thing you cannot earn is the glow, which is the point of it: it says you chose to keep this going.
 
 made by one person who wanted a pet that roots for the real you.
 ```
@@ -89,7 +98,7 @@ the first hatch. Yolkling 1.0 is here.
 
 hatch a one of a kind yolk, grow it by living well with optional Apple Health, put the phone down with focus sessions, check in on how you are, and earn Yolks to dress it up. add friends by code or QR, send postcards, and start your Dex of 219 species.
 
-free forever. no ads, no in-app purchases. made by one person. thank you for being here for the first one.
+free to play, all of it. no ads. made by one person. thank you for being here for the first one.
 ```
 
 ---
@@ -160,11 +169,15 @@ Thanks for reviewing Yolkling.
 
 HealthKit is optional. The app is fully functional without granting Health access. If you decline the Health prompt, everything still works. To see the "grow by living" behavior, please add Steps and Sleep samples in the Apple Health app; the creature reads those to grow over time. (Note: the DEBUG-only sample-seeding path, seedSampleDay, is compiled out of the Release build, so real Health samples are the way to exercise this in review.)
 
-Social works logged out to start. You can hatch, grow, focus, check in, earn Yolks, and shop without an account. Adding friends, visits, and postcards use a share code or QR scan.
+Sign in with Apple is required to create a creature. Only the stable user identifier is requested (requestedScopes is empty), so no name and no email is ever collected. It is required because the creature is backed up to the account and because the friend graph is keyed on it; without it a creature cannot survive a reinstall and cannot be found by friends. An existing creature made before this requirement is never locked out.
 
 Focus sessions use a Live Activity to show the resting creature on the lock screen while the phone is set down.
 
-Monetization: there is none. No in-app purchases, no subscriptions, no ads. The only currency is Yolks, earned in-app, spent on fixed-price cosmetics. There is no real-money transaction anywhere in the app.
+Monetization: one auto-renewable subscription, Yolkling Plus (com.yolkling.ios.plus.monthly), managed through RevenueCat. It grants a cosmetic supporter glow and a small monthly grant of Yolks. It gates no content: every species, cosmetic and feature is reachable without it. There are no ads.
+
+Yolks, the in-app currency, are deliberately NOT purchasable at any price. There is no currency pack, no gacha, no loot box, and no randomised purchase anywhere in the app. Cash never touches a random roll: the only randomness sits behind packs the player earns through daily use. Cosmetics are fixed price in Yolks.
+
+The paywall is reachable from Profile > yolkling+, and Restore Purchases sits on the paywall itself. Cancel, refund and plan changes are available in-app through RevenueCat's Customer Center, also from Profile.
 
 User-generated content: friends can send short postcards. The app includes block, report, and account deletion controls.
 

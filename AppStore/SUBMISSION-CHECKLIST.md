@@ -27,8 +27,21 @@ Nobody and no agent can do them for you.
 ## 1. Pre-flight (code)
 
 - [ ] Version string is **1.0.0** and build number is set (project.yml / target).
-- [ ] **Subscription / paywall removed** — no StoreKit products, no IAP, no paywall
-  surfaces. The app is 100% free.
+- [ ] **Subscription configured, not removed.** This checklist previously said to
+  strip IAP entirely, which was true for the free-tier branch and is now the
+  opposite of the plan. Yolkling Plus ships:
+  - [ ] `com.yolkling.ios.plus.monthly` exists in App Store Connect, priced, with
+        availability including the **United States**, a localization, and a review
+        screenshot (subscriptions are rejected without one).
+  - [ ] Paid Applications Agreement signed and tax/banking complete, or products
+        will not load and the paywall comes back empty looking like a code bug.
+  - [ ] RevenueCat: App Store app on bundle `com.yolkling.ios`, In-App Purchase
+        `.p8` uploaded, entitlement **`Yolkling Plus`** (with the space), offering
+        `default` containing a **Monthly** package, virtual currency `YLK`.
+  - [ ] `RevenueCatConfig.apiKey` swapped from the `test_` key to the real `appl_`
+        one. A `test_` key in production fails silently: the paywall renders and
+        every purchase quietly does nothing.
+  - [ ] Yolks remain unpurchasable. No currency pack, at any price.
 - [ ] **`PrivacyInfo.xcprivacy` present** in the app target and included in the
   build, and its declarations match the App Privacy table in the listing doc.
 - [ ] **Account deletion** shipped and reachable in-app (Profile/Settings).
@@ -36,6 +49,10 @@ Nobody and no agent can do them for you.
 - [ ] **E2E copy softened** — no "end-to-end encrypted" claim anywhere in-app or in
   metadata, since the crypto layer is not shipped. Say "your data stays on your
   device" / "private by design" instead.
+- [x] **Monetization copy matches reality.** The listing said "no in-app purchases"
+  five times over, written for the free-tier branch. Corrected 2026-08-22: a
+  factual misstatement about payments in a store listing is a fast rejection, and
+  it contradicted the RevenueCat integration the app is being judged on.
 - [ ] Tests green (`xcodebuild test` or your CI job passes).
 - [ ] Backend verified: Supabase reachable, RLS policies enforced (friend graph,
   inventory, redeem_code), founding/referral grant one-time and server-validated.
