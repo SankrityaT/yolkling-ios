@@ -29,7 +29,12 @@ struct SignInGateView: View {
         case failed
     }
 
+    /// What went wrong, kept even while the card is hidden.
     @State private var failure: Failure?
+    /// Whether the card is on screen. Separate from `failure` on purpose: dismissing
+    /// should put the card away without forgetting what happened, so it can be summoned
+    /// back without making the person fail the sign-in a second time to see it again.
+    @State private var showFailure = false
     @State private var signingIn = false
 
     var body: some View {
@@ -72,10 +77,24 @@ struct SignInGateView: View {
                     .padding(.horizontal, YolkSpace.lg)
                     .yolkEntrance(2)
 
-                if let failure {
+                if let failure, showFailure {
                     errorCard(failure)
                         .padding(.horizontal, YolkSpace.lg)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
+                } else if failure != nil {
+                    // Dismissed, not forgotten. Quiet enough to ignore, findable when the
+                    // sign-in fails again and the person wants to know why.
+                    Button {
+                        Haptics.shared.tick()
+                        withAnimation(.snappy) { showFailure = true }
+                    } label: {
+                        Text("having trouble?")
+                            .font(YolkType.bodySmall)
+                            .foregroundStyle(YolkColor.muted)
+                            .underline()
+                    }
+                    .buttonStyle(.plain)
+                    .transition(.opacity)
                 }
 
                 Spacer()
@@ -114,17 +133,32 @@ struct SignInGateView: View {
     /// button is the way out.
     @ViewBuilder
     private func errorCard(_ failure: Failure) -> some View {
-        VStack(alignment: .leading, spacing: YolkSpace.sm) {
-            Text(failure == .noAppleAccount
-                 ? "this phone isn't signed in to an Apple Account"
-                 : "that didn't go through")
-                .font(YolkType.body.weight(.semibold))
-                .foregroundStyle(YolkColor.ink)
-                .fixedSize(horizontal: false, vertical: true)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .top) {
+                Text(failure == .noAppleAccount
+                     ? "no Apple Account on this phone"
+                     : "that didn't go through")
+                    .font(YolkType.body.weight(.semibold))
+                    .foregroundStyle(YolkColor.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: YolkSpace.sm)
+                Button {
+                    Haptics.shared.tick()
+                    withAnimation(.snappy) { showFailure = false }
+                } label: {
+                    YolkGlyph(kind: .close, size: 11, weight: 0.14)
+                        .foregroundStyle(YolkColor.muted)
+                        .frame(width: 11, height: 11)
+                        .padding(7)
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("dismiss")
+            }
 
             Text(failure == .noAppleAccount
-                 ? "Yolkling uses it to keep your yolkling safe. open Settings, tap your name at the top, and sign in, then come back."
-                 : "it happens. give it another go in a moment.")
+                 ? "tap your name at the top of Settings to add one."
+                 : "give it another go.")
                 .font(YolkType.bodySmall)
                 .foregroundStyle(YolkColor.inkSoft)
                 .fixedSize(horizontal: false, vertical: true)
@@ -139,14 +173,16 @@ struct SignInGateView: View {
                     Text("open Settings")
                         .font(YolkType.bodySmall.weight(.semibold))
                         .foregroundStyle(YolkColor.shell)
-                        .padding(.horizontal, YolkSpace.md).padding(.vertical, 9)
+                        .padding(.horizontal, YolkSpace.md).padding(.vertical, 8)
                         .background(YolkColor.ink, in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .padding(.top, 2)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(YolkSpace.md)
+        .padding(.horizontal, YolkSpace.md)
+        .padding(.vertical, YolkSpace.sm)
         .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
     }
 
@@ -155,23 +191,25 @@ struct SignInGateView: View {
         switch result {
         case .success(let auth):
             guard let credential = auth.credential as? ASAuthorizationAppleIDCredential else {
-                withAnimation(.snappy) { failure = .failed }
+                withAnimation(.snappy) { failure = .failed; showFailure = true }
                 return
             }
             Haptics.shared.reward()
-            withAnimation(.snappy) { failure = nil }
+            withAnimation(.snappy) { failure = nil; showFailure = false }
             onSignedIn(credential.user)
         case .failure(let err):
             // A cancellation is not an error worth shouting about; the person simply
             // changed their mind and the button is still right there.
             let code = (err as NSError).code
             if code == ASAuthorizationError.canceled.rawValue {
-                withAnimation(.snappy) { failure = nil }
+                withAnimation(.snappy) { failure = nil; showFailure = false }
                 return
             }
             Haptics.shared.warn()
             withAnimation(.snappy) {
                 failure = code == ASAuthorizationError.unknown.rawValue ? .noAppleAccount : .failed
+                // A fresh failure always surfaces, even if the last one was dismissed.
+                showFailure = true
             }
         }
     }
