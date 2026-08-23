@@ -80,6 +80,7 @@
 		63353718CB8C13BD6142B08E /* YolkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370AC2BE38C8F35E8C59C790 /* YolkType.swift */; };
 		63F47CB7F9AAE58E8F9E4208 /* Vibe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF366FD2F7B0531883B229D /* Vibe.swift */; };
 		661AD66CBC76712E89119F7E /* FocusLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE7AD43C334266A4F352AB8 /* FocusLiveActivity.swift */; };
+		67DE977A41A081CB1B37F8C0 /* SupabaseAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CC9CFC6387FAE6A2C920A2 /* SupabaseAuth.swift */; };
 		69D11733107EDC3AA9EDB710 /* SeasonBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334D734661EDF43E80B4A217 /* SeasonBanner.swift */; };
 		6A5F07B799F0E18D074604F6 /* CareEngines.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38FB1D1C79AAE4A5CC2E1CE /* CareEngines.swift */; };
 		6CCEA71E6A40893115EAD6E7 /* HoloMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775778FA780FB58DC2F96847 /* HoloMaterial.swift */; };
@@ -103,6 +104,7 @@
 		8D25FD82B5D02C23463C3A46 /* YolkCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55E15A3191441EF6DD5D2C0 /* YolkCard.swift */; };
 		8E04A92EF50B352275AF88DE /* YolkMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */; };
 		91BA909DB55DA72B013072D0 /* Cosmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F00C72740D6D4E0AD62EB64 /* Cosmetic.swift */; };
+		921A18410B9EC93B4267D392 /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A838C066C2D95AC131CF7A /* TokenStore.swift */; };
 		92C0E2E29F7A45029311A94A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 9F16803B4B290C5582A6C301 /* PrivacyInfo.xcprivacy */; };
 		934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */; };
 		957754945CDFC6FAA6B3E153 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
@@ -269,6 +271,7 @@
 		41F403602C69613F256AC4FD /* YolkSegmented.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkSegmented.swift; sourceTree = "<group>"; };
 		4374987F9853748A1166C1BA /* SpeciesSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeciesSet.swift; sourceTree = "<group>"; };
 		43FF8FE4B124490B3815CD5B /* Entitlements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entitlements.swift; sourceTree = "<group>"; };
+		44A838C066C2D95AC131CF7A /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
 		454CD38CF659BCE1CAF57AB5 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		45701349448C8131182AD13C /* WidgetHowToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetHowToView.swift; sourceTree = "<group>"; };
 		46E50093F8B5CD1A4FB50FE1 /* WanderArrival.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WanderArrival.swift; sourceTree = "<group>"; };
@@ -349,6 +352,7 @@
 		C95D3E4FE309120014CA4B4F /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLink.swift; sourceTree = "<group>"; };
 		CC9F2A0791D44AD80081B7DE /* YolklingTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = YolklingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D071416EBE1A5EEBC6B0564E /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		D2CC9CFC6387FAE6A2C920A2 /* SupabaseAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseAuth.swift; sourceTree = "<group>"; };
 		D3023148FA25E063CED922DF /* SyncClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncClient.swift; sourceTree = "<group>"; };
 		D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticPreviewGrid.swift; sourceTree = "<group>"; };
 		D4FC884495811BB1821AF2CB /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
@@ -553,6 +557,7 @@
 		619ECA6D3E8E4951D510C960 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				AD902194461BC12DA8BB142B /* Auth */,
 				34BCCA526A8E36F0B73F30BF /* Cards */,
 				0B166213DBFCD7C33ACDCACB /* Components */,
 				4846EE911EBDB76ADA46BC5C /* Configuration */,
@@ -758,6 +763,15 @@
 				74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		AD902194461BC12DA8BB142B /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				D2CC9CFC6387FAE6A2C920A2 /* SupabaseAuth.swift */,
+				44A838C066C2D95AC131CF7A /* TokenStore.swift */,
+			);
+			path = Auth;
 			sourceTree = "<group>";
 		};
 		B3C1AF9241FAA90A167E8CC6 /* Species */ = {
@@ -1197,9 +1211,11 @@
 				06CFCBF306F3A0FDCAFD2653 /* SpeciesGalleryView.swift in Sources */,
 				2CAAC08C69E1616E53A9DE93 /* SpeciesSet.swift in Sources */,
 				59DE5860CD52D0A5C2A9961F /* SubscriptionStore.swift in Sources */,
+				67DE977A41A081CB1B37F8C0 /* SupabaseAuth.swift in Sources */,
 				F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */,
 				7174436B53983F61625E185B /* SwapPreview.swift in Sources */,
 				56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */,
+				921A18410B9EC93B4267D392 /* TokenStore.swift in Sources */,
 				DAAC52882B232B1980F924A5 /* TradeSheet.swift in Sources */,
 				CF37128F7CA33BB9DE42746D /* TrustStage.swift in Sources */,
 				2C469F395804CE251D5A723B /* TutorialSpotlight.swift in Sources */,

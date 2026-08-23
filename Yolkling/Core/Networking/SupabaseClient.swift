@@ -309,7 +309,12 @@ struct SupabaseClient {
         var request = URLRequest(url: AppEnvironment.supabaseURL.appending(path: "rest/v1/rpc/\(function)"))
         request.httpMethod = "POST"
         request.setValue(AppEnvironment.supabaseAnonKey, forHTTPHeaderField: "apikey")
-        request.setValue("Bearer \(AppEnvironment.supabaseAnonKey)", forHTTPHeaderField: "Authorization")
+        // The signed-in user's token when there is one, so the database can derive the
+        // caller from `auth.uid()` rather than believing a `p_user` parameter. Falls
+        // back to the anon key, which keeps a signed-out or pre-migration client working
+        // against the functions that still accept an explicit id.
+        let bearer = await SupabaseAuth.shared.validAccessToken() ?? AppEnvironment.supabaseAnonKey
+        request.setValue("Bearer \(bearer)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         guard let (data, response) = try? await URLSession.shared.data(for: request),
@@ -323,7 +328,12 @@ struct SupabaseClient {
         var request = URLRequest(url: AppEnvironment.supabaseURL.appending(path: "rest/v1/rpc/\(function)"))
         request.httpMethod = "POST"
         request.setValue(AppEnvironment.supabaseAnonKey, forHTTPHeaderField: "apikey")
-        request.setValue("Bearer \(AppEnvironment.supabaseAnonKey)", forHTTPHeaderField: "Authorization")
+        // The signed-in user's token when there is one, so the database can derive the
+        // caller from `auth.uid()` rather than believing a `p_user` parameter. Falls
+        // back to the anon key, which keeps a signed-out or pre-migration client working
+        // against the functions that still accept an explicit id.
+        let bearer = await SupabaseAuth.shared.validAccessToken() ?? AppEnvironment.supabaseAnonKey
+        request.setValue("Bearer \(bearer)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         guard let (data, response) = try? await URLSession.shared.data(for: request),

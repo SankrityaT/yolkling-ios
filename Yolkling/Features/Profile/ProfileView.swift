@@ -56,6 +56,7 @@ struct ProfileView: View {
 
                     SignInWithAppleButton(.signIn) { request in
                         request.requestedScopes = []   // only the stable user id; no name/email (privacy)
+                        request.nonce = SupabaseAuth.shared.beginNonce()
                     } onCompletion: { result in
                         handle(result)
                     }
@@ -274,6 +275,10 @@ struct ProfileView: View {
                 player?.appleUserID = credential.user
                 try? context.save()
                 signInError = nil
+                if let tokenData = credential.identityToken,
+                   let token = String(data: tokenData, encoding: .utf8) {
+                    Task { await SupabaseAuth.shared.signIn(appleIdentityToken: token) }
+                }
             }
         case .failure(let error):
             signInError = "sign in didn't complete. \(error.localizedDescription)"

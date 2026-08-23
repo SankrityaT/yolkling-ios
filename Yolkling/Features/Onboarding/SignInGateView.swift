@@ -104,6 +104,10 @@ struct SignInGateView: View {
                     SignInWithAppleButton(.signIn) { request in
                         // Only the stable user id. No name, no email.
                         request.requestedScopes = []
+                        // Nonced so the identity token cannot be replayed into our
+                        // backend from somewhere else. Apple gets the hash, Supabase
+                        // gets the raw value to check it against.
+                        request.nonce = SupabaseAuth.shared.beginNonce()
                     } onCompletion: { result in
                         handle(result)
                     }
@@ -196,6 +200,16 @@ struct SignInGateView: View {
             }
             Haptics.shared.reward()
             withAnimation(.snappy) { failure = nil; showFailure = false }
+
+            // Trade the Apple token for a real Supabase session, so backend calls carry
+            // a verifiable identity instead of asserting one. Deliberately not awaited
+            // before continuing: a server hiccup must not stand between someone and
+            // their creature. Everything works locally without it, and the next launch
+            // retries.
+            if let tokenData = credential.identityToken,
+               let token = String(data: tokenData, encoding: .utf8) {
+                Task { await SupabaseAuth.shared.signIn(appleIdentityToken: token) }
+            }
             onSignedIn(credential.user)
         case .failure(let err):
             // A cancellation is not an error worth shouting about; the person simply
