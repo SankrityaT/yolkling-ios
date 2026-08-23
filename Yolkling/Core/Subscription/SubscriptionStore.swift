@@ -36,23 +36,72 @@ final class SubscriptionStore {
 
     // MARK: What's for sale
 
-    /// The package the paywall leads with. Falls back to whatever the offering has, so a
-    /// dashboard change can't leave the paywall empty.
-    var leadPackage: Package? {
-        offering?.monthly ?? offering?.availablePackages.first
+    var monthly: Package? { offering?.monthly }
+    var annual: Package? { offering?.annual }
+
+    /// A plan, as the paywall needs it.
+    ///
+    /// Deliberately a plain value rather than RevenueCat's `Package`. The convention in
+    /// this project is that SDK types stay inside Core/Subscription, so the view layer
+    /// cannot accidentally take a dependency the widget must never see. Everything the
+    /// paywall renders is precomputed here from real store prices.
+    struct Plan: Identifiable, Equatable {
+        let id: String
+        let title: String
+        /// Localised, straight from StoreKit.
+        let price: String
+        /// "$2.92 / mo", annual only. nil otherwise.
+        let perMonth: String?
+        let isAnnual: Bool
+        /// Percent saved against twelve months of the monthly. nil unless BOTH plans
+        /// loaded, so a saving can never be printed that the store did not produce.
+        let savingPercent: Int?
     }
 
-    /// Localised price for the paywall, with an offline fallback.
+    /// Every plan on offer, annual first so the cheaper-per-month option leads.
+    var plans: [Plan] {
+        let packages = [annual, monthly].compactMap { $0 }
+        let source = packages.isEmpty ? (offering?.availablePackages ?? []) : packages
+        return source.map { plan(from: $0) }
+    }
+
+    /// What the paywall selects on open: the annual when there is one.
     ///
-    /// The fallback is marked in DEBUG so it can't be mistaken for a real fetched price
-    /// — they'd otherwise render identically and hide a broken offering.
-    var priceText: String {
-        if let live = leadPackage?.storeProduct.localizedPriceString { return live }
-        #if DEBUG
-        return "$4.99 (fallback — offering not loaded)"
-        #else
-        return "$4.99"
-        #endif
+    /// Not a dark pattern. It is the cheaper plan per month, and monthly stays one tap
+    /// away and is never hidden.
+    var defaultPlan: Plan? { plans.first { $0.isAnnual } ?? plans.first }
+
+    private func plan(from package: Package) -> Plan {
+        let isAnnual = package.packageType == .annual
+        return Plan(
+            id: package.identifier,
+            title: isAnnual ? "yearly" : "monthly",
+            price: package.storeProduct.localizedPriceString,
+            perMonth: isAnnual ? monthlyEquivalent(of: package) : nil,
+            isAnnual: isAnnual,
+            savingPercent: isAnnual ? annualSavingPercent : nil
+        )
+    }
+
+    /// The annual price divided by twelve, formatted in the store's own currency, so the
+    /// two plans can be compared on one axis. Without it "$34.99" next to "$4.99" reads
+    /// as the expensive one beside the cheap one, which is the opposite of the truth.
+    private func monthlyEquivalent(of package: Package) -> String? {
+        let product = package.storeProduct
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.locale = product.priceFormatter?.locale ?? .current
+        guard let text = f.string(from: (product.price / 12) as NSDecimalNumber) else { return nil }
+        return "\(text) / mo"
+    }
+
+    private var annualSavingPercent: Int? {
+        guard let a = annual?.storeProduct.price,
+              let m = monthly?.storeProduct.price, m > 0 else { return nil }
+        let yearOfMonthly = m * 12
+        guard yearOfMonthly > a else { return nil }
+        let saving = (yearOfMonthly - a) / yearOfMonthly * 100
+        return Int(NSDecimalNumber(decimal: saving).doubleValue.rounded())
     }
 
     func loadOfferings() async {
@@ -82,8 +131,8 @@ final class SubscriptionStore {
     // MARK: Buying
 
     @discardableResult
-    func subscribe() async -> Bool {
-        guard let package = leadPackage else { return false }
+    func subscribe(planID: String) async -> Bool {
+        guard let package = (offering?.availablePackages.first { $0.identifier == planID }) else { return false }
         purchasing = true
         defer { purchasing = false }
         guard let result = try? await Purchases.shared.purchase(package: package) else { return false }

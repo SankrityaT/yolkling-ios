@@ -9,6 +9,7 @@ struct PlusView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var dialog: YolkDialog?
+    @State private var selectedID: String?
 
     /// Only things that actually ship.
     ///
@@ -87,17 +88,20 @@ struct PlusView: View {
                     .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                     .padding(.vertical, 14)
             } else {
+                planPicker
+
                 Button { subscribe() } label: {
                     VStack(spacing: 2) {
-                        Text(store.purchasing ? "…" : "become a supporter").font(YolkType.body.weight(.semibold))
-                        Text("\(store.priceText) / month · cancel anytime").font(.caption2).opacity(0.9)
+                        Text(store.purchasing ? "…" : "become a supporter")
+                            .font(YolkType.body.weight(.semibold))
+                        Text(ctaSubtitle).font(.caption2).opacity(0.9)
                     }
                     .foregroundStyle(YolkColor.shell)
                     .frame(maxWidth: .infinity).padding(.vertical, 13)
                     .background(YolkColor.ink, in: Capsule())
                 }
                 .buttonStyle(.plain)
-                .disabled(store.purchasing)
+                .disabled(store.purchasing || chosen == nil)
             }
             HStack(spacing: YolkSpace.md) {
                 Button("restore") { Task { await store.restore() } }
@@ -110,9 +114,86 @@ struct PlusView: View {
         .background(YolkColor.shell)
     }
 
+    /// The plan the person is buying. Falls back to the store's default (annual when
+    /// there is one) until they touch anything.
+    private var chosen: SubscriptionStore.Plan? {
+        store.plans.first { $0.id == selectedID } ?? store.defaultPlan
+    }
+
+    /// What the button says underneath. Never invents a price: if the offering has not
+    /// loaded there is nothing to promise, so it says nothing.
+    private var ctaSubtitle: String {
+        guard let p = chosen else { return "loading…" }
+        return "\(p.price) / \(p.isAnnual ? "year" : "month") · cancel anytime"
+    }
+
+    /// Both plans, side by side.
+    ///
+    /// Shown as a choice rather than a single lead package. The paywall used to render
+    /// exactly one option (`offering?.monthly`), so an annual plan configured in the
+    /// dashboard would have been invisible and unbuyable with no error anywhere.
+    @ViewBuilder private var planPicker: some View {
+        if store.plans.count > 1 {
+            HStack(spacing: YolkSpace.sm) {
+                ForEach(store.plans) { plan in
+                    planCard(plan)
+                }
+            }
+        }
+    }
+
+    private func planCard(_ plan: SubscriptionStore.Plan) -> some View {
+        let isOn = chosen?.id == plan.id
+        return Button {
+            Haptics.shared.select()
+            withAnimation(.snappy) { selectedID = plan.id }
+        } label: {
+            VStack(spacing: 3) {
+                Text(plan.title)
+                    .font(YolkType.bodySmall.weight(.semibold))
+                    .foregroundStyle(YolkColor.ink)
+                Text(plan.price)
+                    .font(YolkType.body.weight(.bold))
+                    .foregroundStyle(YolkColor.ink)
+                // The per-month figure is what makes the two comparable at a glance.
+                // Without it "$34.99" and "$4.99" look like the expensive one and the
+                // cheap one, which is the opposite of the truth.
+                Text(plan.perMonth ?? " ")
+                    .font(.caption2)
+                    .foregroundStyle(YolkColor.muted)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, YolkSpace.sm)
+            // The unselected card keeps a container. With a clear background and no
+            // border it read as floating text rather than the other half of a choice,
+            // so the monthly plan looked like a caption next to the real option.
+            .background(isOn ? YolkColor.shell2 : YolkColor.shell2.opacity(0.45),
+                        in: RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(isOn ? YolkColor.ink : YolkColor.line, lineWidth: isOn ? 2 : 1)
+            )
+            .overlay(alignment: .top) {
+                // Only ever drawn from real prices. `annualSavingPercent` returns nil
+                // unless both plans actually loaded, so this cannot print a number the
+                // store did not produce.
+                if plan.isAnnual, let pct = plan.savingPercent {
+                    Text("save \(pct)%")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(YolkColor.shell)
+                        .padding(.horizontal, 8).padding(.vertical, 3)
+                        .background(YolkColor.yolkDeep, in: Capsule())
+                        .offset(y: -9)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
     private func subscribe() {
+        guard let plan = chosen else { return }
         Task {
-            let ok = await store.subscribe()
+            let ok = await store.subscribe(planID: plan.id)
             if ok {
                 Haptics.shared.reward()
                 dialog = YolkDialog(icon: .creature(vibe, .affectionate), title: "you're a supporter!",
