@@ -22,6 +22,15 @@ final class SubscriptionStore {
     static let shared = SubscriptionStore()
 
     private(set) var offering: Offering?
+
+    /// Whether the storefront has been reached yet.
+    ///
+    /// Needed because "no plans" and "not asked yet" look identical from `offering ==
+    /// nil`, and the paywall has to tell a person which one they are looking at. A
+    /// button reading "loading…" forever is what happens without this, and it is exactly
+    /// what every user would see if the Paid Applications Agreement were unsigned.
+    enum LoadState: Equatable { case loading, ready, unavailable }
+    private(set) var loadState: LoadState = .loading
     private(set) var isPlus = false
     private(set) var purchasing = false
 
@@ -105,7 +114,14 @@ final class SubscriptionStore {
     }
 
     func loadOfferings() async {
+        loadState = .loading
         offering = try? await Purchases.shared.offerings().current
+        // Products can be absent for reasons that are nobody's fault and not
+        // transient: the Paid Applications Agreement is unsigned, the products are
+        // still in review, or the storefront does not carry them. Treat an empty
+        // offering exactly like a failed fetch, because to the person looking at the
+        // screen they are the same thing.
+        loadState = plans.isEmpty ? .unavailable : .ready
     }
 
     // MARK: Entitlement

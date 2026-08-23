@@ -13,10 +13,10 @@ enum RevenueCatConfig {
     /// real store: shipping it would mean every purchase silently fails in production.
     /// `assertProductionReady()` below exists to make that impossible to do by accident.
     ///
-    /// The real `appl_…` key only appears once an App Store app is configured in the
-    /// RevenueCat dashboard, which requires the shipping team's App Store Connect
-    /// In-App Purchase key.
-    static let apiKey = "test_rMRyXhGxdGQNyEeVdrQrFfjosDo"
+    /// Live since 2026-08-22. The App Store app is configured in RevenueCat under
+    /// bundle id `com.yolkling.ios` with the shipping team's In-App Purchase key, and
+    /// the dashboard reports valid credentials.
+    static let apiKey = "appl_cVMmKZMwBkjbJQwwFIdHgNhQVdu"
 
     /// The entitlement that unlocks supporter features.
     ///

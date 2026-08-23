@@ -88,9 +88,39 @@ struct PlusView: View {
                     .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                     .padding(.vertical, 14)
             } else {
-                planPicker
+                if store.loadState == .unavailable {
+                    // Honest, and it does not blame the person or pretend to be
+                    // loading. Free play is genuinely unaffected, so say so.
+                    VStack(spacing: 6) {
+                        Text("the supporter tier isn't available right now")
+                            .font(YolkType.bodySmall.weight(.semibold))
+                            .foregroundStyle(YolkColor.ink)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text("nothing is wrong with your yolkling. everything in the app still works.")
+                            .font(.caption2)
+                            .foregroundStyle(YolkColor.muted)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Button {
+                            Haptics.shared.tick()
+                            Task { await store.loadOfferings() }
+                        } label: {
+                            Text("try again")
+                                .font(YolkType.bodySmall.weight(.semibold))
+                                .foregroundStyle(YolkColor.shell)
+                                .padding(.horizontal, YolkSpace.md).padding(.vertical, 8)
+                                .background(YolkColor.ink, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.top, 2)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, YolkSpace.sm)
+                } else {
+                    planPicker
 
-                Button { subscribe() } label: {
+                    Button { subscribe() } label: {
                     VStack(spacing: 2) {
                         Text(store.purchasing ? "…" : "become a supporter")
                             .font(YolkType.body.weight(.semibold))
@@ -100,8 +130,9 @@ struct PlusView: View {
                     .frame(maxWidth: .infinity).padding(.vertical, 13)
                     .background(YolkColor.ink, in: Capsule())
                 }
-                .buttonStyle(.plain)
-                .disabled(store.purchasing || chosen == nil)
+                    .buttonStyle(.plain)
+                    .disabled(store.purchasing || chosen == nil)
+                }
             }
             HStack(spacing: YolkSpace.md) {
                 Button("restore") { Task { await store.restore() } }
