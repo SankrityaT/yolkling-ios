@@ -103,3 +103,113 @@ begin
 end $$;
 
 notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- The `language sql` functions, converted to plpgsql so the guard can run first.
+--
+-- A SQL-language function has no place to put a statement before its query, so each
+-- becomes a plpgsql wrapper around the identical query. Bodies are otherwise unchanged.
+--
+-- NOT guarded, deliberately: `friend_collection(p_user)`. get_friends calls it with a
+-- FRIEND's id, not the caller's, so a guard here would break the friends list for
+-- everyone. It exposes only the species list of somebody you are already friends with,
+-- which get_friends is entitled to show, and it is unreachable with a stranger's id
+-- because reaching it requires a friendship row.
+-- ---------------------------------------------------------------------------
+
+create or replace function public.get_friends(p_user text)
+returns jsonb language plpgsql security definer
+set search_path = public as $$
+begin
+  perform public.assert_caller(p_user);
+  return (
+    select coalesce(jsonb_agg(jsonb_build_object(
+      'user_id',    f.friend_id,
+      'name',       rs.name,
+      'snapshot',   rs.snapshot,
+      'updated_at', rs.updated_at,
+      'found',      public.friend_collection(f.friend_id),
+      'trust_band', public.trust_band((ps.state ->> 'trust')::double precision)
+    ) order by rs.updated_at desc nulls last), '[]'::jsonb)
+    from public.friendships f
+    left join public.room_snapshots rs on rs.user_id = f.friend_id
+    left join public.player_state   ps on ps.user_id = f.friend_id
+    where f.user_id = p_user
+  );
+end $$;
+
+create or replace function public.get_postcards(p_user text)
+returns jsonb language plpgsql security definer
+set search_path = public as $$
+begin
+  perform public.assert_caller(p_user);
+  return (
+    select coalesce(jsonb_agg(jsonb_build_object(
+      'id', p.id,
+      'from_id', p.from_id,
+      'from_name', rs.name,
+      'message', p.message,
+      'created_at', p.created_at,
+      'read', (p.read_at is not null)
+    ) order by p.created_at desc), '[]'::jsonb)
+    from public.postcards p
+    left join public.room_snapshots rs on rs.user_id = p.from_id
+    where p.to_id = p_user
+      and not exists (
+        select 1 from public.blocks b
+        where (b.user_id = p_user and b.blocked_id = p.from_id)
+           or (b.user_id = p.from_id and b.blocked_id = p_user))
+    limit 50
+  );
+end $$;
+
+create or replace function public.get_recent_visits(p_user text)
+returns jsonb language plpgsql security definer
+set search_path = public as $$
+begin
+  perform public.assert_caller(p_user);
+  return (
+    select coalesce(jsonb_agg(j order by j->>'created_at' desc), '[]'::jsonb) from (
+      select distinct on (v.visitor_id)
+        jsonb_build_object('visitor_id', v.visitor_id, 'name', rs.name, 'created_at', v.created_at) as j
+      from public.visits v
+      left join public.room_snapshots rs on rs.user_id = v.visitor_id
+      where v.owner_id = p_user and v.created_at >= now() - interval '7 days'
+      order by v.visitor_id, v.created_at desc
+    ) t
+  );
+end $$;
+
+create or replace function public.mark_postcards_read(p_user text)
+returns void language plpgsql security definer
+set search_path = public as $$
+begin
+  perform public.assert_caller(p_user);
+  update public.postcards set read_at = now() where to_id = p_user and read_at is null;
+end $$;
+
+create or replace function public.my_founding(p_user text)
+returns text[] language plpgsql stable security definer
+set search_path = public as $$
+begin
+  perform public.assert_caller(p_user);
+  return (
+    select coalesce(array_agg(item_id order by granted_at), '{}')
+    from public.inventory
+    where user_id = p_user and item_id like 'founding-%'
+  );
+end $$;
+
+-- Single-line body, so the injector could not find a newline after BEGIN.
+create or replace function public.ensure_user(p_user text)
+returns text language plpgsql security definer
+set search_path = public as $$
+declare v_code text;
+begin
+  perform public.assert_caller(p_user);
+  insert into public.app_users (apple_user_id) values (p_user) on conflict (apple_user_id) do nothing;
+  select referral_code into v_code from public.app_users where apple_user_id = p_user;
+  return v_code;
+end $$;
+
+notify pgrst, 'reload schema';
