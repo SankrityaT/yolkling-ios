@@ -156,9 +156,17 @@ or prescribes anything clinical.
 
 ---
 
-## Age Rating: 4+
+## Age Rating: 9+ (actual result)
 
-Answer the Age Rating questionnaire exactly as below. Result should be **4+**.
+This section originally predicted 4+ and that prediction was WRONG. The submitted
+questionnaire returned **9+ in 172 regions and 12+ in Vietnam**, driven by declaring
+User-Generated Content = Yes. Recorded here as fact so nobody re-litigates it later.
+
+9+ was accepted deliberately. Declaring No to UGC to hold 4+ would contradict the
+block/report controls described in our own App Review notes, and 9+ costs almost
+nothing in discoverability for this category.
+
+Answer the questionnaire as below.
 
 | Question | Answer |
 |---|---|
@@ -182,9 +190,33 @@ Notes on the two that sometimes trip people up:
   no real money. Cosmetics are bought at a fixed price with earned currency.
 - No unrestricted web access: the app does not embed an open browser.
 
-There is user-generated content (friend postcards). That is handled in the App
-Review notes and App Privacy sections below, and is moderated with block/report and
-account controls, so it does not raise the age rating above 4+.
+### User-Generated Content and Messaging (the two that decide the rating)
+
+| Question | Answer |
+|---|---|
+| User-Generated Content | **Yes** |
+| Messaging / Chat | **No** |
+
+**Messaging is No** because there is no chat. Postcards are picked from a fixed
+vocabulary (`Core/Social/PostcardVocabulary.swift`) and sent by TOKEN, not text, via
+`sendPostcardToken(from:to:token:)`. The server keeps its own copy of each phrase, so a
+client cannot invent one even by calling the RPC directly. No reply threads, no free
+text, no real-time exchange. The only `TextField` in Social is for a friend's invite
+code. Declaring Yes here would over-declare a feature we do not have.
+
+**UGC is Yes, and postcards are not the reason.** The creature's NAME is: a free
+`TextField` in onboarding, stored server-side, returned to other users by `get_friends`
+and `get_recent_visits`, with no profanity filter or moderation anywhere in the code.
+That is an arbitrary user-typed string displayed to other people, which is textbook UGC
+and is what a reviewer would find. Declaring No while shipping it would be the
+contradiction that earns a metadata rejection.
+
+Guideline 1.2 applies precisely BECAUSE we have UGC, and its controls already ship:
+block, report, and account deletion.
+
+**Known gap, accepted for 1.0:** creature names have no filter. Not a blocker with
+block/report in place, but it is the one UGC surface without a control on it, and it is
+the first thing to add if Apple pushes back.
 
 ---
 
