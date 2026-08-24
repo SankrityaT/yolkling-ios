@@ -84,6 +84,7 @@
 		67DE977A41A081CB1B37F8C0 /* SupabaseAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CC9CFC6387FAE6A2C920A2 /* SupabaseAuth.swift */; };
 		69D11733107EDC3AA9EDB710 /* SeasonBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334D734661EDF43E80B4A217 /* SeasonBanner.swift */; };
 		6A5F07B799F0E18D074604F6 /* CareEngines.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38FB1D1C79AAE4A5CC2E1CE /* CareEngines.swift */; };
+		6B084ECE30CDF7AC64AC76A4 /* AppReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84182C7549CD2B980C79766 /* AppReview.swift */; };
 		6CCEA71E6A40893115EAD6E7 /* HoloMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775778FA780FB58DC2F96847 /* HoloMaterial.swift */; };
 		7174436B53983F61625E185B /* SwapPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525C2E9327AAC745CB3DD23D /* SwapPreview.swift */; };
 		721FB15B3A3EB0AB343FFB39 /* OnboardingEntrance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEE2E3B0659BB1DD7BDE97F /* OnboardingEntrance.swift */; };
@@ -155,6 +156,7 @@
 		CA9F4D5D2F5BE5C80C7FFDE4 /* CosmeticPreviewGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */; };
 		CB5428C1CCDDEDEEA036D244 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 974C6D0127079C7B7DCD5F95 /* Wallet.swift */; };
 		CC95E3840269A681FB2E0953 /* SharePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9EA7652B10E7A58EC9A965 /* SharePreview.swift */; };
+		CCBCEC4E333CBD429A555E10 /* AppReviewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B97FCD4DE1CA31D530990F /* AppReviewTests.swift */; };
 		CD3BDC853E4D567D4ECD735D /* DecorateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCBEF321B406CD08787A8AD /* DecorateView.swift */; };
 		CD940F0368D4571EF8B4583E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30CB0A1116928879DE203401 /* Assets.xcassets */; };
 		CF37128F7CA33BB9DE42746D /* TrustStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822B58776D67B8C7AC5DB908 /* TrustStage.swift */; };
@@ -339,6 +341,7 @@
 		AF4187DA7A92439863DAF815 /* YolklingWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = YolklingWidgets.entitlements; sourceTree = "<group>"; };
 		B00E5F0B2E4AE46F432F74D6 /* RewardsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsTests.swift; sourceTree = "<group>"; };
 		B10352955EC8A724ED2AEAC4 /* VisitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitView.swift; sourceTree = "<group>"; };
+		B2B97FCD4DE1CA31D530990F /* AppReviewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReviewTests.swift; sourceTree = "<group>"; };
 		B4438975C80653EBA9197E0C /* YolkCardBack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCardBack.swift; sourceTree = "<group>"; };
 		B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundingRevealView.swift; sourceTree = "<group>"; };
 		B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopHomeView.swift; sourceTree = "<group>"; };
@@ -383,6 +386,7 @@
 		F6E28EF370E18DD9AE7BD181 /* YolkCloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCloseButton.swift; sourceTree = "<group>"; };
 		F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCollectionView.swift; sourceTree = "<group>"; };
 		F83EB1C45212CB363A9FB7EE /* BodyPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyPattern.swift; sourceTree = "<group>"; };
+		F84182C7549CD2B980C79766 /* AppReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReview.swift; sourceTree = "<group>"; };
 		FD20DDA9932DC37F8B2B837F /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusView.swift; sourceTree = "<group>"; };
 		FE819215FD090FE423F75193 /* YolklingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingApp.swift; sourceTree = "<group>"; };
@@ -427,6 +431,14 @@
 				B882A1710147434DD16C02B3 /* ScreenTimeReport.swift */,
 			);
 			path = ScreenTimeReport;
+			sourceTree = "<group>";
+		};
+		1385B9B5EC305E06956DBEF6 /* Growth */ = {
+			isa = PBXGroup;
+			children = (
+				F84182C7549CD2B980C79766 /* AppReview.swift */,
+			);
+			path = Growth;
 			sourceTree = "<group>";
 		};
 		14AADFC0457FCD77853ED3EB /* YolklingWidgets */ = {
@@ -574,6 +586,7 @@
 				8215FF7FD07AC4B81B86DC0C /* Economy */,
 				EFA23118C29585F9BD8DCBA9 /* Events */,
 				CA3F4309FAE99414E373CB46 /* Focus */,
+				1385B9B5EC305E06956DBEF6 /* Growth */,
 				2388AF86FB38DDACEBD2C246 /* Haptics */,
 				86DFC5E8904B1AD373D47733 /* Health */,
 				523F6BB3978812B8CF969D06 /* Navigation */,
@@ -739,6 +752,7 @@
 		87F2FE1F9BD3DA6D2543BDC6 /* YolklingTests */ = {
 			isa = PBXGroup;
 			children = (
+				B2B97FCD4DE1CA31D530990F /* AppReviewTests.swift */,
 				A525DCFA93FB2E386604E390 /* NameFilterTests.swift */,
 				B00E5F0B2E4AE46F432F74D6 /* RewardsTests.swift */,
 				77C4E64C5781F3C8518BCB9B /* SpeciesTests.swift */,
@@ -1139,6 +1153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA925A3A4FA9DD75958F5189 /* AppEnvironment.swift in Sources */,
+				6B084ECE30CDF7AC64AC76A4 /* AppReview.swift in Sources */,
 				C5189AE999143F1ED887A77F /* BodyPattern.swift in Sources */,
 				823C10E6893487A0027EA9EB /* BrandFonts.swift in Sources */,
 				9753D9F73A7C9C6D34C1A2A6 /* CardDetailView.swift in Sources */,
@@ -1278,6 +1293,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CCBCEC4E333CBD429A555E10 /* AppReviewTests.swift in Sources */,
 				A1A6BD246A8E25A44865DCE5 /* NameFilterTests.swift in Sources */,
 				869E24C3E4EACCF6044FCC01 /* RewardsTests.swift in Sources */,
 				2AC2BDCF6B0A54ABC0D5F635 /* SpeciesTests.swift in Sources */,

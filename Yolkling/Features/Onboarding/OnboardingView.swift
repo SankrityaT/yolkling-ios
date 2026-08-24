@@ -96,11 +96,13 @@ struct OnboardingView: View {
         }
         .onAppear {
             // Launch args as well as env vars — SIMCTL_CHILD_* propagates unreliably.
+            #if DEBUG
             if let demo = ProcessInfo.processInfo.environment["YOLK_ONB"] {
                 model.jumpForDemo(demo)
             } else if let arg = CommandLine.arguments.first(where: { $0.hasPrefix("YOLK_ONB=") }) {
                 model.jumpForDemo(String(arg.dropFirst("YOLK_ONB=".count)))
             }
+            #endif
         }
     }
 }

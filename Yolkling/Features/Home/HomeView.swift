@@ -6,6 +6,9 @@ import SwiftData
 /// for now; each becomes a real feature (mood check-in, focus session, visits).
 struct HomeView: View {
     @Environment(\.modelContext) private var context
+    /// The App Store review prompt. Held here rather than called from a store because
+    /// only a View can hold it. `AppReview` decides whether it ever fires.
+    @Environment(\.requestReview) private var requestReview
     @Environment(\.scenePhase) private var scenePhase
 
     /// `YOLK_PROBE=<itemID>` — draws the ownership probe overlay. Debug-only seam.
@@ -572,6 +575,9 @@ struct HomeView: View {
         if let b = Rewards.streakBonus(for: r.streak) {
             bonus += b
             notes.append("\(r.streak)-day streak, +\(b)")
+            // A week of showing up is the first moment somebody plausibly likes this
+            // enough to say so. See AppReview for why the policy is this stingy.
+            if AppReview.shouldAsk(atStreak: r.streak) { requestReview() }
         }
         rolloverWeekIfNeeded()
         weekCareDays += 1
@@ -1346,6 +1352,12 @@ struct HomeView: View {
     }
 
     private func applyScreenshotSeams() {
+        // Release ships none of this. The seams jump straight onto screens and seed
+        // owned items, which is exactly right for the screenshot pipeline and has no
+        // business existing in a build a stranger installs. See RootView.seamsOn.
+        #if !DEBUG
+        return
+        #else
         let env = ProcessInfo.processInfo.environment
         // Accept a launch ARGUMENT as well as an env var: SIMCTL_CHILD_* env vars
         // propagate unreliably through `simctl launch`, while --args always arrives.
@@ -1400,6 +1412,7 @@ struct HomeView: View {
         if env["YOLK_TRUST"] != nil { demoTrust = 1; Task { try? await Task.sleep(for: .seconds(0.5)); waveToken += 1 } }
         if let h = env["YOLK_HOUR"], let hr = Int(h) { demoHour = hr }
         if env["YOLK_TUTORIAL"] != nil { Task { try? await Task.sleep(for: .seconds(0.6)); withAnimation { showTutorial = true } } }
+        #endif
         #endif
     }
 

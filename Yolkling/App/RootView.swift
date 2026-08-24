@@ -32,28 +32,48 @@ struct RootView: View {
     // Launch ARGUMENTS as well as env vars: SIMCTL_CHILD_* propagates unreliably through
     // `simctl launch`, while --args always arrives. The App Store screenshot pipeline
     // will want this too.
-    private let screenshotMode = ProcessInfo.processInfo.environment["YOLK_VIBE"] != nil
-        || CommandLine.arguments.contains("YOLK_VIBE")
+    /// Whether the screenshot/demo seams are live. FALSE in Release, as a compile-time
+    /// constant, so every `seamsOn` branch below is provably unreachable in a shipped
+    /// build and the screens behind them cannot be reached by any launch argument or
+    /// environment variable.
+    ///
+    /// These were never reachable by a real user, since iOS gives no way to set either
+    /// on an App Store install. This is about not shipping ~30 branches that bypass
+    /// onboarding and the sign-in gate, which is a thing a reviewer should never find
+    /// and a thing we should not have to argue about.
+    private var seamsOn: Bool {
+        #if DEBUG
+        true
+        #else
+        false
+        #endif
+    }
+
+    private var screenshotMode: Bool {
+        guard seamsOn else { return false }
+        return ProcessInfo.processInfo.environment["YOLK_VIBE"] != nil
+            || CommandLine.arguments.contains("YOLK_VIBE")
+    }
 
     var body: some View {
         Group {
-            if ProcessInfo.processInfo.environment["YOLK_SPECIES"] != nil {
+            if seamsOn, ProcessInfo.processInfo.environment["YOLK_SPECIES"] != nil {
                 CollectionView(discovered: Set(SpeciesSets.headStart + [
                     "celestial-sunny yolkstar", "garden-clovi", "cozy-mochi",
                     "ocean-pearlpup", "garden-daisette", "celestial-moonpuff"]))
-            } else if ProcessInfo.processInfo.environment["YOLK_FOUNDING"] != nil,
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_FOUNDING"] != nil,
                       let sp = SpeciesCatalog.founding(id: "founding-the very first") {
                 FoundingRevealView(species: sp, onWear: {})
-            } else if ProcessInfo.processInfo.environment["YOLK_FEEDBACK"] != nil {
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_FEEDBACK"] != nil {
                 FeedbackView(vibe: .bubble, userID: "preview")
-            } else if ProcessInfo.processInfo.environment["YOLK_PACK"] != nil,
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_PACK"] != nil,
                       let sp = SpeciesCatalog.all.first(where: { $0.id == "garden-firefleur" }) {
                 PackRevealView(species: sp)
-            } else if let slot = ProcessInfo.processInfo.environment["YOLK_COSMETICS"]
+            } else if seamsOn, let slot = ProcessInfo.processInfo.environment["YOLK_COSMETICS"]
                         ?? CommandLine.arguments.first(where: { $0.hasPrefix("YOLK_COSMETICS=") })
                             .map({ String($0.dropFirst("YOLK_COSMETICS=".count)) }) {
                 CosmeticPreviewGrid(items: Array(CosmeticCatalog.items(in: CosmeticSlot(rawValue: slot) ?? .hat).reversed()))
-            } else if let r = ProcessInfo.processInfo.environment["YOLK_ROOM"] {
+            } else if seamsOn, let r = ProcessInfo.processInfo.environment["YOLK_ROOM"] {
                 let theme = RoomThemes.all[min(max(Int(r) ?? 0, 0), RoomThemes.all.count - 1)]
                 let sample = RoomDecorCatalog.all.filter {
                     ["decor-poster","decor-garland","decor-bookshelf","decor-bed","decor-beanbag",
@@ -79,44 +99,44 @@ struct RootView: View {
                     .padding(YolkSpace.lg)
                 }
                 .background(YolkColor.shell.ignoresSafeArea())
-            } else if ProcessInfo.processInfo.environment["YOLK_ROOM_TRYON"] != nil {
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_ROOM_TRYON"] != nil {
                 RoomTryOnPreview()
-            } else if ProcessInfo.processInfo.environment["YOLK_VISIT"] != nil
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_VISIT"] != nil
                         || CommandLine.arguments.contains("YOLK_VISIT") {
                 VisitView(subject: .friend(SocialPreview.sunny), store: SocialPreview.store,
                           vibe: .matcha, wallet: Wallet(),
                           myOutfit: SocialPreview.myOutfit,
                           myDiscovered: Set(SpeciesSets.headStart),
                           onReward: { _ in })
-            } else if CommandLine.arguments.contains("YOLK_TRADE") {
+            } else if seamsOn, CommandLine.arguments.contains("YOLK_TRADE") {
                 TradeSheet(store: SocialPreview.store, friend: SocialPreview.sunny, vibe: .yolk,
                            wallet: Wallet(), myOutfit: SocialPreview.myOutfit)
-            } else if CommandLine.arguments.contains("YOLK_WANDER") {
+            } else if seamsOn, CommandLine.arguments.contains("YOLK_WANDER") {
                 WanderArrival(target: SocialPreview.drifter, vibe: .yolk,
                               store: SocialPreview.store, myName: "Yolky", onReward: { _ in })
-            } else if CommandLine.arguments.contains("YOLK_DRIFT") {
+            } else if seamsOn, CommandLine.arguments.contains("YOLK_DRIFT") {
                 // The stranger side of the same view, for eyeballing what differs.
                 VisitView(subject: .stranger(SocialPreview.drifter), store: SocialPreview.store,
                           vibe: .matcha, wallet: Wallet(),
                           myOutfit: SocialPreview.myOutfit, onReward: { _ in })
-            } else if CommandLine.arguments.contains("YOLK_HOLO") {
+            } else if seamsOn, CommandLine.arguments.contains("YOLK_HOLO") {
                 HoloPreview()
-            } else if CommandLine.arguments.contains("YOLK_MOODS") {
+            } else if seamsOn, CommandLine.arguments.contains("YOLK_MOODS") {
                 MoodGridPreview()
-            } else if ProcessInfo.processInfo.environment["YOLK_INBOX"] != nil {
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_INBOX"] != nil {
                 InboxPreview()
-            } else if ProcessInfo.processInfo.environment["YOLK_COLORS"] != nil {
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_COLORS"] != nil {
                 ColorPreview()
             // Accepts a launch ARGUMENT as well as an env var: `SIMCTL_CHILD_*` env
             // vars propagate unreliably through `simctl launch`, whereas `--args` always
             // arrives. Worth copying to the other seams when the screenshot pipeline
             // gets built.
-            } else if ProcessInfo.processInfo.environment["YOLK_CARD"] != nil
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_CARD"] != nil
                         || CommandLine.arguments.contains("YOLK_CARD") {
                 SharePreview()
-            } else if ProcessInfo.processInfo.environment["YOLK_PLUS"] != nil {
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_PLUS"] != nil {
                 PlusView(store: .shared, vibe: .matcha)
-            } else if ProcessInfo.processInfo.environment["YOLK_ONB"] != nil {
+            } else if seamsOn, ProcessInfo.processInfo.environment["YOLK_ONB"] != nil {
                 // Screenshot seam: render the real onboarding flow even when a
                 // saved player exists. OnboardingView's own onAppear reads
                 // YOLK_ONB and jumps to the requested step.
@@ -157,7 +177,7 @@ struct RootView: View {
     /// the `@Query` sort buys, and it is invisible unless something prints it.
     @ViewBuilder private var playerCountOverlay: some View {
         #if DEBUG
-        if ProcessInfo.processInfo.environment["YOLK_PLAYERS"] != nil
+        if seamsOn, ProcessInfo.processInfo.environment["YOLK_PLAYERS"] != nil
             || CommandLine.arguments.contains("YOLK_PLAYERS") {
             Text("players=\(players.count)  first=\(players.first?.name ?? "-")")
                 .font(.system(size: 11, weight: .medium, design: .monospaced))
