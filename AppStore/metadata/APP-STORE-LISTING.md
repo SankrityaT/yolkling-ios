@@ -13,9 +13,15 @@ Bundle id: `com.Sankritya.Yolkling` · Version: `1.0.0`
 ## App Name
 
 ```
-Yolkling: Grow by Living
+Yolkling: Self Care Pet
 ```
-(24 / 30 characters)
+(23 / 30 characters)
+
+**Why not "Yolkling: Grow by Living".** The App Name carries the single heaviest
+ranking weight of any field, and "Grow by Living" is brand poetry with no search
+volume behind it, so the most valuable 14 characters in the entire listing were
+spent on a phrase nobody types. "self care pet" is the exact term Finch ranks on,
+and Finch does $30M ARR in this category, so the intent behind it is proven.
 
 The bare "Yolkling" was taken by a never-submitted app record on the original
 developer account, and Apple will not delete a record that was never approved.
@@ -28,9 +34,14 @@ released.
 ## Subtitle
 
 ```
-a cozy pet that grows with you
+grow a cozy virtual creature
 ```
-(30 / 30 characters — verified exact, at the limit)
+(28 / 30 characters)
+
+**Why the change.** The old subtitle repeated "pet" from the title, and Apple credits a
+keyword once no matter how many fields it appears in, so that word was wasted. It also
+spent 12 of its 30 characters on "a", "that", "with" and "you", none of which are ever
+searched. This version adds four new indexed terms instead: grow, cozy, virtual, creature.
 
 ---
 
@@ -85,9 +96,26 @@ made by one person who wanted a pet that roots for the real you.
 Comma-separated, no spaces. Paste exactly.
 
 ```
-virtualpet,creature,cozy,selfcare,tamagotchi,wellbeing,companion,habit,collect,focus,mood,pet,egg
+tamagotchi,habit,tracker,mood,journal,wellbeing,mental,health,sleep,step,focus,cute,kawaii,egg,buddy
 ```
-(97 / 100 characters)
+(100 / 100 characters)
+
+**Three fixes to the old list.**
+
+"cozy", "pet", "creature" and "selfcare" all now appear in the title or subtitle, and
+Apple counts a keyword once, so repeating them here bought nothing. They are gone,
+freeing space for terms that are not indexed anywhere else.
+
+"virtualpet" was written as one word. Apple builds phrases by combining terms ACROSS
+fields, so "virtual" in the subtitle plus "pet" in the title already matches a search for
+"virtual pet". Jamming them together only matched the literal string.
+
+Everything is singular. Apple matches English plurals automatically, so "step" also
+covers "steps" and the extra character is dead weight.
+
+**Phrases this combination matches:** self care pet, virtual pet, cozy pet, virtual
+creature, self care, habit tracker, mood tracker, sleep tracker, cute pet, kawaii pet,
+tamagotchi pet, mental health.
 
 ---
 
@@ -178,6 +206,8 @@ Monetization: one auto-renewable subscription, Yolkling Plus (com.yolkling.ios.p
 Yolks, the in-app currency, are deliberately NOT purchasable at any price. There is no currency pack, no gacha, no loot box, and no randomised purchase anywhere in the app. Cash never touches a random roll: the only randomness sits behind packs the player earns through daily use. Cosmetics are fixed price in Yolks.
 
 The paywall is reachable from Profile > yolkling+, and Restore Purchases sits on the paywall itself. Cancel, refund and plan changes are available in-app through RevenueCat's Customer Center, also from Profile.
+
+If the paywall shows "the supporter tier isn't available right now", the storefront could not be reached from your test device rather than the app failing. Both products are approved and live; the screen states plainly that nothing is wrong with the user's creature and offers a retry, because an indefinite spinner on a payment screen is worse than an honest message. Tapping either plan and then "become a supporter" starts a normal StoreKit purchase.
 
 User-generated content: friends can send short postcards. The app includes block, report, and account deletion controls.
 
