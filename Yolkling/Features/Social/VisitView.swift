@@ -241,6 +241,7 @@ struct VisitView: View {
                     }
                     Text("it comes out of your own \(Currency.name.lowercased()).")
                         .font(.caption2).foregroundStyle(YolkColor.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal, YolkSpace.md)
                 .padding(.vertical, 12)

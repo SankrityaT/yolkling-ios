@@ -357,6 +357,7 @@ struct ShopHomeView: View {
             Text("recolors your body. a permanent glow-up earned with Yolks.")
                 .font(.caption).foregroundStyle(YolkColor.muted)
                 .padding(.top, -4)
+                .fixedSize(horizontal: false, vertical: true)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: YolkSpace.sm)], spacing: YolkSpace.sm) {
                 if searchText.isEmpty && !showOwned { originalColour }
                 ForEach(filteredColours) { colourCard($0) }
@@ -469,6 +470,7 @@ struct ShopHomeView: View {
                     Text("sets your room's look. apply the active theme in Decorate.")
                         .font(.caption).foregroundStyle(YolkColor.muted)
                         .padding(.top, -4)
+                        .fixedSize(horizontal: false, vertical: true)
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: YolkSpace.sm)], spacing: YolkSpace.sm) {
                         ForEach(themes) { themeCard($0) }
                     }

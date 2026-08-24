@@ -47,6 +47,7 @@ struct PlusView: View {
                         Text("free to hatch, always. this is just for when you love it.")
                             .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                             .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     VStack(alignment: .leading, spacing: YolkSpace.md) {
                         ForEach(perks, id: \.1) { perk in

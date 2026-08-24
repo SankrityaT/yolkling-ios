@@ -83,6 +83,7 @@ struct DriftSheet: View {
                 .font(YolkType.body).foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, YolkSpace.lg)
+                .fixedSize(horizontal: false, vertical: true)
             Text("no names, no chat. just a room and a kind note.")
                 .font(.caption2).foregroundStyle(YolkColor.muted)
 
@@ -108,6 +109,7 @@ struct DriftSheet: View {
                 .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, YolkSpace.xl)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

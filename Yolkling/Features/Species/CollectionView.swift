@@ -88,6 +88,7 @@ struct CollectionView: View {
             Text("a few were a week-one gift. the rest are out there to find.")
                 .font(.footnote).foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.top, YolkSpace.md)
     }

@@ -73,6 +73,7 @@ struct FocusView: View {
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Text("put your phone down. \(name) rests and glows while you're away.")
                 .font(YolkType.body).foregroundStyle(YolkColor.muted).multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: YolkSpace.sm) {
                 ForEach(durations, id: \.self) { m in
                     chip("\(m)m", selected: !showCustom && store.durationMinutes == m) {
@@ -180,6 +181,7 @@ struct FocusView: View {
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Text("you focused for \(store.durationMinutes) minutes. \(name) rested the whole time.")
                 .font(YolkType.body).foregroundStyle(YolkColor.muted).multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: 6) {
                 YolkCoin(size: 22)
                 Text("+\(store.durationMinutes) \(Currency.name)")
@@ -203,6 +205,7 @@ struct FocusView: View {
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Text("looks like you left the app. no worries and no guilt. try again whenever you're ready.")
                 .font(YolkType.body).foregroundStyle(YolkColor.muted).multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
             Spacer()
             VStack(spacing: YolkSpace.sm) {
                 primary("try again") { store.reset() }

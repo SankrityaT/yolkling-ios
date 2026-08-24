@@ -15,6 +15,7 @@ struct SpeciesGalleryView: View {
                         .font(.system(.title2, design: .rounded).weight(.bold)).foregroundStyle(YolkColor.ink)
                     Text("\(SpeciesCatalog.standard.count) named so far . all code-drawn")
                         .font(.footnote).foregroundStyle(YolkColor.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.top, 16)
 
