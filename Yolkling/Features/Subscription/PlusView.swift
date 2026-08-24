@@ -13,11 +13,21 @@ struct PlusView: View {
 
     /// Only things that actually ship.
     ///
-    /// This list previously advertised five features, **none of which were built** —
+    /// This list previously advertised five features, **none of which were built**:
     /// cloud backup, a supporter glow, seasonal species, multiple creatures. Selling
     /// unimplemented functionality is an App Store Guideline 3.1.2 rejection, and it's a
     /// straightforward lie to the person paying. Anything added back here has to exist
     /// first. See docs/CLAIMS.md.
+    ///
+    /// The glow line survived that cleanup and was STILL not built: `isPlus` reached two
+    /// text badges in Profile and this view's own footer, and never reached the creature.
+    /// So the paywall promised a visible change to your yolk and buying it changed
+    /// nothing you could see. It ships now, as `SupporterGlow` in Core/Creature, drawn at
+    /// every place the app renders your own creature: here, Home, Profile and Focus.
+    ///
+    /// The other two lines are checked and true. The monthly Yolks are real via
+    /// `SubscriptionStore.claimStipend()`, wired into HomeView, reading the RevenueCat
+    /// virtual-currency balance. There is no ad SDK anywhere in the project.
     private let perks: [(String, String)] = [
         ("sparkles",   "a supporter glow on your yolk, so it's visibly yours"),
         ("leaf.fill",  "a monthly handful of Yolks, on the house"),
@@ -29,7 +39,7 @@ struct PlusView: View {
             header
             ScrollView {
                 VStack(spacing: YolkSpace.lg) {
-                    YolklingView(vibe: vibe, expression: .happy, size: 120).frame(height: 150)
+                    YolklingView(vibe: vibe, expression: .happy, size: 120, supporterGlow: store.isPlus).frame(height: 150)
                     // The real guard against shipping a Test Store key: it shows up in
                     // TestFlight and in App Review, where a human will see it. An
                     // `assert` cannot do this job — it's compiled out in release.

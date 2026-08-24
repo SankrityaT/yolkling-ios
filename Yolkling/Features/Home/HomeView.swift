@@ -711,7 +711,8 @@ struct HomeView: View {
                     YolklingView(vibe: vibe, expression: shownExpression,
                                  size: geo.size.height * RoomView.creatureSpot.size,
                                  outfit: wardrobe.outfit, waveToken: waveToken,
-                                 celebrateToken: celebrateToken, petToken: petToken)
+                                 celebrateToken: celebrateToken, petToken: petToken,
+                                 supporterGlow: SubscriptionStore.shared.isPlus)
                         .contentShape(Rectangle())
                         .position(x: geo.size.width * RoomView.creatureSpot.x,
                                   y: geo.size.height * RoomView.creatureSpot.y)

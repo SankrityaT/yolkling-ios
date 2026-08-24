@@ -46,6 +46,7 @@
 		2E8A4379E8AC57C0E654C849 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC6AD7229641595F1324223 /* ProfileView.swift */; };
 		2FAAB31039B25DC9582412FC /* Species+Ocean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */; };
 		301A7CC3CC8CED5A339A5398 /* BrandFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D460297B8B82462A61ED36 /* BrandFonts.swift */; };
+		30D38AAB048863EA17A0840F /* SupporterGlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB5128473FBAA038A3F7B2B /* SupporterGlow.swift */; };
 		339169F8EB3C2F3BEAB56081 /* MoodCheckInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE358D6CD83AA87EA6358B2 /* MoodCheckInView.swift */; };
 		3395E08E88EBF6AF2686CB1A /* YolkSegmented.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F403602C69613F256AC4FD /* YolkSegmented.swift */; };
 		363FF6492F6CCD6F82CF23A3 /* YolkMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD66B197F22F7316ED9073EF /* YolkMenu.swift */; };
@@ -107,6 +108,7 @@
 		921A18410B9EC93B4267D392 /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A838C066C2D95AC131CF7A /* TokenStore.swift */; };
 		92C0E2E29F7A45029311A94A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 9F16803B4B290C5582A6C301 /* PrivacyInfo.xcprivacy */; };
 		934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */; };
+		94C89ABBADC6CFC81D9ADBA5 /* SupporterGlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AB5128473FBAA038A3F7B2B /* SupporterGlow.swift */; };
 		957754945CDFC6FAA6B3E153 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
 		9753D9F73A7C9C6D34C1A2A6 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5DF92AB0E724AF0780577E /* CardDetailView.swift */; };
 		984F2FF722D79E95EDC451AB /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7271B792C6CDA97F073DDC10 /* QRCodeView.swift */; };
@@ -245,6 +247,7 @@
 		14C460FAA85BB2A5D657CBE3 /* ScreenTimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeService.swift; sourceTree = "<group>"; };
 		14FCBBEBD1D5464C4A735893 /* FoundingFlair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundingFlair.swift; sourceTree = "<group>"; };
 		1A696350A3A3F96048352A62 /* RoomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomView.swift; sourceTree = "<group>"; };
+		1AB5128473FBAA038A3F7B2B /* SupporterGlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupporterGlow.swift; sourceTree = "<group>"; };
 		1BF269F8705D1C1273019B7C /* TutorialSpotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialSpotlight.swift; sourceTree = "<group>"; };
 		1DCBEF321B406CD08787A8AD /* DecorateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecorateView.swift; sourceTree = "<group>"; };
 		1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkExpression.swift; sourceTree = "<group>"; };
@@ -641,6 +644,7 @@
 				0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */,
 				8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */,
 				4374987F9853748A1166C1BA /* SpeciesSet.swift */,
+				1AB5128473FBAA038A3F7B2B /* SupporterGlow.swift */,
 				822B58776D67B8C7AC5DB908 /* TrustStage.swift */,
 				4FF366FD2F7B0531883B229D /* Vibe.swift */,
 				1F1E8FBD4089B6AF74FD4E25 /* YolkExpression.swift */,
@@ -1104,6 +1108,7 @@
 				2FAAB31039B25DC9582412FC /* Species+Ocean.swift in Sources */,
 				9C4AEC9956A058F4B06869BD /* Species.swift in Sources */,
 				231D03F805E66B6978F7EBDA /* SpeciesSet.swift in Sources */,
+				94C89ABBADC6CFC81D9ADBA5 /* SupporterGlow.swift in Sources */,
 				15071DFB35BFB0D5E456F908 /* TrustStage.swift in Sources */,
 				63F47CB7F9AAE58E8F9E4208 /* Vibe.swift in Sources */,
 				2DD5ED2695A90EFCD302A043 /* WidgetPublisher.swift in Sources */,
@@ -1213,6 +1218,7 @@
 				59DE5860CD52D0A5C2A9961F /* SubscriptionStore.swift in Sources */,
 				67DE977A41A081CB1B37F8C0 /* SupabaseAuth.swift in Sources */,
 				F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */,
+				30D38AAB048863EA17A0840F /* SupporterGlow.swift in Sources */,
 				7174436B53983F61625E185B /* SwapPreview.swift in Sources */,
 				56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */,
 				921A18410B9EC93B4267D392 /* TokenStore.swift in Sources */,

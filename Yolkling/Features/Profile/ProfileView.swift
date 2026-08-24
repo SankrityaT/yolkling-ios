@@ -54,7 +54,7 @@ struct ProfileView: View {
             }
             .padding(.top, YolkSpace.sm)
 
-            YolklingView(vibe: vibe, expression: .happy, size: 130)
+            YolklingView(vibe: vibe, expression: .happy, size: 130, supporterGlow: subs.isPlus)
                 .frame(height: 160)
             Text(name)
                 .font(YolkType.heading)

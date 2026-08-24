@@ -33,6 +33,13 @@ struct YolklingView: View {
     /// Use ``posedT`` unless you need a specific moment.
     var frozenAt: Double? = nil
 
+    /// Draws the Yolkling Plus supporter glow. A plain Bool rather than a reach into
+    /// `SubscriptionStore`, because this file compiles into the widget target and the
+    /// store imports RevenueCat. Callers pass `subs.isPlus`; pass `false` for anyone
+    /// else's creature, since we do not know a friend's subscription state and it is
+    /// none of our business.
+    var supporterGlow: Bool = false
+
     /// A good `frozenAt` for a still: mid-breath, and clear of the blink window
     /// (blinks occupy the first 0.16s of each 3.6s cycle, so eyes are open here).
     static let posedT: Double = 1.2
@@ -48,7 +55,7 @@ struct YolklingView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let duration: TimeInterval = 0.55
 
-    init(vibe: Vibe = .yolk, expression: YolkExpression = .content, size: CGFloat = 220, outfit: [Cosmetic] = [], waveToken: Int = 0, celebrateToken: Int = 0, petToken: Int = 0, frozenAt: Double? = nil) {
+    init(vibe: Vibe = .yolk, expression: YolkExpression = .content, size: CGFloat = 220, outfit: [Cosmetic] = [], waveToken: Int = 0, celebrateToken: Int = 0, petToken: Int = 0, frozenAt: Double? = nil, supporterGlow: Bool = false) {
         self.vibe = vibe
         self.expression = expression
         self.size = size
@@ -57,6 +64,7 @@ struct YolklingView: View {
         self.celebrateToken = celebrateToken
         self.petToken = petToken
         self.frozenAt = frozenAt
+        self.supporterGlow = supporterGlow
         _from = State(initialValue: expression)
         _to = State(initialValue: expression)
     }
@@ -109,9 +117,18 @@ struct YolklingView: View {
         // so an idle breath barely moves it and a celebrate hop moves it a lot.
         let rise = min(1, motion.bodyRise / 0.10)
 
+        // The body ZStack lifts by this much on breath and celebrate. The glow has to
+        // borrow it, or the light stays pinned to the frame while the creature hops out
+        // of it, which reads as two separate objects.
+        let bodyLift = -size * 0.14 * e.bounce * (0.5 + 0.5 * breath) - size * 0.16 * celebrateAmt
+
         return ZStack {
             if let flair = vibe.flair {
                 FoundingAura(flair: flair, size: size, t: t)
+            }
+            if supporterGlow {
+                SupporterGlow(size: size, t: t, reduceMotion: reduceMotion)
+                    .offset(y: bodyLift)
             }
             groundShadow(rise: rise)
 
@@ -140,7 +157,7 @@ struct YolklingView: View {
                 }
             }
             .rotationEffect(.degrees(e.headTilt + e.bodyLean * 6), anchor: .bottom)
-            .offset(y: -size * 0.14 * e.bounce * (0.5 + 0.5 * breath) - size * 0.16 * celebrateAmt)
+            .offset(y: bodyLift)
 
             ParticleLayer(particle: e.particle, t: t, size: size)
                 // Same problem as the toppers, same fix. The sparkle particle is filled

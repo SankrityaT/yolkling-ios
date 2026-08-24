@@ -68,7 +68,7 @@ struct FocusView: View {
     private var setup: some View {
         VStack(spacing: YolkSpace.lg) {
             Spacer()
-            YolklingView(vibe: vibe, expression: .calm, size: 165).frame(height: 205)
+            YolklingView(vibe: vibe, expression: .calm, size: 165, supporterGlow: SubscriptionStore.shared.isPlus).frame(height: 205)
             Text("focus session")
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Text("put your phone down. \(name) rests and glows while you're away.")
@@ -149,7 +149,7 @@ struct FocusView: View {
             Spacer()
             ZStack {
                 Circle().fill(vibe.body).blur(radius: 45).opacity(0.4).frame(width: 230, height: 230)
-                YolklingView(vibe: vibe, expression: .sleepy, size: 185)
+                YolklingView(vibe: vibe, expression: .sleepy, size: 185, supporterGlow: SubscriptionStore.shared.isPlus)
             }
             .frame(height: 250)
             TimelineView(.periodic(from: .now, by: 1)) { ctx in
@@ -176,7 +176,7 @@ struct FocusView: View {
     private var completed: some View {
         VStack(spacing: YolkSpace.lg) {
             Spacer()
-            YolklingView(vibe: vibe, expression: .proud, size: 185).frame(height: 240)
+            YolklingView(vibe: vibe, expression: .proud, size: 185, supporterGlow: SubscriptionStore.shared.isPlus).frame(height: 240)
             Text("nice focus")
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Text("you focused for \(store.durationMinutes) minutes. \(name) rested the whole time.")
@@ -200,7 +200,7 @@ struct FocusView: View {
     private var ended: some View {
         VStack(spacing: YolkSpace.lg) {
             Spacer()
-            YolklingView(vibe: vibe, expression: .content, size: 165).frame(height: 205)
+            YolklingView(vibe: vibe, expression: .content, size: 165, supporterGlow: SubscriptionStore.shared.isPlus).frame(height: 205)
             Text("session ended")
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Text("looks like you left the app. no worries and no guilt. try again whenever you're ready.")
