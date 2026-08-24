@@ -66,7 +66,7 @@ Yolkling is a virtual pet that grows when you take care of yourself in real life
 free to play, all of it. no ads, and the only currency is Yolks, which you earn by showing up for yourself. Yolks are never for sale: there is no way to buy them at any price.
 
 hatch
-your yolk is one of a kind. pick its color and its look, watch it hatch, and it is yours. there are 219 named species to discover across five families, so the one you start with is just the first.
+your yolk is one of a kind. pick its color and its look, watch it hatch, and it is yours. there are 203 named species to discover across four families, so the one you start with is just the first.
 
 grow by living
 connect Apple Health if you want to, and your real days feed your yolk. steps and sleep help it grow, slowly, over weeks, from a little one into a grown one. it is completely optional. the app works fully without Health access, and nothing about your day ever leaves your device to make this happen.
@@ -124,7 +124,7 @@ tamagotchi pet, mental health.
 ```
 the first hatch. Yolkling 1.0 is here.
 
-hatch a one of a kind yolk, grow it by living well with optional Apple Health, put the phone down with focus sessions, check in on how you are, and earn Yolks to dress it up. add friends by code or QR, send postcards, and start your Dex of 219 species.
+hatch a one of a kind yolk, grow it by living well with optional Apple Health, put the phone down with focus sessions, check in on how you are, and earn Yolks to dress it up. add friends by code or QR, send postcards, and start filling your Dex.
 
 free to play, all of it. no ads. made by one person. thank you for being here for the first one.
 ```
@@ -264,3 +264,33 @@ HealthKit and processed on-device only. Reconfirm this claim against
 | Subtitle | 30 | 30 (at limit) |
 | Promotional Text | 170 | 151 |
 | Keywords | 100 | 97 |
+
+
+---
+
+## Note on the species count
+
+Counted from the source on 2026-08-24, not from memory:
+
+| Family | Named species |
+|---|---|
+| celestial | 48 |
+| garden | 55 |
+| ocean | 40 |
+| cozy | 60 |
+| **total** | **203** |
+
+`SpeciesCatalog.all` is `celestial + garden + ocean + cozy`, so it is **four** families,
+not five, and **203** species, not 219. Both numbers in the earlier copy were wrong.
+
+Separately, the **Dex is 32**, which is a different thing again: `SpeciesSets.dex` is the
+curated set list the collection screen groups by, and the app's own UI says "9 of 32
+discovered". So "your Dex of 219 species" was wrong twice over, conflating the full
+catalog with the Dex.
+
+There is also a "912 species" figure referenced in `Species.swift`, which counts
+procedural palette combinations rather than named creatures. Do not put it in the listing
+without saying what it counts.
+
+Metadata that overstates content is a rejection risk under Guideline 2.3, and a reviewer
+who opens the Dex sees 32.

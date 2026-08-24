@@ -59,8 +59,14 @@ Built from primitives rather than assets:
   share cards and snapshot tests.
 - Secondary motion: arms, feet and hats trail the body and settle past it.
 
-**6 Dex sets, 32 species in the Dex.** (The App Store listing claims 219 named species
-across five families; I have not independently verified that number.)
+**203 named species across four families** (celestial 48, garden 55, ocean 40, cozy 60),
+counted from the source. **32 of them are in the Dex**, which is the curated set list the
+collection screen groups by.
+
+The listing previously claimed 219 across five families, and separately "your Dex of 219
+species". Both were wrong, and the second conflated the full catalog with the Dex.
+A "912 species" figure also appears in `Species.swift`: that counts procedural palette
+combinations, not named creatures, and should never be used without saying so.
 
 ## The daily loop
 
