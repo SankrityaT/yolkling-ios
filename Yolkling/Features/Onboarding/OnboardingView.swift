@@ -339,6 +339,12 @@ private struct NamingView: View {
     @State private var expr: YolkExpression = .curious
     @FocusState private var fieldFocused: Bool
 
+    /// Set only when someone tries to commit a name the filter rejects, and cleared as
+    /// soon as they type again. Deliberately NOT live-validated on every keystroke: being
+    /// told off mid-word, before you have finished the word, is a hostile way to meet an
+    /// app whose entire voice is gentle.
+    @State private var nameError: String?
+
     private var trimmed: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
 
     var body: some View {
@@ -374,6 +380,18 @@ private struct NamingView: View {
                     .focused($fieldFocused)
                     .submitLabel(.done)
                     .onSubmit(commit)
+                    .onChange(of: name) { _, _ in nameError = nil }
+
+                if let nameError {
+                    Text(nameError)
+                        .font(YolkType.bodySmall)
+                        .foregroundStyle(YolkColor.inkSoft)
+                        .multilineTextAlignment(.center)
+                        // Without this the message truncates to an ellipsis on an SE
+                        // instead of wrapping, which is the project's most repeated bug.
+                        .fixedSize(horizontal: false, vertical: true)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                }
             }
             .padding(.horizontal, YolkSpace.lg)
             .padding(.top, YolkSpace.lg)
@@ -389,7 +407,14 @@ private struct NamingView: View {
     }
 
     private func commit() {
-        guard !trimmed.isEmpty else { return }
+        // Guideline 1.2 filtering. The name is the app's one free-text surface that
+        // other people see, so it is checked before it can ever reach the server.
+        let verdict = NameFilter.check(name)
+        guard verdict == .ok else {
+            Haptics.shared.warn()
+            withAnimation(.snappy) { nameError = NameFilter.message(for: verdict) }
+            return
+        }
         Haptics.shared.reward()
         fieldFocused = false
         withAnimation(.bouncy(duration: 0.5, extraBounce: 0.45)) { expr = .happy }

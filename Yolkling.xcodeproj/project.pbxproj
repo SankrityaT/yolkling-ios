@@ -116,6 +116,7 @@
 		9B08F7A18C857012CD227CCE /* YolkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370AC2BE38C8F35E8C59C790 /* YolkType.swift */; };
 		9C4AEC9956A058F4B06869BD /* Species.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A81F4FB5B6B4FE7DC31F059 /* Species.swift */; };
 		A15536C1FB51C9CA06D2A02E /* Species+Ocean.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF0C0CF7A7F90B686622D72 /* Species+Ocean.swift */; };
+		A1A6BD246A8E25A44865DCE5 /* NameFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A525DCFA93FB2E386604E390 /* NameFilterTests.swift */; };
 		A2DA17A39B665DFB2F01E51B /* YolkSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492F48EFAB2DD9CED277891 /* YolkSpacing.swift */; };
 		A3456E748BB01E749F4C4FD9 /* RoomDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */; };
 		A7014539ACA074D72F2EE1A7 /* Onest-VF.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 062DF25F0B107A6A708BE8E2 /* Onest-VF.ttf */; };
@@ -139,6 +140,7 @@
 		BD05E4BA6E9D3241D814861E /* YolkColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCE5524395404EDA669648 /* YolkColors.swift */; };
 		BD284E721748D9A0590066F4 /* ShopHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */; };
 		C12C0259ED876B5BA58FE8C2 /* Species+Garden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C05B6FF5AC20A93C0A88354 /* Species+Garden.swift */; };
+		C1833D4865DC4A4DE92A7EC6 /* NameFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78554FBD2EC0D954CA58B207 /* NameFilter.swift */; };
 		C1DED04D454F150D89F0A062 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE97CC199270E8FD1BCC9874 /* WidgetSnapshot.swift */; };
 		C2BC5F4B1FA45DC677D46D34 /* YolkMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA0A0646A0E2FED1458D9E9 /* YolkMotion.swift */; };
 		C35B7A70AC799406886E8051 /* YolkCloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E28EF370E18DD9AE7BD181 /* YolkCloseButton.swift */; };
@@ -303,6 +305,7 @@
 		775778FA780FB58DC2F96847 /* HoloMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoloMaterial.swift; sourceTree = "<group>"; };
 		77B3DF45A83DE92F2CDBBAA4 /* YolklingWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = YolklingWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		77C4E64C5781F3C8518BCB9B /* SpeciesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeciesTests.swift; sourceTree = "<group>"; };
+		78554FBD2EC0D954CA58B207 /* NameFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameFilter.swift; sourceTree = "<group>"; };
 		7A1C490033D514C40A0067B7 /* PackRevealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackRevealView.swift; sourceTree = "<group>"; };
 		7BB9C33AA7D56912EC109F71 /* StreakEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakEngineTests.swift; sourceTree = "<group>"; };
 		7C9EA7652B10E7A58EC9A965 /* SharePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreview.swift; sourceTree = "<group>"; };
@@ -325,6 +328,7 @@
 		9F16803B4B290C5582A6C301 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A2A5A57163EFCA5D3FA63808 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A388843295E23F423C6D05DE /* PostcardVocabulary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardVocabulary.swift; sourceTree = "<group>"; };
+		A525DCFA93FB2E386604E390 /* NameFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameFilterTests.swift; sourceTree = "<group>"; };
 		A7558E421CB8F49D94D63FD7 /* RoomZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomZone.swift; sourceTree = "<group>"; };
 		A999B3ECF4F6D60AF1777E91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AA14B0BD0FCF8A0D740D3B22 /* ScreenTimeReport.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScreenTimeReport.entitlements; sourceTree = "<group>"; };
@@ -735,6 +739,7 @@
 		87F2FE1F9BD3DA6D2543BDC6 /* YolklingTests */ = {
 			isa = PBXGroup;
 			children = (
+				A525DCFA93FB2E386604E390 /* NameFilterTests.swift */,
 				B00E5F0B2E4AE46F432F74D6 /* RewardsTests.swift */,
 				77C4E64C5781F3C8518BCB9B /* SpeciesTests.swift */,
 				7BB9C33AA7D56912EC109F71 /* StreakEngineTests.swift */,
@@ -916,6 +921,7 @@
 		FF0BE94A516969245B4B0FB1 /* Social */ = {
 			isa = PBXGroup;
 			children = (
+				78554FBD2EC0D954CA58B207 /* NameFilter.swift */,
 				A388843295E23F423C6D05DE /* PostcardVocabulary.swift */,
 			);
 			path = Social;
@@ -1176,6 +1182,7 @@
 				03BAB92472079E790686F81F /* LivingTile.swift in Sources */,
 				8CFEA4E65FD7AA9F81025A05 /* Mood.swift in Sources */,
 				339169F8EB3C2F3BEAB56081 /* MoodCheckInView.swift in Sources */,
+				C1833D4865DC4A4DE92A7EC6 /* NameFilter.swift in Sources */,
 				F1BB2F225D99F64387F88587 /* OnboardingBackdrop.swift in Sources */,
 				721FB15B3A3EB0AB343FFB39 /* OnboardingEntrance.swift in Sources */,
 				23B68D582EA550BE1B5B2088 /* OnboardingView.swift in Sources */,
@@ -1271,6 +1278,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1A6BD246A8E25A44865DCE5 /* NameFilterTests.swift in Sources */,
 				869E24C3E4EACCF6044FCC01 /* RewardsTests.swift in Sources */,
 				2AC2BDCF6B0A54ABC0D5F635 /* SpeciesTests.swift in Sources */,
 				AFCD4B498426B4ABD40F4804 /* StreakEngineTests.swift in Sources */,

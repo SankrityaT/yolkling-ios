@@ -214,9 +214,20 @@ contradiction that earns a metadata rejection.
 Guideline 1.2 applies precisely BECAUSE we have UGC, and its controls already ship:
 block, report, and account deletion.
 
-**Known gap, accepted for 1.0:** creature names have no filter. Not a blocker with
-block/report in place, but it is the one UGC surface without a control on it, and it is
-the first thing to add if Apple pushes back.
+**Closed.** Creature names are filtered by `Core/Social/NameFilter.swift`, checked at
+input before a name can reach the server. That completes all four of Guideline 1.2's
+requirements: filter, report, block, and published contact info.
+
+The filter is deliberately conservative about false positives, since wrongly rejecting a
+real person's chosen name is worse than missing a word that report and block would catch
+anyway. Blocked terms that appear inside ordinary English (hell in hello, ass in class,
+shit in shiitake) match as whole words only; only terms with no innocent embedding match
+anywhere. `YolklingTests/NameFilterTests.swift` pins that behaviour down, including
+Scunthorpe.
+
+Client-side, and honestly so: the anon key ships in the binary, so a determined person
+can write a name straight to the RPC. Moving the check into `ensure_user` server-side is
+the follow-up.
 
 ---
 
