@@ -1,6 +1,6 @@
 name: Yolkling
 options:
-  bundleIdPrefix: com.Sankritya
+  bundleIdPrefix: com.yolkling.ios
   deploymentTarget:
     iOS: "18.0"
   createIntermediateGroups: true
@@ -15,7 +15,7 @@ settings:
     # Xcode wrote these straight into the .pbxproj, which xcodegen regenerates.
     # They live here so the project stays reproducible.
     # NOTE: DEVELOPMENT_TEAM must change to the team that actually ships the app.
-    DEVELOPMENT_TEAM: J94T84BVCP
+    DEVELOPMENT_TEAM: 94277H98XP
     INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.lifestyle"
     SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
     SUPPORTS_MACCATALYST: NO
@@ -53,7 +53,7 @@ targets:
         product: RevenueCatUI
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios
         PRODUCT_NAME: Yolkling
         CODE_SIGN_ENTITLEMENTS: Yolkling/Yolkling.entitlements
         GENERATE_INFOPLIST_FILE: YES
@@ -89,7 +89,7 @@ targets:
       - package: YolklingCore
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling.Widgets
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios.Widgets
         PRODUCT_NAME: YolklingWidgets
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: YolklingWidgets/Info.plist
@@ -106,7 +106,7 @@ targets:
       - path: Yolkling/Core/Health/ScreenTimeShare.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling.ScreenTimeReport
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios.ScreenTimeReport
         PRODUCT_NAME: YolklingScreenTimeReport
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: ScreenTimeReport/Info.plist
@@ -129,11 +129,11 @@ targets:
       - package: YolklingCore
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.Yolkling.watchkitapp
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios.watchkitapp
         PRODUCT_NAME: YolklingWatch
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_WKApplication: YES
-        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: com.Sankritya.Yolkling
+        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: com.yolkling.ios
         INFOPLIST_KEY_CFBundleDisplayName: Yolkling
         # Base settings pin SUPPORTED_PLATFORMS to iphoneos for every other target;
         # this one really is a watch app.
@@ -155,7 +155,7 @@ targets:
       - package: YolklingCore
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.Sankritya.YolklingTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios.Tests
         GENERATE_INFOPLIST_FILE: YES
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic

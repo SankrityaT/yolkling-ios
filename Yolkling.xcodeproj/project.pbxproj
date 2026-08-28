@@ -968,23 +968,23 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					0380A3ADC7B50DF4DDD0B2A1 = {
-						DevelopmentTeam = J94T84BVCP;
+						DevelopmentTeam = 94277H98XP;
 						ProvisioningStyle = Automatic;
 					};
 					0F67D7AAA9597122D7BDE67C = {
-						DevelopmentTeam = J94T84BVCP;
+						DevelopmentTeam = 94277H98XP;
 						ProvisioningStyle = Automatic;
 					};
 					7D4565EBBB1BDB1D01B0CDA5 = {
-						DevelopmentTeam = J94T84BVCP;
+						DevelopmentTeam = 94277H98XP;
 						ProvisioningStyle = Automatic;
 					};
 					D11C675502367D0547EDF59C = {
-						DevelopmentTeam = J94T84BVCP;
+						DevelopmentTeam = 94277H98XP;
 						ProvisioningStyle = Automatic;
 					};
 					DD2770B84A509DAFA8B6AA33 = {
-						DevelopmentTeam = J94T84BVCP;
+						DevelopmentTeam = 94277H98XP;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -1238,7 +1238,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.Widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.Widgets;
 				PRODUCT_NAME = YolklingWidgets;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1259,7 +1259,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.Widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.Widgets;
 				PRODUCT_NAME = YolklingWidgets;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1303,7 +1303,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = J94T84BVCP;
+				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1353,7 +1353,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.ScreenTimeReport;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.ScreenTimeReport;
 				PRODUCT_NAME = YolklingScreenTimeReport;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1373,7 +1373,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.YolklingTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.Tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yolkling.app/Yolkling";
@@ -1389,8 +1389,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Yolkling;
 				INFOPLIST_KEY_WKApplication = YES;
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.Sankritya.Yolkling;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.watchkitapp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.yolkling.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.watchkitapp;
 				PRODUCT_NAME = YolklingWatch;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1412,7 +1412,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.YolklingTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.Tests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yolkling.app/Yolkling";
@@ -1432,7 +1432,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.ScreenTimeReport;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.ScreenTimeReport;
 				PRODUCT_NAME = YolklingScreenTimeReport;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1462,7 +1462,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios;
 				PRODUCT_NAME = Yolkling;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1478,8 +1478,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Yolkling;
 				INFOPLIST_KEY_WKApplication = YES;
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.Sankritya.Yolkling;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling.watchkitapp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.yolkling.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.watchkitapp;
 				PRODUCT_NAME = YolklingWatch;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1511,7 +1511,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Sankritya.Yolkling;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios;
 				PRODUCT_NAME = Yolkling;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1554,7 +1554,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = J94T84BVCP;
+				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;

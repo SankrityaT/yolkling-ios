@@ -4,7 +4,7 @@ import Foundation
 /// App Group. Pure value type; carries the same RoomSnapshot friends use to render
 /// a room, plus the yolk's name.
 enum WidgetShare {
-    static let appGroup = "group.com.Sankritya.Yolkling"
+    static let appGroup = "group.com.yolkling.ios"
     static let key = "yolk.widget.snapshot"
     static var defaults: UserDefaults? { UserDefaults(suiteName: appGroup) }
 }
