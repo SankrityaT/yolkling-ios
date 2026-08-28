@@ -7,6 +7,9 @@ import YolklingCore
 /// for now; each becomes a real feature (mood check-in, focus session, visits).
 struct HomeView: View {
     @Environment(\.modelContext) private var context
+    /// The App Store review prompt. Held here rather than called from a store because
+    /// only a View can hold it. `AppReview` decides whether it ever fires.
+    @Environment(\.requestReview) private var requestReview
     @Environment(\.scenePhase) private var scenePhase
 
     /// `YOLK_PROBE=<itemID>` — draws the ownership probe overlay. Debug-only seam.
@@ -160,16 +163,20 @@ struct HomeView: View {
             // writes today's off-phone figure to the App Group for us to read back.
             if screenTime.status == .approved { ScreenTimeReportHost() }
         }
-        .sheet(isPresented: $showWardrobe) {
+        // Full screen, not a half sheet.
+        //
+        // Shop is a TAB destination. Tapping a tab and getting a card that stops halfway
+        // up the screen, with the previous screen dimmed behind it, contradicts what a
+        // tab bar means: these are peer places you go, not modals you summon. It also
+        // wasted a third of the screen on a browsing surface, which is the one kind of
+        // screen that wants every pixel.
+        .fullScreenCover(isPresented: $showWardrobe) {
             ShopHomeView(vibe: vibe, store: wardrobe, wallet: wallet,
                          originalBodyHex: originalBodyHex, originalAccentHex: player?.accentHex,
                          onColor: applyColor)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.hidden)
         }
-        .sheet(isPresented: $showProfile) {
+        .fullScreenCover(isPresented: $showProfile) {
             ProfileView(vibe: vibe, name: heading, player: player)
-                .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showReferral) {
             ReferralView(vibe: vibe, player: player) { bonus in
@@ -178,7 +185,7 @@ struct HomeView: View {
             }
             .presentationDetents([.large])
         }
-        .sheet(isPresented: $showCollection) {
+        .fullScreenCover(isPresented: $showCollection) {
             CollectionView(discovered: discovered, events: events, vibe: vibe,
                            onGranted: { ids in wallet.grant(ids); persist() },
                            inviteCode: player?.referralCode ?? "",
@@ -188,7 +195,6 @@ struct HomeView: View {
                                player?.guestSpeciesID = id
                                persist()
                            })
-                .presentationDetents([.large])
         }
         .fullScreenCover(item: $discoveryReveal) { sp in
             // The creature walks it home rather than the card just materialising. Same
@@ -204,18 +210,16 @@ struct HomeView: View {
                                outOf: SpeciesSets.dexTotal)
             )
         }
-        .sheet(isPresented: $showRoom) {
+        .fullScreenCover(isPresented: $showRoom) {
             DecorateView(vibe: vibe, expression: shownExpression, outfit: wardrobe.outfit,
                          wallet: wallet, placed: $placedByZone, themeID: $roomThemeID,
                          onChange: { player?.placedDecorByZone = placedByZone; persist() })
-                .presentationDetents([.large])
         }
-        .sheet(isPresented: $showFriends) {
+        .fullScreenCover(isPresented: $showFriends) {
             FriendsView(store: SocialStore(userID: backendUserID, myCode: player?.referralCode ?? ""),
                         vibe: vibe, player: player, myName: heading, mySnapshot: mySnapshot(),
                         wallet: wallet,
                         onReward: { amt in wallet.earn(amt); persist() })
-                .presentationDetents([.large])
         }
         .sheet(item: $wandered) { target in
             WanderArrival(target: target, vibe: vibe,
@@ -277,7 +281,20 @@ struct HomeView: View {
             // when a surprise is worth the most and when "while you were away" is
             // literally true. Deliberately after the season refresh so a slow network
             // can't hold up the moment.
-            if wandered == nil {
+            //
+            // Gated on having actually looked after yourself recently, for two reasons.
+            //
+            // The design one: the creature going out is supposed to be EARNED. Care for
+            // yourself, your creature has a good day, it comes home with something. An
+            // ungated roll fired the instant onboarding finished, so a brand-new player
+            // was told their yolkling "wandered off" before they had done a single thing
+            // — which makes "while you were away" a lie and buries the first run under a
+            // modal.
+            //
+            // The correctness one: the server's nightly roll (roll_nightly_drifts) gates
+            // on lastCareDate inside drift_care_window(). The client rolling on a looser
+            // rule than the server means the two disagree about who is eligible.
+            if wandered == nil, hasCaredRecently {
                 let social = SocialStore(userID: backendUserID, myCode: player?.referralCode ?? "")
                 wandered = await social.wanderIfDue()
             }
@@ -298,8 +315,26 @@ struct HomeView: View {
         }
         .task { if router.pending != nil { showFriends = true } }
         .onChange(of: router.pending) { _, link in if link != nil { showFriends = true } }
-        .overlay {
-            if showTutorial { HomeTutorial(name: heading, onDone: finishTutorial) }
+        // Anchors resolved here, at the root, so the tutorial gets real on-screen
+        // frames rather than guessing at proportions of the screen height.
+        .overlayPreferenceValue(TutorialAnchorKey.self) { anchors in
+            // `ignoresSafeArea` on the reader, not just the scrim.
+            //
+            // The proxy resolves anchors in ITS OWN coordinate space. Inset by the top
+            // safe area, every rect it produced came out shifted up by the height of the
+            // status bar, so the spotlight hole sat above the control it was meant to be
+            // highlighting. The scrim already ignored the safe area, which is exactly why
+            // the two disagreed.
+            GeometryReader { proxy in
+                if showTutorial {
+                    HomeTutorial(
+                        name: heading,
+                        anchors: anchors.mapValues { proxy[$0] },
+                        onDone: finishTutorial
+                    )
+                }
+            }
+            .ignoresSafeArea()
         }
         .overlay(alignment: .top) { probeOverlay }
         .yolkMenu(isPresented: $showVisitMenu, alignment: .bottom, anchor: .top) {
@@ -549,6 +584,9 @@ struct HomeView: View {
         if let b = Rewards.streakBonus(for: r.streak) {
             bonus += b
             notes.append("\(r.streak)-day streak, +\(b)")
+            // A week of showing up is the first moment somebody plausibly likes this
+            // enough to say so. See AppReview for why the policy is this stingy.
+            if AppReview.shouldAsk(atStreak: r.streak) { requestReview() }
         }
         rolloverWeekIfNeeded()
         weekCareDays += 1
@@ -582,7 +620,7 @@ struct HomeView: View {
     private var topBar: some View {
         HStack {
             pill {
-                Image(systemName: "flame.fill").foregroundStyle(Color(hex: 0xFF8A3D))
+                YolkGlyph(kind: .streak, size: 16, weight: 0.115).foregroundStyle(Color(hex: 0xFF8A3D))
                 if careStreak == 0 {
                     // A brand-new player used to be greeted by "0 days" — a scoreboard
                     // opening at nil. Endowed progress (MONETIZATION.md lever 3) says
@@ -595,7 +633,7 @@ struct HomeView: View {
                     Text(careStreak == 1 ? "day" : "days").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                 }
                 if restTokens > 0 {
-                    Image(systemName: "leaf.fill").font(.caption2).foregroundStyle(Color(hex: 0x9AC77E))
+                    YolkGlyph(kind: .leaf, size: 13, weight: 0.115).foregroundStyle(Color(hex: 0x9AC77E))
                 }
             }
             Spacer()
@@ -688,7 +726,8 @@ struct HomeView: View {
                     YolklingView(vibe: vibe, expression: shownExpression,
                                  size: geo.size.height * RoomView.creatureSpot.size,
                                  outfit: wardrobe.outfit, waveToken: waveToken,
-                                 celebrateToken: celebrateToken, petToken: petToken)
+                                 celebrateToken: celebrateToken, petToken: petToken,
+                                 supporterGlow: SubscriptionStore.shared.isPlus)
                         .contentShape(Rectangle())
                         .position(x: geo.size.width * RoomView.creatureSpot.x,
                                   y: geo.size.height * RoomView.creatureSpot.y)
@@ -704,9 +743,11 @@ struct HomeView: View {
                         .foregroundStyle(YolkColor.ink)
                 }
                 .buttonStyle(.plain).padding(YolkSpace.md)
+                .tutorialTarget(.decorate)
             }
             .frame(height: heroHeight)
             .padding(.horizontal, YolkSpace.lg)
+            .tutorialTarget(.creature)
 
             // The creature's own line, promoted to be the thing you actually read.
             //
@@ -735,8 +776,8 @@ struct HomeView: View {
                 .padding(.horizontal, YolkSpace.lg)
 
             HStack(spacing: YolkSpace.sm) {
-                careCard("check in", reward: 10, icon: "heart.fill", done: checkedInToday) { showCheckIn = true }
-                careCard("focus", reward: 20, icon: "moon.stars.fill") { showFocus = true }
+                careCard("check in", reward: 10, icon: .trust, done: checkedInToday) { showCheckIn = true }
+                careCard("focus", reward: 20, icon: .focus) { showFocus = true }
                 // One card, two destinations, rather than adding a fourth card to a
                 // screen that already has too many. Wandering is the once-a-day ritual;
                 // friends are always there.
@@ -744,17 +785,18 @@ struct HomeView: View {
                     Haptics.shared.tick()
                     withAnimation(.snappy(duration: 0.24)) { showVisitMenu = true }
                 } label: {
-                    careCardLabel("visit", reward: 5, icon: "person.2.fill", done: false)
+                    careCardLabel("visit", reward: 5, icon: .friends, done: false)
                 }
                 .buttonStyle(.plain)
             }
+            .tutorialTarget(.careRow)
             .padding(.horizontal, YolkSpace.lg)
 
             // Three kinds of thing used to stack here as equal-weight cards: things you
             // DO, a thing to SET UP, and passive STATUS. That flat hierarchy is what made
             // the panel read as a dashboard. Now they're separated by kind and by weight.
             if health.available, health.authorized {
-                livingCard.padding(.horizontal, YolkSpace.lg)   // real data, earns a card
+                livingCard.padding(.horizontal, YolkSpace.lg).tutorialTarget(.living)   // real data, earns a card
             } else if health.available, shouldOfferHealth {
                 healthPrompt.padding(.horizontal, YolkSpace.lg) // earned, and dismissible
             }
@@ -816,13 +858,51 @@ struct HomeView: View {
                     }
                 }
                 HStack(spacing: YolkSpace.sm) {
-                    livingStat(icon: "figure.walk", value: "\(health.steps)", label: "steps", hit: health.steps >= stepGoal)
-                    livingStat(icon: "moon.zzz.fill", value: String(format: "%.1fh", health.sleepHours), label: "sleep", hit: health.sleepHours >= 7)
+                    LivingTile(glyph: .steps,
+                               value: health.steps > 0 ? "\(health.steps)" : nil,
+                               label: "steps",
+                               progress: Double(health.steps) / Double(stepGoal),
+                               hit: health.steps >= stepGoal,
+                               emptyWord: "let's go",
+                               tint: YolkColor.mint)
+
+                    LivingTile(glyph: .sleep,
+                               value: health.sleepHours > 0 ? String(format: "%.1fh", health.sleepHours) : nil,
+                               label: "sleep",
+                               progress: health.sleepHours / 7,
+                               hit: health.sleepHours >= 7,
+                               emptyWord: "tonight",
+                               tint: YolkColor.sky)
+
+                    // Three states, not two. `available` needs BOTH approval AND a figure
+                    // from the report extension, so someone who had just granted Screen
+                    // Time landed in the same branch as someone never asked: a padlock,
+                    // the word "soon", and a button that re-requested a permission they
+                    // had already given and then visibly did nothing.
                     if screenTime.available, let off = screenTime.offScreenHours {
-                        livingStat(icon: "iphone", value: String(format: "%.0fh", off), label: "off phone", hit: screenTime.hitGoal)
+                        // Below half an hour there is no figure worth printing: early in
+                        // the day "off phone" is legitimately near zero, and "0.0h" under
+                        // a success outline celebrates nothing while reading as a fault.
+                        // The budget is still intact, so the tile stays warm and waits.
+                        LivingTile(glyph: .phone,
+                                   value: off >= 0.5 ? String(format: "%.1fh", off) : nil,
+                                   label: "off phone",
+                                   progress: screenTime.offScreenProgress,
+                                   hit: screenTime.hitGoal && off >= 1,
+                                   emptyWord: "counting",
+                                   tint: YolkColor.grape)
+                    } else if screenTime.status == .approved {
+                        // Approved, but no figure yet. Deliberately not tappable: there
+                        // is nothing left to ask for, and a button that does nothing is
+                        // the bug being fixed.
+                        LivingTile(glyph: .phone, value: nil, label: "off phone",
+                                   progress: 0, hit: false,
+                                   emptyWord: "counting", tint: YolkColor.grape)
                     } else {
-                        Button { connectScreenTime() } label: { livingStatSoon(icon: "iphone", label: "off phone") }
-                            .buttonStyle(.plain)
+                        LivingTile(glyph: .phone, value: nil, label: "off phone",
+                                   progress: 0, hit: false,
+                                   emptyWord: "turn on", tint: YolkColor.grape,
+                                   onTap: { connectScreenTime() })
                     }
                 }
                 if livingHasReward {
@@ -855,9 +935,11 @@ struct HomeView: View {
         }
     }
 
-    private func livingStat(icon: String, value: String, label: String, hit: Bool) -> some View {
+    private func livingStat(icon: YolkGlyph.Kind, value: String, label: String, hit: Bool) -> some View {
         HStack(spacing: 8) {
-            Image(systemName: icon).font(.system(size: 15)).foregroundStyle(hit ? YolkColor.mint : YolkColor.muted)
+            YolkGlyph(kind: icon, size: 17, weight: 0.1)
+                .foregroundStyle(hit ? YolkColor.mint : YolkColor.muted)
+                .frame(width: 17, height: 17)
             VStack(alignment: .leading, spacing: 0) {
                 Text(value).font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                 Text(label).font(.caption2).foregroundStyle(YolkColor.muted)
@@ -869,11 +951,36 @@ struct HomeView: View {
         .background(YolkColor.shell, in: RoundedRectangle(cornerRadius: 14))
     }
 
+    /// Authorised, but no figure yet.
+    ///
+    /// Distinct from the "soon" pillar on purpose. That one means "you have not turned
+    /// this on"; this one means "you have, and it is counting". The first off-phone
+    /// figure cannot exist until the report extension has had a day to produce one, so
+    /// the copy says that rather than leaving someone tapping a padlock wondering what
+    /// they got wrong.
+    private func livingStatWaiting(label: String) -> some View {
+        HStack(spacing: 8) {
+            YolkGlyph(kind: .phone, size: 15, weight: 0.1)
+                .foregroundStyle(YolkColor.muted)
+                .frame(width: 15, height: 15)
+            VStack(alignment: .leading, spacing: 0) {
+                Text("counting").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.inkSoft)
+                Text(label).font(.caption2).foregroundStyle(YolkColor.muted)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 12).padding(.vertical, 8)
+        .frame(maxWidth: .infinity)
+        .background(YolkColor.shell, in: RoundedRectangle(cornerRadius: 14))
+    }
+
     /// A gated pillar (Screen Time): present so the surface is ready the moment the
     /// Family Controls entitlement lands, shown as a gentle "soon" until then.
-    private func livingStatSoon(icon: String, label: String) -> some View {
+    private func livingStatSoon(icon: YolkGlyph.Kind, label: String) -> some View {
         HStack(spacing: 8) {
-            Image(systemName: "lock.fill").font(.system(size: 12)).foregroundStyle(YolkColor.muted.opacity(0.7))
+            YolkGlyph(kind: .lock, size: 15, weight: 0.1)
+                .foregroundStyle(YolkColor.muted.opacity(0.7))
+                .frame(width: 15, height: 15)
             VStack(alignment: .leading, spacing: 0) {
                 Text("soon").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.muted)
                 Text(label).font(.caption2).foregroundStyle(YolkColor.muted)
@@ -958,6 +1065,16 @@ struct HomeView: View {
     private func helloWaveIfTrusted() {
         guard trustStage.waves else { return }
         Task { try? await Task.sleep(for: .seconds(0.6)); waveToken += 1 }
+    }
+
+    /// Whether the player has cared for themselves inside the drift window.
+    ///
+    /// Mirrors `drift_care_window()` in docs/sql/drift_cron.sql, which is 2 days. A
+    /// player who has never cared has no `lastCareDate` at all and is not eligible,
+    /// which is what keeps the wander from firing the moment onboarding ends.
+    private var hasCaredRecently: Bool {
+        guard let last = player?.lastCareDate else { return false }
+        return Date().timeIntervalSince(last) < 2 * 24 * 60 * 60
     }
 
     /// Trust eases back when you drift from caring for YOURSELF. Deliberately gentle:
@@ -1067,7 +1184,7 @@ struct HomeView: View {
         .padding(.horizontal, YolkSpace.lg)
     }
 
-    private func careCard(_ title: String, reward: Int, icon: String, done: Bool = false, action: @escaping () -> Void) -> some View {
+    private func careCard(_ title: String, reward: Int, icon: YolkGlyph.Kind, done: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) { careCardLabel(title, reward: reward, icon: icon, done: done) }
             .buttonStyle(.plain)
     }
@@ -1081,11 +1198,11 @@ struct HomeView: View {
     /// path". The Yolks still arrive; they're just a consequence of caring rather than
     /// the reason printed next to it. `reward` stays in the signature because the caller
     /// still uses it to credit the wallet.
-    private func careCardLabel(_ title: String, reward: Int, icon: String, done: Bool) -> some View {
+    private func careCardLabel(_ title: String, reward: Int, icon: YolkGlyph.Kind, done: Bool) -> some View {
         VStack(spacing: 8) {
-            Image(systemName: done ? "checkmark.circle.fill" : icon)
-                .font(.title2)
+            YolkGlyph(kind: done ? .check : icon, size: 26, weight: 0.1)
                 .foregroundStyle(done ? Color(hex: 0x73C57A) : YolkColor.ink)
+                .frame(width: 26, height: 26)
             Text(done ? "done" : title)
                 .font(YolkType.bodySmall)
                 .foregroundStyle(done ? YolkColor.muted : YolkColor.ink)
@@ -1099,11 +1216,11 @@ struct HomeView: View {
 
     private var bottomNav: some View {
         HStack(spacing: 0) {
-            navItem("house.fill", label: "Home", active: true) { showRoom = true }
-            navItem("bag.fill", label: "Shop", active: false) { showWardrobe = true }
-            navItem("square.grid.2x2.fill", label: "Dex", active: false) { showCollection = true }
-            navItem("person.2.fill", label: "Friends", active: false) { showFriends = true }
-            navItem("person.crop.circle.fill", label: "You", active: false) { showProfile = true }
+            navItem(.home, label: "Home", active: true) { showRoom = true }
+            navItem(.shop, label: "Shop", active: false) { showWardrobe = true }
+            navItem(.grid, label: "Dex", active: false) { showCollection = true }
+            navItem(.friends, label: "Friends", active: false) { showFriends = true }
+            navItem(.person, label: "You", active: false) { showProfile = true }
         }
         .padding(.top, YolkSpace.sm)
         .padding(.horizontal, YolkSpace.md)
@@ -1112,12 +1229,14 @@ struct HomeView: View {
         }
     }
 
-    private func navItem(_ icon: String, label: String, active: Bool, action: @escaping () -> Void) -> some View {
+    private func navItem(_ icon: YolkGlyph.Kind, label: String, active: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(spacing: 3) {
-                Image(systemName: icon)
-                    .font(.title3)
+                // Slightly heavier stroke when active. A tab bar cannot use fill-vs-outline
+                // to show selection the way SF Symbols do, so weight and colour carry it.
+                YolkGlyph(kind: icon, size: 22, weight: active ? 0.105 : 0.085)
                     .foregroundStyle(active ? YolkColor.ink : YolkColor.muted)
+                    .frame(width: 22, height: 22)
                 Text(label)
                     .font(.system(size: 10, weight: active ? .semibold : .regular))
                     .foregroundStyle(active ? YolkColor.ink : YolkColor.muted)
@@ -1242,6 +1361,12 @@ struct HomeView: View {
     }
 
     private func applyScreenshotSeams() {
+        // Release ships none of this. The seams jump straight onto screens and seed
+        // owned items, which is exactly right for the screenshot pipeline and has no
+        // business existing in a build a stranger installs. See RootView.seamsOn.
+        #if !DEBUG
+        return
+        #else
         let env = ProcessInfo.processInfo.environment
         // Accept a launch ARGUMENT as well as an env var: SIMCTL_CHILD_* env vars
         // propagate unreliably through `simctl launch`, while --args always arrives.
@@ -1278,11 +1403,25 @@ struct HomeView: View {
         if seam("YOLK_ROOM_SHEET") { showRoom = true }
         if env["YOLK_FRIENDS"] != nil { showFriends = true }
         #if DEBUG
-        if let h = env["YOLK_HEALTH"] { health.mock(high: h != "low") }
-        if let s = env["YOLK_SCREENTIME"] { screenTime.mock(offHours: s == "low" ? 8 : 21) }
+        // Value seams read a launch ARGUMENT as well as an env var. `SIMCTL_CHILD_*`
+        // propagates unreliably through `simctl launch`, so an env-only seam silently
+        // does nothing and you end up "verifying" a state you never actually rendered.
+        func seamValue(_ key: String) -> String? {
+            if let v = env[key] { return v }
+            return CommandLine.arguments
+                .first { $0.hasPrefix("\(key)=") }
+                .map { String($0.dropFirst(key.count + 1)) }
+        }
+        if let h = seamValue("YOLK_HEALTH") { health.mock(high: h != "low") }
+        if let s = seamValue("YOLK_SCREENTIME") {
+            // A number is taken literally, so any fill level can be rendered.
+            screenTime.mock(usedHours: Double(s) ?? (s == "low" ? 6 : 1.5))
+        }
+        if let st = seamValue("YOLK_STEPS"), let n = Int(st) { health.mockSteps(n) }
         if env["YOLK_TRUST"] != nil { demoTrust = 1; Task { try? await Task.sleep(for: .seconds(0.5)); waveToken += 1 } }
         if let h = env["YOLK_HOUR"], let hr = Int(h) { demoHour = hr }
         if env["YOLK_TUTORIAL"] != nil { Task { try? await Task.sleep(for: .seconds(0.6)); withAnimation { showTutorial = true } } }
+        #endif
         #endif
     }
 

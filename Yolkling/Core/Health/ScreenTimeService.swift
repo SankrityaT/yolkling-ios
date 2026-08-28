@@ -16,29 +16,53 @@ final class ScreenTimeService {
     /// Current Family Controls authorization for this person.
     private(set) var status: AuthorizationStatus = AuthorizationCenter.shared.authorizationStatus
 
-    /// Hours spent OFF the phone today, published by the report extension via the
-    /// App Group. nil until authorized and the extension has produced a figure.
-    private(set) var offScreenHours: Double?
+    /// Hours spent ON the phone today, as measured by the report extension.
+    /// nil until authorized and the extension has produced a figure.
+    private(set) var usedHours: Double?
+
+    /// Hours of today that have actually happened so far.
+    ///
+    /// The ceiling on any "off phone" figure. Without it the app was reporting a
+    /// full 24 hours off the phone at 1am, which is both impossible and the kind of
+    /// number that makes someone stop trusting every other number on the screen.
+    private var elapsedToday: Double {
+        let now = Date()
+        return now.timeIntervalSince(Calendar.current.startOfDay(for: now)) / 3600
+    }
+
+    /// Hours off the phone so far today. Never more than the day has offered.
+    var offScreenHours: Double? {
+        guard let used = usedHours else { return nil }
+        return max(0, min(elapsedToday, elapsedToday - used))
+    }
 
     /// Under this much daily screen time reads as a good "off phone" day.
     let screenGoalHours: Double = 3
 
     /// True only when authorized AND we have a real number to show.
-    var available: Bool { status == .approved && offScreenHours != nil }
+    var available: Bool { status == .approved && usedHours != nil }
 
-    /// Whether today clears the off-phone goal.
+    /// Whether today is still inside the off-phone budget.
+    ///
+    /// Measured against time USED, not time off. The old test was `off >= 21`, which
+    /// only becomes achievable late in the day however little you touch the phone, so
+    /// a genuinely good morning read as a failure until the evening.
     var hitGoal: Bool {
-        guard let off = offScreenHours else { return false }
-        return off >= (24 - screenGoalHours)
+        guard let used = usedHours else { return false }
+        return used <= screenGoalHours
     }
 
     /// 0...1 progress toward a full off-phone day. Always non-negative, so a heavy
     /// screen day can never subtract from the creature's vitality (WELLBEING.md:
     /// the yolk gets sleepy, never sick).
+    /// How much of today's screen-time budget is still unspent, 0...1.
+    ///
+    /// Framed as budget remaining rather than hours accumulated, so it starts full and
+    /// drains. A bar that begins empty every morning tells someone they are behind on a
+    /// day they have not lived yet.
     var offScreenProgress: Double {
-        guard let off = offScreenHours else { return 0 }
-        let target = max(1, 24 - screenGoalHours)
-        return min(1, max(0, off / target))
+        guard let used = usedHours else { return 1 }
+        return min(1, max(0, 1 - used / max(0.5, screenGoalHours)))
     }
 
     /// Ask for Family Controls authorization, then read the latest figure. Returns
@@ -63,15 +87,15 @@ final class ScreenTimeService {
 
     /// Pull the newest off-phone figure the report extension wrote to the App Group.
     func refresh() {
-        if let off = ScreenTimeShare.readOffHours() { offScreenHours = off }
+        if let used = ScreenTimeShare.readUsedHours() { usedHours = used }
     }
 
     #if DEBUG
     /// Dev only: fake an off-phone figure so the pillar renders in screenshots
     /// without a real device (Family Controls does not run in the simulator).
-    func mock(offHours: Double = 20) {
+    func mock(usedHours hours: Double = 2) {
         status = .approved
-        offScreenHours = offHours
+        usedHours = hours
     }
     #endif
 }

@@ -35,8 +35,8 @@ xcrun simctl boot "$DEVICE"
 APP=$(find ~/Library/Developer/Xcode/DerivedData/Yolkling-*/Build/Products/Debug-iphonesimulator -name "Yolkling.app" | head -1)
 xcrun simctl install "$DEVICE" "$APP"
 for i in 0 1 2 3 4; do
-  xcrun simctl terminate "$DEVICE" com.Sankritya.Yolkling 2>/dev/null
-  SIMCTL_CHILD_YOLK_VIBE=$i xcrun simctl launch "$DEVICE" com.Sankritya.Yolkling
+  xcrun simctl terminate "$DEVICE" com.yolkling.ios 2>/dev/null
+  SIMCTL_CHILD_YOLK_VIBE=$i xcrun simctl launch "$DEVICE" com.yolkling.ios
   sleep 3
   xcrun simctl io "$DEVICE" screenshot AppStore/screenshots/home-vibe-$i.png
 done
@@ -53,7 +53,7 @@ verified character counts). Quick reference only:
 - Keywords (no spaces): `virtualpet,creature,cozy,selfcare,tamagotchi,wellbeing,companion,habit,collect,focus,mood,pet,egg` (97/100)
 - Category: **Lifestyle** (primary), **Health & Fitness** (secondary)
 - Support / Marketing URL: https://yolkling.com · Privacy: https://yolkling.com/privacy
-- Age rating: 4+ · Bundle id: com.Sankritya.Yolkling
+- Age rating: 4+ · Bundle id: com.yolkling.ios
 - Full description, What's New, App Review notes, and App Privacy answers: see the
   listing doc.
 

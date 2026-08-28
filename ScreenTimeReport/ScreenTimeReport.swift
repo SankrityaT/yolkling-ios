@@ -9,8 +9,8 @@ import SwiftUI
 @main
 struct ScreenTimeReport: DeviceActivityReportExtension {
     var body: some DeviceActivityReportScene {
-        TotalActivityReport { offHours in
-            TotalActivityView(offHours: offHours)
+        TotalActivityReport { usedHours in
+            TotalActivityView(usedHours: usedHours)
         }
     }
 }
@@ -32,15 +32,21 @@ struct TotalActivityReport: DeviceActivityReportScene {
                 totalSeconds += segment.totalActivityDuration
             }
         }
-        let offHours = max(0, min(24, 24 - totalSeconds / 3600))
-        ScreenTimeShare.write(offHours: offHours)
-        return offHours
+        // Publish what was MEASURED (time on screen), not a derived "off" figure.
+        //
+        // This used to compute `24 - used` and publish that, which claimed a full 24
+        // hours off the phone at 1am — while the person was holding the phone reading
+        // it. You cannot have been off your phone longer than the day has existed. The
+        // app derives the off-phone figure from elapsed time instead, so the number can
+        // never exceed the part of the day that has actually happened.
+        ScreenTimeShare.write(usedHours: totalSeconds / 3600)
+        return totalSeconds / 3600
     }
 }
 
 /// Nothing needs to render: the host mounts this hidden. The value is delivered
 /// via the App Group in `makeConfiguration`, not on screen.
 struct TotalActivityView: View {
-    let offHours: Double
+    let usedHours: Double
     var body: some View { Color.clear }
 }

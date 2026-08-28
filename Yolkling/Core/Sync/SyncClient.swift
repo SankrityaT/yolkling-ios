@@ -167,6 +167,15 @@ enum PlayerBackup {
     private static let client = SupabaseClient.shared
     private static let lastPushKey = "yolk.lastBackupPush"
 
+    /// When a backup last actually reached the server, or nil if one never has.
+    ///
+    /// Only set after `pushPlayerState` returns success, so it means "this creature
+    /// exists on the server", not "we tried". Profile shows it, because the difference
+    /// between those two is the whole point of that screen.
+    static var lastPushedAt: Date? {
+        UserDefaults.standard.object(forKey: lastPushKey) as? Date
+    }
+
     /// Save, at most once every few minutes. The app persists on nearly every
     /// interaction, and backing up on each one would be a request per tap for state that
     /// changes meaningfully a few times a day.

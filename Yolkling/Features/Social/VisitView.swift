@@ -47,7 +47,7 @@ struct VisitView: View {
         .background(YolkColor.shell)
         .sheet(isPresented: $composing) {
             PostcardCompose(subject: subject, store: store, vibe: vibe, onReward: onReward)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
         }
         .sheet(isPresented: $swapping) {
             if case .friend(let f) = subject {
@@ -242,6 +242,7 @@ struct VisitView: View {
                     }
                     Text("it comes out of your own \(Currency.name.lowercased()).")
                         .font(.caption2).foregroundStyle(YolkColor.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal, YolkSpace.md)
                 .padding(.vertical, 12)

@@ -1,70 +1,130 @@
 import SwiftUI
 import YolklingCore
 
-/// A short, warm first-run tour over the home screen that teaches the actual loop:
-/// this is your yolk, your real day feeds it, caring for yourself earns its trust.
-/// Dims the screen (the room shows through) and walks three beats. Shown once.
+/// The first-run tour.
+///
+/// The previous version had three problems, and they compounded:
+///
+/// **It covered what it was describing.** The beat that says "tap decorate to place your
+/// stuff" sat directly over the room and the Decorate button. You read about a control
+/// you could not see, then had to go find it from memory afterwards.
+///
+/// **The card jumped.** Each beat carried a `bottom: Bool` that placed it at either 46%
+/// or 60% of the screen, and the beats alternated — so the card hopped down, up, down,
+/// up with no visible reason. Movement without a cause reads as a glitch.
+///
+/// **It dimmed everything.** A scrim over the whole screen during a tour of that screen
+/// means the tour has nothing to point at.
+///
+/// Now each beat spotlights its subject: the dim gets a hole cut in it around the real
+/// measured frame of the thing being talked about, and the card places itself in
+/// whichever half of the screen the spotlight is not in. The card still moves, but now
+/// it moves *because* the subject moved, which is legible rather than random.
 struct HomeTutorial: View {
     let name: String
+    /// Measured frames, supplied by HomeView.
+    let anchors: [TutorialTarget: CGRect]
     var onDone: () -> Void
 
     @State private var step = 0
 
-    private struct Beat { let eyebrow: String; let text: String; let bottom: Bool; let cta: String }
+    private struct Beat {
+        let eyebrow: String
+        let text: String
+        let target: TutorialTarget?
+        let cta: String
+    }
 
     private var beats: [Beat] {
         [
             Beat(eyebrow: "meet \(name)",
-                 text: "this is \(name), your one of a kind yolk, living in their little room. tap them anytime to say hi.",
-                 bottom: false, cta: "next"),
-            Beat(eyebrow: "the secret",
-                 text: "your real day feeds \(name). steps and sleep are what nourish them. (time off your phone is coming soon.)",
-                 bottom: true, cta: "next"),
+                 text: "this is \(name), your one of a kind yolk. tap them anytime to say hi.",
+                 target: .creature, cta: "next"),
+            Beat(eyebrow: "your real day feeds them",
+                 text: "steps and sleep are what nourish \(name). the more you look after yourself, the better their day goes.",
+                 target: .living, cta: "next"),
             Beat(eyebrow: "make it home",
-                 text: "this little room is theirs and yours. tap decorate to place your stuff and make the space your own.",
-                 bottom: false, cta: "next"),
+                 text: "this little room is theirs and yours. tap decorate to make the space your own.",
+                 target: .decorate, cta: "next"),
             Beat(eyebrow: "earn their trust",
-                 text: "check in and care for yourself daily. that is how you earn their trust, and they learn to wave, celebrate your wins, and become truly yours.",
-                 bottom: true, cta: "let's go"),
+                 text: "check in daily and care for yourself. that is how they learn to wave, celebrate your wins, and become truly yours.",
+                 target: .careRow, cta: "let's go"),
         ]
     }
 
+    private var beat: Beat { beats[min(step, beats.count - 1)] }
+
+    /// The subject's frame, padded so the spotlight has a little air around it.
+    private var hole: CGRect? {
+        guard let t = beat.target, let r = anchors[t] else { return nil }
+        return r.insetBy(dx: -10, dy: -10)
+    }
+
     var body: some View {
-        let beat = beats[step]
         GeometryReader { geo in
-            ZStack {
-                Color.black.opacity(0.55).ignoresSafeArea()
+            ZStack(alignment: .top) {
+                SpotlightScrim(hole: hole)
                     .contentShape(Rectangle())
                     .onTapGesture { advance() }
 
+                // The card goes to whichever half the spotlight is not in, so it can
+                // never sit on top of its own subject.
                 VStack(spacing: 0) {
-                    // proportional so the card sits below the creature on any screen
-                    Spacer().frame(height: geo.size.height * (beat.bottom ? 0.6 : 0.46))
-                    card(beat)
-                    Spacer(minLength: 0)
+                    if cardBelowSpotlight(in: geo.size) {
+                        Spacer(minLength: 0)
+                        card
+                            .padding(.bottom, geo.size.height * 0.12)
+                    } else {
+                        card
+                            .padding(.top, geo.size.height * 0.10)
+                        Spacer(minLength: 0)
+                    }
                 }
+                .animation(.spring(response: 0.5, dampingFraction: 0.85), value: step)
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: step)
         .transition(.opacity)
     }
 
-    private func card(_ beat: Beat) -> some View {
+    /// True when the subject sits in the top half, so the card belongs underneath it.
+    private func cardBelowSpotlight(in size: CGSize) -> Bool {
+        guard let hole else { return true }
+        return hole.midY < size.height * 0.5
+    }
+
+    private var card: some View {
         VStack(alignment: .leading, spacing: YolkSpace.sm) {
             HStack {
-                Text(beat.eyebrow.uppercased()).font(.caption2.weight(.bold)).tracking(2).foregroundStyle(YolkColor.yolkDeep)
+                Text(beat.eyebrow.uppercased())
+                    .font(.caption2.weight(.bold)).tracking(2)
+                    .foregroundStyle(YolkColor.yolkDeep)
                 Spacer()
-                Text("\(step + 1) / \(beats.count)").font(.caption2).foregroundStyle(YolkColor.muted)
+                // Dots rather than "3 / 4". A fraction invites you to count how much is
+                // left; dots just say roughly where you are.
+                HStack(spacing: 5) {
+                    ForEach(0..<beats.count, id: \.self) { i in
+                        Circle()
+                            .fill(i == step ? YolkColor.ink : YolkColor.line)
+                            .frame(width: 5, height: 5)
+                    }
+                }
             }
             Text(beat.text)
                 .font(YolkType.body).foregroundStyle(YolkColor.ink)
                 .fixedSize(horizontal: false, vertical: true)
-            Button { advance() } label: {
-                Text(beat.cta).font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.shell)
-                    .frame(maxWidth: .infinity).padding(.vertical, 12)
-                    .background(YolkColor.ink, in: Capsule())
+            HStack(spacing: YolkSpace.sm) {
+                Button { onDone() } label: {
+                    Text("skip").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                        .padding(.vertical, 12).padding(.horizontal, 4)
+                }
+                .buttonStyle(.plain)
+                Button { advance() } label: {
+                    Text(beat.cta).font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.shell)
+                        .frame(maxWidth: .infinity).padding(.vertical, 12)
+                        .background(YolkColor.ink, in: Capsule())
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
             .padding(.top, 2)
         }
         .padding(YolkSpace.lg)
@@ -76,7 +136,7 @@ struct HomeTutorial: View {
 
     private func advance() {
         if step < beats.count - 1 {
-            withAnimation { step += 1 }
+            withAnimation(.spring(response: 0.45, dampingFraction: 0.86)) { step += 1 }
             Haptics.shared.tick()
         } else {
             Haptics.shared.select()

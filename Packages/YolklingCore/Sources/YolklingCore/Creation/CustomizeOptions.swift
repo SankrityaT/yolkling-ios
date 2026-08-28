@@ -7,6 +7,15 @@ public struct HatchedCreature: Equatable {
     public var name: String = ""
     public var colorHex: UInt = 0xFFC23B   // the picked colour, kept for persistence
 
+    /// Whether the player actually granted these during onboarding.
+    ///
+    /// The priming screens used to be theatre: "connect health" and "maybe later" were
+    /// wired to the same closure, so the button asked for a permission it never requested
+    /// and the flow moved on either way. The real prompt only ever appeared much later,
+    /// from the home screen. These carry the true answer through to the `Player`.
+    public var healthConnected = false
+    public var screenTimeConnected = false
+
     public init(vibe: Vibe, startingMood: Mood = .happy, name: String = "", colorHex: UInt = 0xFFC23B) {
         self.vibe = vibe
         self.startingMood = startingMood

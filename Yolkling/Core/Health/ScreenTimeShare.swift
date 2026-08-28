@@ -8,21 +8,25 @@ import Foundation
 /// the app and the extension targets.
 enum ScreenTimeShare {
     static let appGroup = "group.com.yolkling.ios"
-    static let offHoursKey = "yolk.screen.offHours"
+    static let usedHoursKey = "yolk.screen.usedHours"
     static let updatedKey = "yolk.screen.updatedAt"
 
     static var defaults: UserDefaults? { UserDefaults(suiteName: appGroup) }
 
-    /// Extension writes the latest off-phone hours (0...24) plus a timestamp.
-    static func write(offHours: Double) {
+    /// Extension writes the hours actually spent ON screen today, plus a timestamp.
+    ///
+    /// Deliberately the measured figure rather than a derived "hours off" one. The
+    /// derivation depends on how much of the day has elapsed, which changes every
+    /// minute; baking it in at write time is what produced "24h off phone" at 1am.
+    static func write(usedHours: Double) {
         guard let d = defaults else { return }
-        d.set(offHours, forKey: offHoursKey)
+        d.set(usedHours, forKey: usedHoursKey)
         d.set(Date().timeIntervalSince1970, forKey: updatedKey)
     }
 
-    /// App reads the latest off-phone hours, or nil if the extension hasn't run yet.
-    static func readOffHours() -> Double? {
-        guard let d = defaults, d.object(forKey: offHoursKey) != nil else { return nil }
-        return d.double(forKey: offHoursKey)
+    /// App reads today's on-screen hours, or nil if the extension hasn't run yet.
+    static func readUsedHours() -> Double? {
+        guard let d = defaults, d.object(forKey: usedHoursKey) != nil else { return nil }
+        return d.double(forKey: usedHoursKey)
     }
 }

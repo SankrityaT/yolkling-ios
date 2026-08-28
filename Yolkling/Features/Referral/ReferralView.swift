@@ -89,7 +89,15 @@ struct ReferralView: View {
                         Image(systemName: "doc.on.doc").foregroundStyle(YolkColor.inkSoft)
                     }
                     .buttonStyle(.plain)
-                    ShareLink(item: "hatch a yolkling with me. use my code \(code) and we both get a bonus. yolkling.com") {
+                    // The link, not the bare domain. This shared "use my code X ...
+                    // yolkling.com", which dropped the recipient on the homepage and
+                    // asked them to retype a code by hand. GrowFriendsView has shared a
+                    // real https://yolkling.com/add/<code> deep link all along, so the
+                    // HIGHER-value loop (both people get a founding species) had strictly
+                    // more friction than the ordinary one. The AASA file is deployed, so
+                    // this opens the app straight into add-a-friend.
+                    ShareLink(item: URL(string: "https://yolkling.com/add/\(code)")!,
+                              message: Text("hatch a yolkling with me. we both get a founding species.")) {
                         Image(systemName: "square.and.arrow.up").foregroundStyle(YolkColor.inkSoft)
                     }
                 }

@@ -42,6 +42,7 @@ struct ShopHomeView: View {
     @State private var sortOrder: SortOrder = .newest
     /// Our own menu rather than a native one, so the rows can be drawn. See `sortMenu`.
     @State private var showSort = false
+    @Environment(\.dismiss) private var dismiss
     private let baseStyle: CreatureStyle
     private let basePattern: BodyPattern
 
@@ -101,6 +102,21 @@ struct ShopHomeView: View {
 
     private var header: some View {
         HStack {
+            // A real close control, because this is presented full-screen now. The view
+            // previously relied entirely on swipe-to-dismiss, which is invisible and
+            // which a full-screen presentation does not offer at all.
+            Button {
+                Haptics.shared.tick()
+                dismiss()
+            } label: {
+                YolkGlyph(kind: .close, size: 15, weight: 0.12)
+                    .foregroundStyle(YolkColor.inkSoft)
+                    .frame(width: 15, height: 15)
+                    .padding(9)
+                    .background(YolkColor.shell2, in: Circle())
+            }
+            .buttonStyle(.plain)
+
             Text("shop").font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Spacer()
             HStack(spacing: 5) {
@@ -342,6 +358,7 @@ struct ShopHomeView: View {
             Text("recolors your body. a permanent glow-up earned with Yolks.")
                 .font(.caption).foregroundStyle(YolkColor.muted)
                 .padding(.top, -4)
+                .fixedSize(horizontal: false, vertical: true)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: YolkSpace.sm)], spacing: YolkSpace.sm) {
                 if searchText.isEmpty && !showOwned { originalColour }
                 ForEach(filteredColours) { colourCard($0) }
@@ -454,6 +471,7 @@ struct ShopHomeView: View {
                     Text("sets your room's look. apply the active theme in Decorate.")
                         .font(.caption).foregroundStyle(YolkColor.muted)
                         .padding(.top, -4)
+                        .fixedSize(horizontal: false, vertical: true)
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: YolkSpace.sm)], spacing: YolkSpace.sm) {
                         ForEach(themes) { themeCard($0) }
                     }

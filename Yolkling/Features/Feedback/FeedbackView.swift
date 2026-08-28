@@ -38,6 +38,7 @@ struct FeedbackView: View {
                 Text("this goes straight to the one person who makes yolkling.")
                     .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             HStack(spacing: YolkSpace.sm) {

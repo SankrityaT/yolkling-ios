@@ -33,6 +33,13 @@ public struct YolklingView: View {
     /// Use ``posedT`` unless you need a specific moment.
     public var frozenAt: Double? = nil
 
+    /// Draws the Yolkling Plus supporter glow. A plain Bool rather than a reach into
+    /// `SubscriptionStore`, because this file compiles into the widget target and the
+    /// store imports RevenueCat. Callers pass `subs.isPlus`; pass `false` for anyone
+    /// else's creature, since we do not know a friend's subscription state and it is
+    /// none of our business.
+    var supporterGlow: Bool = false
+
     /// A good `frozenAt` for a still: mid-breath, and clear of the blink window
     /// (blinks occupy the first 0.16s of each 3.6s cycle, so eyes are open here).
     public static let posedT: Double = 1.2
@@ -48,7 +55,7 @@ public struct YolklingView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let duration: TimeInterval = 0.55
 
-    public init(vibe: Vibe = .yolk, expression: YolkExpression = .content, size: CGFloat = 220, outfit: [Cosmetic] = [], waveToken: Int = 0, celebrateToken: Int = 0, petToken: Int = 0, frozenAt: Double? = nil) {
+    public init(vibe: Vibe = .yolk, expression: YolkExpression = .content, size: CGFloat = 220, outfit: [Cosmetic] = [], waveToken: Int = 0, celebrateToken: Int = 0, petToken: Int = 0, frozenAt: Double? = nil, supporterGlow: Bool = false) {
         self.vibe = vibe
         self.expression = expression
         self.size = size
@@ -57,6 +64,7 @@ public struct YolklingView: View {
         self.celebrateToken = celebrateToken
         self.petToken = petToken
         self.frozenAt = frozenAt
+        self.supporterGlow = supporterGlow
         _from = State(initialValue: expression)
         _to = State(initialValue: expression)
     }
@@ -109,9 +117,18 @@ public struct YolklingView: View {
         // so an idle breath barely moves it and a celebrate hop moves it a lot.
         let rise = min(1, motion.bodyRise / 0.10)
 
+        // The body ZStack lifts by this much on breath and celebrate. The glow has to
+        // borrow it, or the light stays pinned to the frame while the creature hops out
+        // of it, which reads as two separate objects.
+        let bodyLift = -size * 0.14 * e.bounce * (0.5 + 0.5 * breath) - size * 0.16 * celebrateAmt
+
         return ZStack {
             if let flair = vibe.flair {
                 FoundingAura(flair: flair, size: size, t: t)
+            }
+            if supporterGlow {
+                SupporterGlow(size: size, t: t, reduceMotion: reduceMotion)
+                    .offset(y: bodyLift)
             }
             groundShadow(rise: rise)
 
@@ -140,9 +157,22 @@ public struct YolklingView: View {
                 }
             }
             .rotationEffect(.degrees(e.headTilt + e.bodyLean * 6), anchor: .bottom)
-            .offset(y: -size * 0.14 * e.bounce * (0.5 + 0.5 * breath) - size * 0.16 * celebrateAmt)
+            .offset(y: bodyLift)
 
             ParticleLayer(particle: e.particle, t: t, size: size)
+                // Same problem as the toppers, same fix. The sparkle particle is filled
+                // with `YolkColor.yolk` and the hearts with `YolkColor.pink`, both fixed —
+                // so an excited yellow creature threw yellow sparkles onto a yellow body,
+                // and a pink one threw pink hearts onto pink. The particles drift partly
+                // over the creature and partly over the background, so as with the
+                // toppers only a dark halo separates them from both.
+                // Two rims: a tight one that acts as an outline, and a wider soft one
+                // that lifts the mark off whatever is behind it. A single subtle halo was
+                // not enough — a yolk-yellow sparkle sitting on a yolk-yellow body has
+                // essentially no luminance difference to work with, so the separation has
+                // to come entirely from the rim.
+                .shadow(color: YolkColor.ink.opacity(0.45), radius: size * 0.006)
+                .shadow(color: YolkColor.ink.opacity(0.22), radius: size * 0.022)
                 .offset(y: -size * 0.42)
 
             if let flair = vibe.flair {
@@ -414,6 +444,23 @@ public struct YolklingView: View {
     private func topFeature() -> some View {
         TopFeatureView(style: vibe.style, bodyColor: vibe.body, deep: vibe.deep,
                        accent: vibe.accentColor, size: size)
+            // A tight dark halo so the topper's silhouette always reads.
+            //
+            // The toppers are what tell 58 looks apart, and most of them are filled with
+            // `accent` — which resolves to `deep` when the creature has no explicit accent,
+            // i.e. to a slightly darker version of the body. A darker-pink shape on a pink
+            // body has almost nothing to separate it, and the ones with white highlights
+            // vanish outright on a pale creature. The sprout only ever read clearly
+            // because it happens to be green.
+            //
+            // Applied here, at the one call site, rather than as 58 individual colour
+            // fixes: an occlusion edge separates the shape from whatever is behind it
+            // without touching any of the art. It has to work against two very different
+            // backdrops, because a topper peeking over the head is partly on the body and
+            // partly on the cream background — which is exactly what a soft dark halo
+            // does and what a lighter outline would not.
+            .shadow(color: YolkColor.ink.opacity(0.28), radius: size * 0.011)
+            .shadow(color: YolkColor.ink.opacity(0.16), radius: size * 0.03, y: size * 0.006)
     }
 
     /// The shadow reads weight: as the body rises it tightens, lightens and softens.

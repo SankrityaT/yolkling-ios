@@ -839,17 +839,45 @@ public struct CosmeticView: View {
         }
     }
 
+    /// A wrapped scarf.
+    ///
+    /// The previous version was a plain capsule at y = 0 with a rectangular tail and a
+    /// circle for a knot. At thumbnail size that passes; on the card, where the creature
+    /// is drawn at 118pt, it read as a blue plank laid across the belly with a stick
+    /// hanging off it. Two things were wrong and both are worth keeping fixed:
+    ///
+    /// 1. **It sat too low.** Every other neck piece offsets up (`necktie` -0.08,
+    ///    `bandana` -0.06); this one sat on the centre line, which on a round body is the
+    ///    middle of the stomach rather than a neck.
+    /// 2. **It had no thickness.** A single flat capsule cannot read as cloth. The wrap is
+    ///    now two capsules, the back one darker and a shade lower, so there is an under-
+    ///    edge — the same trick the creature's own body uses to look round.
     private var scarf: some View {
-        let band = size * 0.56
         let col = Color(hex: 0x5FA9E0)
-        let knot = Color(hex: 0x4F95CC)
+        let shade = Color(hex: 0x4A8CC2)
+        // Slim. The original was 0.56 x 0.10, against a necktie's 0.3 x 0.05 and a bell
+        // collar's 0.34 — nearly double the weight of anything else in the slot, which is
+        // why it read as a plank rather than as cloth however it was positioned.
+        let band = size * 0.42
+        let bandH = size * 0.072
+        let neck = -size * 0.05
         return ZStack {
-            Capsule().fill(col).frame(width: band, height: size * 0.1)
-            // a tail hanging down off to one side
-            RoundedRectangle(cornerRadius: size * 0.025).fill(col)
-                .frame(width: size * 0.1, height: size * 0.18)
-                .offset(x: size * 0.13, y: size * 0.13)
-            Circle().fill(knot).frame(width: size * 0.11, height: size * 0.11).offset(x: size * 0.13)
+            // The tail is drawn FIRST so the band lands on top of it. That overlap is
+            // what reads as a knot — an explicit circle for one turned the whole piece
+            // into a keyhole, and a gap between tail and band turned it into a figure
+            // with legs. Cloth emerging from under cloth needs neither.
+            TieBlade().fill(shade)
+                .frame(width: size * 0.068, height: size * 0.17)
+                .rotationEffect(.degrees(6))
+                .offset(x: size * 0.125, y: neck + size * 0.085)
+
+            // The wrap: an under-edge peeking below the front, so it has thickness.
+            Capsule().fill(shade)
+                .frame(width: band, height: bandH)
+                .offset(y: neck + size * 0.012)
+            Capsule().fill(col)
+                .frame(width: band, height: bandH * 0.86)
+                .offset(y: neck)
         }
     }
 

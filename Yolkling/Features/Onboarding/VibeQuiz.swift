@@ -78,6 +78,7 @@ enum VibeQuiz {
 /// the output at the end.
 struct VibeQuizView: View {
     @State var model: HatchModel
+    let hero: Namespace.ID
     var onDone: () -> Void
 
     @State private var index = 0
@@ -92,6 +93,7 @@ struct VibeQuizView: View {
             // Forms in front of you as you answer.
             YolklingView(vibe: model.vibe, expression: model.startingMood.expression, size: 150)
                 .frame(height: 190)
+                .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
                 .animation(.snappy(duration: 0.35), value: model.colorHex)
                 .animation(.snappy(duration: 0.35), value: model.style)
 
@@ -105,7 +107,7 @@ struct VibeQuizView: View {
             .padding(.horizontal, YolkSpace.lg)
 
             VStack(spacing: YolkSpace.sm) {
-                ForEach(question.answers) { answer in
+                ForEach(Array(question.answers.enumerated()), id: \.element.id) { i, answer in
                     Button { pick(answer) } label: {
                         Text(answer.text)
                             .font(YolkType.body)
@@ -115,8 +117,13 @@ struct VibeQuizView: View {
                             .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 18))
                     }
                     .buttonStyle(.plain)
+                    .yolkEntrance(i)
                 }
             }
+            // `id:` on the question rebuilds this stack whenever the question changes,
+            // which re-runs the stagger. Without it the answers would cascade in once on
+            // the first question and then swap silently for the other two.
+            .id(question.id)
             .padding(.horizontal, YolkSpace.lg)
 
             Spacer(minLength: 0)

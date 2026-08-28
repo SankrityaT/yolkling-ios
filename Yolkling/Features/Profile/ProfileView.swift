@@ -22,6 +22,7 @@ struct ProfileView: View {
     @State private var showFeedback = false
     @State private var showHowTo = false
     @State private var showPlus = false
+    @State private var retrying = false
     private var subs: SubscriptionStore { .shared }
     @State private var notifyOn = YolkNotifications.isEnabled
     @State private var notifyTime = Calendar.current.date(
@@ -29,29 +30,82 @@ struct ProfileView: View {
 
     private var isSignedIn: Bool { player?.appleUserID != nil }
 
+    /// Whether the backend will actually accept us.
+    ///
+    /// Deliberately NOT `isSignedIn`. Having an Apple id locally says nothing about
+    /// whether the server ever agreed: the backend now requires a real session, so a
+    /// player can hold an Apple id and still be entirely unbacked. Profile said "saved
+    /// with Apple" on the strength of the local field alone, which is a false promise
+    /// about someone's data on the exact screen they visit to check it.
+    private var hasSession: Bool { SupabaseAuth.shared.isSignedIn }
+
+    private var backupLine: String {
+        guard let at = PlayerBackup.lastPushedAt else { return "not backed up yet" }
+        let f = RelativeDateTimeFormatter()
+        f.unitsStyle = .full
+        return "backed up " + f.localizedString(for: at, relativeTo: .now)
+    }
+
     var body: some View {
         VStack(spacing: YolkSpace.lg) {
-            Capsule().fill(YolkColor.line).frame(width: 40, height: 5).padding(.top, YolkSpace.sm)
+            // Was a drag grabber, which means nothing in a full-screen presentation.
+            HStack {
+                YolkCloseButton { dismiss() }
+                Spacer()
+            }
+            .padding(.top, YolkSpace.sm)
 
-            YolklingView(vibe: vibe, expression: .happy, size: 130)
+            YolklingView(vibe: vibe, expression: .happy, size: 130, supporterGlow: subs.isPlus)
                 .frame(height: 160)
             Text(name)
                 .font(YolkType.heading)
                 .foregroundStyle(YolkColor.ink)
 
             if isSignedIn {
-                Label("saved with Apple", systemImage: "checkmark.seal.fill")
-                    .font(YolkType.body)
-                    .foregroundStyle(YolkColor.inkSoft)
+                VStack(spacing: 4) {
+                    if hasSession, PlayerBackup.lastPushedAt != nil {
+                        Label(backupLine, systemImage: "checkmark.seal.fill")
+                            .font(YolkType.body)
+                            .foregroundStyle(YolkColor.inkSoft)
+                    } else {
+                        // Signed in with Apple, but nothing has reached the server. Says
+                        // so plainly instead of showing a tick, and offers the one
+                        // action that can fix it.
+                        Label("not backed up yet", systemImage: "exclamationmark.circle")
+                            .font(YolkType.body)
+                            .foregroundStyle(YolkColor.inkSoft)
+                        Text("your yolkling is safe on this phone. we just haven't been able to save a copy yet.")
+                            .font(YolkType.bodySmall)
+                            .foregroundStyle(YolkColor.muted)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.horizontal, YolkSpace.lg)
+                        Button {
+                            Haptics.shared.tick()
+                            retryBackup()
+                        } label: {
+                            Text(retrying ? "trying…" : "try again")
+                                .font(YolkType.bodySmall.weight(.semibold))
+                                .foregroundStyle(YolkColor.shell)
+                                .padding(.horizontal, YolkSpace.md).padding(.vertical, 8)
+                                .background(YolkColor.ink, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(retrying)
+                        .padding(.top, 2)
+                    }
+                }
             } else {
                 VStack(spacing: YolkSpace.sm) {
                     Text("save \(name) forever, and sync across your devices.")
                         .font(YolkType.body)
                         .foregroundStyle(YolkColor.muted)
                         .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
 
                     SignInWithAppleButton(.signIn) { request in
                         request.requestedScopes = []   // only the stable user id; no name/email (privacy)
+                        request.nonce = SupabaseAuth.shared.beginNonce()
                     } onCompletion: { result in
                         handle(result)
                     }
@@ -65,6 +119,8 @@ struct ProfileView: View {
                     Text("your journal stays on your device. we never ask for your name or email.")
                         .font(YolkType.bodySmall)
                         .foregroundStyle(YolkColor.muted)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal, YolkSpace.lg)
             }
@@ -74,6 +130,7 @@ struct ProfileView: View {
                     .font(YolkType.bodySmall)
                     .foregroundStyle(Color(hex: 0xE05A6E))
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, YolkSpace.lg)
             }
 
@@ -109,12 +166,13 @@ struct ProfileView: View {
             Button("keep \(name)", role: .cancel) { }
         } message: {
             Text("this removes \(name), your collection, your Yolks and your friends, on this device and on our server. it can't be undone.")
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
         .background(YolkColor.shell)
         .sheet(isPresented: $showFeedback) {
             FeedbackView(vibe: vibe, userID: player?.backendUserID ?? InstallID.current)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
         }
         .sheet(isPresented: $showPlus) {
             PlusView(store: subs, vibe: vibe).presentationDetents([.large])
@@ -251,6 +309,19 @@ struct ProfileView: View {
         }
     }
 
+    /// Force a backup now, so someone who saw "not backed up yet" can do something
+    /// about it rather than waiting and hoping. `force` bypasses the five minute
+    /// throttle, which exists to stop a push per tap and would otherwise make this
+    /// button appear to do nothing.
+    private func retryBackup() {
+        guard let player, !retrying else { return }
+        retrying = true
+        Task {
+            await PlayerBackup.push(player, appleUserID: player.appleUserID, force: true)
+            retrying = false
+        }
+    }
+
     private func handleNotify(on: Bool) {
         Task {
             if on {
@@ -270,6 +341,10 @@ struct ProfileView: View {
                 player?.appleUserID = credential.user
                 try? context.save()
                 signInError = nil
+                if let tokenData = credential.identityToken,
+                   let token = String(data: tokenData, encoding: .utf8) {
+                    Task { await SupabaseAuth.shared.signIn(appleIdentityToken: token) }
+                }
             }
         case .failure(let error):
             signInError = "sign in didn't complete. \(error.localizedDescription)"

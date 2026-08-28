@@ -102,6 +102,14 @@ final class HealthService {
         sleepHours = high ? 7.5 : 3.0
     }
 
+    /// Dev only: an exact step count, so a partial goal state can actually be rendered
+    /// rather than only the two extremes.
+    func mockSteps(_ n: Int) {
+        authorized = true
+        steps = n
+        if sleepHours == 0 { sleepHours = 5.2 }
+    }
+
     /// Dev only: write a sample day so the grow-by-living card can be verified in the
     /// simulator (which has no real steps/sleep).
     func seedSampleDay() async {

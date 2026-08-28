@@ -38,6 +38,25 @@ $$;
 -- Writes into the SAME `drifts` table the client already reads, with the same unique
 -- (user_id, day) constraint, so a server roll and a client roll cannot both land — whoever
 -- gets there first owns the day. That is why this needs no coordination with the app.
+-- The daily ceiling, enforced by the schema rather than by hope.
+--
+-- This comment block used to claim `drifts` already had a unique (user_id, day)
+-- constraint. It did not: the primary key is (user_id, target_id, day), so the same
+-- player could hold several drifts on one day as long as the targets differed. Two
+-- consequences, both silent:
+--
+--   1. `roll_nightly_drifts` failed OUTRIGHT. Its `on conflict (user_id, day)` had no
+--      matching constraint to bind to, which is an error, not a no-op — so the nightly
+--      job would have thrown at 04:00 every night and produced nothing, while cron.job
+--      still showed it scheduled and active.
+--   2. The "whoever gets there first owns the day" guarantee between the client roll and
+--      the server roll did not hold, because nothing stopped both from landing.
+--
+-- One wander a day is a design invariant (see the daily-ceilings section in the plan),
+-- so it belongs in the schema. Added as a unique INDEX rather than by altering the
+-- primary key, which would need the existing key dropped and rebuilt for no gain.
+create unique index if not exists drifts_one_per_day on public.drifts (user_id, day);
+
 create or replace function roll_nightly_drifts()
 returns int language plpgsql security definer as $$
 declare v_count int := 0;

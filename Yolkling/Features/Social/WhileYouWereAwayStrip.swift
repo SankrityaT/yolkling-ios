@@ -15,7 +15,11 @@ struct WhileYouWereAwayStrip: View {
 
     private struct Row: Identifiable {
         let id: String
-        let icon: String
+        /// Drawn, not an emoji. These three rows carried literal 👋 🏠 ✨, which render
+        /// in the system emoji font — a different palette and a different rendering
+        /// engine sitting inside a warm cream card, and reshaped by whatever iOS version
+        /// the player happens to be on.
+        let icon: YolkGlyph.Kind
         let text: String
         let friendID: String
     }
@@ -27,7 +31,7 @@ struct WhileYouWereAwayStrip: View {
         for wave in waves {
             result.append(Row(
                 id: "wave-\(wave.from_id)",
-                icon: "👋",
+                icon: .wave,
                 text: "\(wave.senderName) waved",
                 friendID: wave.from_id
             ))
@@ -37,7 +41,7 @@ struct WhileYouWereAwayStrip: View {
         for visit in visits {
             result.append(Row(
                 id: "visit-\(visit.visitor_id)",
-                icon: "🏠",
+                icon: .home,
                 text: "\(visit.visitorName) visited your room",
                 friendID: visit.visitor_id
             ))
@@ -47,7 +51,7 @@ struct WhileYouWereAwayStrip: View {
         for friend in redecorated {
             result.append(Row(
                 id: "redecor-\(friend.user_id)",
-                icon: "✨",
+                icon: .markSparkle,
                 text: "\(friend.displayName) redecorated",
                 friendID: friend.user_id
             ))
@@ -75,7 +79,9 @@ struct WhileYouWereAwayStrip: View {
                             onTap(row.friendID)
                         } label: {
                             HStack(spacing: YolkSpace.sm) {
-                                Text(row.icon)
+                                YolkGlyph(kind: row.icon, size: 17, weight: 0.1)
+                                    .foregroundStyle(YolkColor.inkSoft)
+                                    .frame(width: 17, height: 17)
                                     .font(.system(size: 15))
                                 Text(row.text)
                                     .font(YolkType.bodySmall)

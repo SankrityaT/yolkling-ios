@@ -33,6 +33,8 @@ struct CollectionView: View {
     private var totalCount: Int { allSetIDs.count }
     private var discoveredCount: Int { allSetIDs.filter { discovered.contains($0) }.count }
 
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
         ScrollView {
             VStack(spacing: YolkSpace.lg) {
@@ -51,6 +53,13 @@ struct CollectionView: View {
             .padding(.bottom, 40)
         }
         .background(YolkColor.shell.ignoresSafeArea())
+        // Overlaid rather than placed in the header, because that title is centred and a
+        // button inside the stack would push it off axis.
+        .overlay(alignment: .topLeading) {
+            YolkCloseButton { dismiss() }
+                .padding(.leading, YolkSpace.md)
+                .padding(.top, YolkSpace.sm)
+        }
         .task { await events?.refresh() }
         // `fullScreenCover`, matching the pack reveal. A card is the subject, not a detail
         // pane, and a sheet over a grid of cards leaves the grid peeking round it.
@@ -80,6 +89,7 @@ struct CollectionView: View {
             Text("a few were a week-one gift. the rest are out there to find.")
                 .font(.footnote).foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.top, YolkSpace.md)
     }

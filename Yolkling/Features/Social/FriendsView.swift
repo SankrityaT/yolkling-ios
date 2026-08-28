@@ -105,6 +105,7 @@ struct FriendsView: View {
 
     private var header: some View {
         HStack {
+            YolkCloseButton { dismiss() }
             Text("friends").font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Spacer()
             Button { showInbox = true } label: {
