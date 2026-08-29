@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Everything printed on one card.
 ///

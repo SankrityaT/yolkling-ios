@@ -1,4 +1,5 @@
 import Testing
+import YolklingCore
 @testable import Yolkling
 
 /// Exercises `TrustStage.from(trust:)` thresholds and the `waves` / `celebrates`

@@ -16,13 +16,23 @@ context compaction. If you are an agent picking this project back up, read this 
 
 ## Architecture / build
 
-- **`Core/DesignSystem` is compiled into the WIDGET extension.** Do NOT put code that uses
-  `Haptics`, UIKit, or anything not widget-safe in `Core/DesignSystem`. App-only interactive
-  controls go in `Core/Components/` (app target globs all of `Yolkling/`; the widget only
-  compiles specific Core subdirs).
-- The renderers (`Core/Creature`, `Core/Cosmetics`, `Core/Rooms`, `Core/DesignSystem`,
-  `Core/Networking/SocialModels.swift`) are pure (no SwiftData / networking) so they can be
-  shared into the widget. Keep them that way.
+- **After every `xcodegen generate`, run `python3 tools/fix_local_packages.py`.**
+  XcodeGen wires local packages in a shape `xcodebuild` accepts but the Xcode IDE does
+  not (every in-IDE build fails instantly with "Missing package product 'YolklingCore'"
+  while the CLI builds fine). The script rewrites the wiring into the shape native Xcode
+  writes. If the project was open in Xcode during regeneration, close and reopen it —
+  Xcode never refreshes its package graph from an in-place reload.
+- **The creature layer lives in `Packages/YolklingCore`** (local SPM package: Creature,
+  Cosmetics, colour/spacing/type tokens, CreaturePalette, the watch sync contract). The
+  app, the widget, the watch app and the tests all depend on it. It must NEVER import
+  RevenueCat, FamilyControls, HealthKit, SwiftData, or the Supabase client — the watch and
+  widget builds must never see those. New shared creature code goes there and needs
+  `public` on anything targets touch (plus an explicit `public init` on structs they
+  construct). See `Packages/YolklingCore/README.md`.
+- **`Core/Rooms`, `Core/Widget`, `Core/Networking/SocialModels.swift` and `RoomView.swift`
+  are still cherry-picked into the WIDGET extension** by path in `project.yml`. Keep them
+  pure (no SwiftData / networking / Haptics / RevenueCat). App-only interactive controls go
+  in `Core/Components/` (app target globs all of `Yolkling/`).
 - SwiftData `@Model` (Player) changes must be OPTIONAL or DEFAULTED (migration-safe).
 
 ## Verification
@@ -35,9 +45,12 @@ context compaction. If you are an agent picking this project back up, read this 
   covered by the screenshot seams instead, not by tests.
 - Verify with `xcodebuild` (must say `** BUILD SUCCEEDED **`) plus the `YOLK_*` screenshot
   seams in `App/RootView.swift` + `HomeView.applyScreenshotSeams()`.
-- **Build all four targets**, not just the app: `Yolkling`, `YolklingWidgets`,
-  `YolklingScreenTimeReport`, `YolklingTests`. The widget cherry-picks sources out of
-  `Yolkling/`, so a design-system change can break it while the app still compiles.
+- **Build all five targets**, not just the app: `Yolkling`, `YolklingWidgets`,
+  `YolklingScreenTimeReport`, `YolklingWatch`, `YolklingTests`. The widget still
+  cherry-picks some sources out of `Yolkling/`, so a Rooms/Widget change can break it while
+  the app compiles; a YolklingCore change can break the watch the same way (the `Yolkling`
+  scheme covers all of them via dependencies). The watch app builds with
+  `-destination 'generic/platform=watchOS Simulator'` (see docs/WATCH_APP.md).
 - **Haptics and Screen Time cannot be verified here.** Neither runs on the simulator.
   Anything touching them is written-and-unverified until it has been on a device; say so
   rather than reporting it as working.

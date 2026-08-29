@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The friends surface: see each friend's living room, catch up on what happened
 /// while you were away, wave, visit, and grow your circle. No likes, no followers,

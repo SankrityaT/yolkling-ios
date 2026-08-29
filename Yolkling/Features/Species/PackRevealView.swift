@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The pack opening: a face-down card you scratch to find out who you found.
 ///

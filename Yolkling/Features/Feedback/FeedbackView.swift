@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A warm, direct line to the maker. Writes to Supabase (write-only RPC). Reached
 /// from the profile sheet. No account needed; tagged with the install/Apple id so

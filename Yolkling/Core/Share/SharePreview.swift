@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Screenshot seam (`YOLK_CARD=1`) for the share card.
 ///

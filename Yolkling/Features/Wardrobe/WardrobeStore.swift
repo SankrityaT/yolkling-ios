@@ -1,5 +1,6 @@
 import SwiftUI
 import Observation
+import YolklingCore
 
 /// What the creature is currently wearing — one cosmetic per slot. In-memory for
 /// now; persists with SwiftData and gates on owned items + coins once the economy

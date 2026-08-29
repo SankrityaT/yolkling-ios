@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The image a player posts to Instagram or TikTok. This is the app's primary **open**
 /// growth loop: unlike a friend visit, it works with zero friends and lands in front of

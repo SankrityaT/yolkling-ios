@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A card, framed for posting.
 ///

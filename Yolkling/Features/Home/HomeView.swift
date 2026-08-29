@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import YolklingCore
 
 /// The game hub. Top bar (streak + Yolks), your creature (tap to pet), today's
 /// care actions (which earn Yolks), and the bottom nav. Care actions are stubs
@@ -433,9 +434,17 @@ struct HomeView: View {
         }
     }
 
-    /// Publish the current yolk look to the App Group so the home-screen widget reflects it.
+    /// Publish the current yolk look to the App Group so the home-screen widget
+    /// reflects it, and across WatchConnectivity so the watch app does too.
     private func publishWidget() {
-        WidgetPublisher.publish(name: heading, room: mySnapshot())
+        let room = mySnapshot()
+        WidgetPublisher.publish(name: heading, room: room)
+        WatchPublisher.shared.publish(WatchCreatureSnapshot(
+            name: heading, colorHex: room.colorHex, styleRaw: room.styleRaw,
+            accentHex: room.accentHex, patternRaw: room.patternRaw,
+            activeFoundingID: room.activeFoundingID, moodRaw: room.moodRaw,
+            outfitIDs: room.outfitIDs, trust: trust, streak: careStreak
+        ))
     }
 
     /// Everything that runs once when home appears.

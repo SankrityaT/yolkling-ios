@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The living background behind onboarding.
 ///

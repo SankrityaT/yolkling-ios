@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The unified store: one sheet, three aisles. Colours repaints your yolk,
 /// Outfit clips on cosmetics per slot, Room picks themes and decor for your

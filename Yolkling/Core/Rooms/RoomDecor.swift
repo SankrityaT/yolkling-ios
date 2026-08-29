@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A placeable room decoration, bought with earned Yolks (ownership lives in the
 /// wallet, so it persists like every other purchase). Each piece is code-drawn by

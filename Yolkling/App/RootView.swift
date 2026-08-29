@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import YolklingCore
 
 /// Decides the first surface. A returning player (one saved `Player`) lands on
 /// home; a new user gets onboarding, and finishing it saves their creature so

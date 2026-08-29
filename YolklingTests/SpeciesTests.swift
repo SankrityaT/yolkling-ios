@@ -1,5 +1,6 @@
 import Testing
 import SwiftUI
+import YolklingCore
 @testable import Yolkling
 
 /// Exercises the species taxonomy: catalog integrity, head-start / set membership

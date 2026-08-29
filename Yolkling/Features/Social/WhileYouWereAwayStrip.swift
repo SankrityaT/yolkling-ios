@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A count-free "while you were away" reciprocity strip.
 /// Shows warm lines for waves, room visits, and redecorations since the user was last active.

@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The "grow your circle" section: add by code, share invite link, show QR,
 /// scan a friend's QR, and an invite nudge. Lives inside the redesigned Friends tab.

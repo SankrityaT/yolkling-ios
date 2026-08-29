@@ -1,5 +1,6 @@
 import SwiftData
 import Foundation
+import YolklingCore
 
 /// A stable id for this install, kept in UserDefaults so it survives launches
 /// (lost only on uninstall). Used for the backend until Sign in with Apple.

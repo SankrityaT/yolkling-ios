@@ -1,5 +1,6 @@
 import SwiftUI
 import Observation
+import YolklingCore
 
 /// The in-app currency: **Yolks**.
 enum Currency {
