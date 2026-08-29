@@ -30,6 +30,15 @@ struct RootView: View {
     /// there is nothing to attach an identity to.
     @State private var pendingAppleUserID: String?
 
+    /// Whether we are still looking for a creature this account already owns.
+    ///
+    /// `.checking` is also the state we STAY in after a successful restore: `@Query` does
+    /// not republish within the same runloop turn, so flipping to `.done` here would show
+    /// a frame of onboarding before `players.first` takes over. The restore path
+    /// deliberately leaves this alone and lets the player branch win.
+    private enum RestoreCheck { case idle, checking, done }
+    @State private var restoreCheck: RestoreCheck = .idle
+
     // Launch ARGUMENTS as well as env vars: SIMCTL_CHILD_* propagates unreliably through
     // `simctl launch`, while --args always arrives. The App Store screenshot pipeline
     // will want this too.
@@ -154,9 +163,16 @@ struct RootView: View {
                     .transition(.opacity)
             } else if pendingAppleUserID == nil {
                 SignInGateView { userID in
-                    withAnimation(.easeInOut(duration: 0.4)) { pendingAppleUserID = userID }
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        pendingAppleUserID = userID
+                        restoreCheck = .checking
+                    }
+                    Task { await restoreIfPossible(userID) }
                 }
                 .transition(.opacity)
+            } else if restoreCheck == .checking {
+                RestoringView()
+                    .transition(.opacity)
             } else {
                 OnboardingView { creature in
                     withAnimation(.easeInOut(duration: 0.5)) { save(creature) }
@@ -187,6 +203,58 @@ struct RootView: View {
                 .allowsHitTesting(false)
         }
         #endif
+    }
+
+    /// Bring back the creature this Apple id already owns, if there is one.
+    ///
+    /// Runs BEFORE onboarding, which is the whole point: `HomeView`'s restore cannot help
+    /// a fresh install because it needs a `Player` that does not exist yet.
+    ///
+    /// Falls through to onboarding on every failure, which is exactly the old behaviour,
+    /// so the worst case here is the status quo rather than a person stuck on a spinner.
+    private func restoreIfPossible(_ userID: String) async {
+        // The gate fires `onSignedIn` without awaiting the Supabase exchange, on purpose:
+        // a server hiccup must not stand between someone and their creature. But the
+        // backup RPC authenticates from that session (it ignores any client-supplied id,
+        // which is what closed the IDOR), so a restore genuinely cannot happen until the
+        // session lands. Wait briefly, then give up rather than block.
+        guard await waitForSession(upTo: 6) else { restoreCheck = .done; return }
+
+        guard let snapshot = await PlayerBackup.pull(appleUserID: userID),
+              snapshot.isWorthRestoring,
+              players.isEmpty, !saving
+        else { restoreCheck = .done; return }
+
+        saving = true
+        // createdAt comes from the snapshot, not `.now`. It is the creature's birthday and
+        // the dateline on its card; a restore that resets it quietly rewrites how long
+        // someone has had their yolkling.
+        let player = Player(
+            name: snapshot.name,
+            colorHex: snapshot.colorHex,
+            styleRaw: snapshot.styleRaw,
+            startingMoodRaw: snapshot.startingMoodRaw,
+            appleUserID: userID,
+            createdAt: snapshot.createdAt
+        )
+        snapshot.apply(to: player)
+        context.insert(player)
+        // Explicit, unlike `save(_:)` below. A restored creature that is lost to a
+        // not-yet-flushed autosave would send the person straight back into onboarding,
+        // which is the exact bug this method exists to fix.
+        try? context.save()
+        // restoreCheck stays `.checking`; the `players.first` branch takes over.
+    }
+
+    /// Poll for the Supabase session rather than awaiting the sign-in task directly,
+    /// because the gate owns that task and deliberately does not hand it back.
+    private func waitForSession(upTo seconds: Double) async -> Bool {
+        let deadline = Date().addingTimeInterval(seconds)
+        while Date() < deadline {
+            if SupabaseAuth.shared.isSignedIn { return true }
+            try? await Task.sleep(for: .milliseconds(150))
+        }
+        return SupabaseAuth.shared.isSignedIn
     }
 
     private func save(_ creature: HatchedCreature) {

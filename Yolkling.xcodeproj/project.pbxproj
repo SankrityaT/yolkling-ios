@@ -80,6 +80,7 @@
 		8B8E18E2B8EE1D580D861F3D /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9E64CF6D045ACC42F06467FE /* RevenueCatUI */; };
 		8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689CB056088DED814BB7D8E5 /* TypewriterText.swift */; };
 		8D25FD82B5D02C23463C3A46 /* YolkCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E55E15A3191441EF6DD5D2C0 /* YolkCard.swift */; };
+		91BC89C2CFEAC7673BA4E7C9 /* RestoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8C7DF4E1C18F3A1127D059 /* RestoringView.swift */; };
 		921A18410B9EC93B4267D392 /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A838C066C2D95AC131CF7A /* TokenStore.swift */; };
 		92C0E2E29F7A45029311A94A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 9F16803B4B290C5582A6C301 /* PrivacyInfo.xcprivacy */; };
 		934596132191A3732F457369 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */; };
@@ -252,6 +253,7 @@
 		4A5DF92AB0E724AF0780577E /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
 		4CCF8ECE26CC48006007F98E /* ScreenTimeShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeShare.swift; sourceTree = "<group>"; };
 		4E4A5383B84FED32116786EF /* YolkNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkNotifications.swift; sourceTree = "<group>"; };
+		4F8C7DF4E1C18F3A1127D059 /* RestoringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoringView.swift; sourceTree = "<group>"; };
 		525C2E9327AAC745CB3DD23D /* SwapPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapPreview.swift; sourceTree = "<group>"; };
 		571CDDC06280096B10794E7C /* PostcardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardViews.swift; sourceTree = "<group>"; };
 		57E7F2809A70CE580B97F50B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -323,7 +325,8 @@
 		D3023148FA25E063CED922DF /* SyncClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncClient.swift; sourceTree = "<group>"; };
 		D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticPreviewGrid.swift; sourceTree = "<group>"; };
 		D4FC884495811BB1821AF2CB /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
-				DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTilt.swift; sourceTree = "<group>"; };
+		D934B6F2B67A9883D2A66D6D /* YolklingCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = YolklingCore; path = Packages/YolklingCore; sourceTree = SOURCE_ROOT; };
+		DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTilt.swift; sourceTree = "<group>"; };
 		DC9DF2A1897F2D6B597F6A9B /* CardScratchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScratchView.swift; sourceTree = "<group>"; };
 		DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeStore.swift; sourceTree = "<group>"; };
 		E011F05F71F616426CCE0C22 /* YolklingWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingWatchApp.swift; sourceTree = "<group>"; };
@@ -724,6 +727,7 @@
 		AA07E7E05826E49AEF6E4D23 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				D934B6F2B67A9883D2A66D6D /* YolklingCore */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -737,6 +741,7 @@
 				270564D342B0AC858D8BD308 /* OnboardingBackdrop.swift */,
 				0DEE2E3B0659BB1DD7BDE97F /* OnboardingEntrance.swift */,
 				7E7AFB40028E43F26BD38206 /* OnboardingView.swift */,
+				4F8C7DF4E1C18F3A1127D059 /* RestoringView.swift */,
 				95CED4E300F9DEB0A7A51E33 /* SignInGateView.swift */,
 				74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */,
 			);
@@ -1063,10 +1068,10 @@
 			projectRoot = "";
 			targets = (
 				DD2770B84A509DAFA8B6AA33 /* Yolkling */,
-				D11C675502367D0547EDF59C /* YolklingWidgets */,
 				0F67D7AAA9597122D7BDE67C /* YolklingScreenTimeReport */,
-				0380A3ADC7B50DF4DDD0B2A1 /* YolklingWatch */,
 				7D4565EBBB1BDB1D01B0CDA5 /* YolklingTests */,
+				0380A3ADC7B50DF4DDD0B2A1 /* YolklingWatch */,
+				D11C675502367D0547EDF59C /* YolklingWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -1178,6 +1183,7 @@
 				984F2FF722D79E95EDC451AB /* QRCodeView.swift in Sources */,
 				08D9901B447473F63656E17A /* QRScannerView.swift in Sources */,
 				62F892518BC4B84224E78C5D /* ReferralView.swift in Sources */,
+				91BC89C2CFEAC7673BA4E7C9 /* RestoringView.swift in Sources */,
 				8A16161AA593A990544C3CD7 /* Rewards.swift in Sources */,
 				A3456E748BB01E749F4C4FD9 /* RoomDecor.swift in Sources */,
 				086B1B692A28EC7108795144 /* RoomDecorView.swift in Sources */,
@@ -1732,7 +1738,6 @@
 /* Begin XCSwiftPackageProductDependency section */
 		1EF266223E6CA667789B7B66 /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 		7105AA21C4F6E3A47890C83D /* RevenueCat */ = {
@@ -1742,7 +1747,6 @@
 		};
 		84AD81837A764554C261EAF5 /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 		9E64CF6D045ACC42F06467FE /* RevenueCatUI */ = {
@@ -1752,12 +1756,10 @@
 		};
 		B9BC56A5A6215E934A19E1E0 /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 		D7F6707E384114D485D267DE /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 /* End XCSwiftPackageProductDependency section */
