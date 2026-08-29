@@ -188,7 +188,7 @@
 		F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F554785860AE53390D69233E /* SupabaseClient.swift */; };
 		F2C5878F99269B2EDA41761C /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FC884495811BB1821AF2CB /* CollectionView.swift */; };
 		F31A3E2F41BFF29944253D77 /* PostcardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593CF31848BF060E5D52D091 /* PostcardCard.swift */; };
-		F6C38D5F76F0AC1ED9BF1D17 /* YolklingScreenTimeReport.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F6C38D5F76F0AC1ED9BF1D17 /* YolklingScreenTimeReport.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F6E72741E88E322E12CFF18B /* FriendCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */; };
 		F881D46D850C51D7C10D8613 /* DMMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */; };
 		F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */; };
@@ -230,9 +230,19 @@
 			dstSubfolderSpec = 13;
 			files = (
 				4702ED8BB128D89E453FFCF6 /* YolklingWidgets.appex in Embed Foundation Extensions */,
-				F6C38D5F76F0AC1ED9BF1D17 /* YolklingScreenTimeReport.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A6B4C55A0B04FF8B23F8D22 /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				F6C38D5F76F0AC1ED9BF1D17 /* YolklingScreenTimeReport.appex in Embed ExtensionKit Extensions */,
+			);
+			name = "Embed ExtensionKit Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -379,7 +389,7 @@
 		EC9B833332453257B1847522 /* RarityAura.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RarityAura.swift; sourceTree = "<group>"; };
 		EDC43CFE7BE7D26FE43A29BE /* CardShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardShareCard.swift; sourceTree = "<group>"; };
 		EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
-		EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = YolklingScreenTimeReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = YolklingScreenTimeReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFC6AD7229641595F1324223 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F554785860AE53390D69233E /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
 		F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkGlyph.swift; sourceTree = "<group>"; };
@@ -959,7 +969,7 @@
 			);
 			productName = YolklingScreenTimeReport;
 			productReference = EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */;
-			productType = "com.apple.product-type.app-extension";
+			productType = "com.apple.product-type.extensionkit-extension";
 		};
 		7D4565EBBB1BDB1D01B0CDA5 /* YolklingTests */ = {
 			isa = PBXNativeTarget;
@@ -1005,6 +1015,7 @@
 				04FDBD6A1787203A56F5088A /* Resources */,
 				60E9DA8CF82AEBC5335EE2C6 /* Frameworks */,
 				D285FE252D89964D5FA5EABC /* Embed Foundation Extensions */,
+				1A6B4C55A0B04FF8B23F8D22 /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
 			);
