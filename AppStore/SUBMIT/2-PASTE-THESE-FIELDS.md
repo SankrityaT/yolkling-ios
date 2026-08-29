@@ -235,6 +235,12 @@ the follow-up.
 
 Paste into the "Notes" field of the version's App Review Information.
 
+**Kept in sync with reality.** These notes previously said "one auto-renewable
+subscription" and named only the monthly product id, while the listing carries two
+products and the notes themselves later refer to "both products". Apple reads this field
+against what is actually configured, so a contradiction here is a self-inflicted
+metadata rejection. If the products ever change, change this too.
+
 ```
 Thanks for reviewing Yolkling.
 
@@ -244,7 +250,7 @@ Sign in with Apple is required to create a creature. Only the stable user identi
 
 Focus sessions use a Live Activity to show the resting creature on the lock screen while the phone is set down.
 
-Monetization: one auto-renewable subscription, Yolkling Plus (com.yolkling.ios.plus.monthly), managed through RevenueCat. It grants a cosmetic supporter glow and a small monthly grant of Yolks. It gates no content: every species, cosmetic and feature is reachable without it. There are no ads.
+Monetization: one subscription, Yolkling Plus, offered as two auto-renewable options (monthly and annual) and managed through RevenueCat. It grants a cosmetic supporter glow on the creature and a small monthly grant of Yolks. It gates no content: every species, every cosmetic and every feature is reachable without it. There are no ads.
 
 Yolks, the in-app currency, are deliberately NOT purchasable at any price. There is no currency pack, no gacha, no loot box, and no randomised purchase anywhere in the app. Cash never touches a random roll: the only randomness sits behind packs the player earns through daily use. Cosmetics are fixed price in Yolks.
 
