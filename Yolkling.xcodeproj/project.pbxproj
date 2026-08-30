@@ -77,6 +77,7 @@
 		8597B528569F7A794735B5C6 /* TrialAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E7EAB2F6FC0083027A9866 /* TrialAccess.swift */; };
 		8643941FECB35114AD0E6FF0 /* EventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B11B8AC851E841F937667EF /* EventStore.swift */; };
 		869E24C3E4EACCF6044FCC01 /* RewardsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00E5F0B2E4AE46F432F74D6 /* RewardsTests.swift */; };
+		8913CBA70F0E23F2F3FED0FF /* YolksExplainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EDE9C10856F89329BB3D8BF /* YolksExplainer.swift */; };
 		8A16161AA593A990544C3CD7 /* Rewards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4BB5586801A2B60F7F7A7 /* Rewards.swift */; };
 		8AB5D8F4D1CD51841F5F8A02 /* YolkCardBack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4438975C80653EBA9197E0C /* YolkCardBack.swift */; };
 		8B8E18E2B8EE1D580D861F3D /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9E64CF6D045ACC42F06467FE /* RevenueCatUI */; };
@@ -248,6 +249,7 @@
 		6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhileYouWereAwayStrip.swift; sourceTree = "<group>"; };
 		689CB056088DED814BB7D8E5 /* TypewriterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterText.swift; sourceTree = "<group>"; };
 		6B11B8AC851E841F937667EF /* EventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventStore.swift; sourceTree = "<group>"; };
+		6EDE9C10856F89329BB3D8BF /* YolksExplainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolksExplainer.swift; sourceTree = "<group>"; };
 		7271B792C6CDA97F073DDC10 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		72FD5561EB45544F72742563 /* WatchPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchPublisher.swift; sourceTree = "<group>"; };
 		74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeQuiz.swift; sourceTree = "<group>"; };
@@ -705,6 +707,7 @@
 			isa = PBXGroup;
 			children = (
 				B615D4D6A96E713CDD933F5D /* ShopHomeView.swift */,
+				6EDE9C10856F89329BB3D8BF /* YolksExplainer.swift */,
 			);
 			path = Shop;
 			sourceTree = "<group>";
@@ -1220,6 +1223,7 @@
 				FBFF303FA92AE2EEBC97B37A /* YolkNotifications.swift in Sources */,
 				3395E08E88EBF6AF2686CB1A /* YolkSegmented.swift in Sources */,
 				BB04580D3125794B8DB6BD99 /* YolklingApp.swift in Sources */,
+				8913CBA70F0E23F2F3FED0FF /* YolksExplainer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

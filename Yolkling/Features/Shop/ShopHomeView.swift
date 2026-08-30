@@ -37,6 +37,10 @@ struct ShopHomeView: View {
     @State private var previewVibe: Vibe
     @State private var tryOn: TryOn?
     @State private var dialog: YolkDialog?
+    /// The Shop is where somebody is already thinking about spending, so it is the honest
+    /// place to say where Yolks come from and that a subscription exists. See
+    /// `YolksExplainer` for why it leads with "never bought".
+    @State private var showPlus = false
     @State private var searchText: String = ""
     @State private var showOwned: Bool = false
     @State private var sortOrder: SortOrder = .newest
@@ -82,6 +86,13 @@ struct ShopHomeView: View {
                     case .outfit:  outfitAisle
                     case .room:    roomAisle
                     }
+
+                    // AFTER the aisles, not before. Somebody arriving at the Shop wants to
+                    // see things, not be told about money; this answers the question once
+                    // they have scrolled past something they cannot afford yet.
+                    if searchText.isEmpty {
+                        YolksExplainer { showPlus = true }
+                    }
                 }
                 .padding(.horizontal, YolkSpace.lg)
                 .padding(.bottom, YolkSpace.xl)
@@ -90,6 +101,10 @@ struct ShopHomeView: View {
         .background(YolkColor.shell)
         .safeAreaInset(edge: .bottom, spacing: 0) { confirmBar }
         .yolkDialog($dialog)
+        .sheet(isPresented: $showPlus) {
+            PlusView(store: .shared, vibe: previewVibe)
+                .presentationDetents([.large])
+        }
         .onAppear {
             if ProcessInfo.processInfo.environment["YOLK_TRYON"] != nil,
                let item = CosmeticCatalog.all.first(where: { $0.id == "flower" }) {
