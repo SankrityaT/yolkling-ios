@@ -15,6 +15,18 @@ duplicate, so a second upload at build 1 would have failed at the last step.
 
 ---
 
+## 0. TODAY, and only your friend can do it: finish the Paid Applications Agreement
+
+Status is **Pending User Info**: the bank account and the W-9 are missing. This is the
+only item on the whole list with an EXTERNAL clock on it, because Apple verifies bank
+details and that is not instant. Everything else here is minutes of form-filling.
+
+App Store Connect > Business > Paid Applications > complete banking and tax. Account
+Holder only, so it cannot be delegated.
+
+Until it is Active, neither subscription can be submitted and the paywall shows
+"unavailable" to everyone, including the reviewer.
+
 ## 1. Your friend: archive and upload (about 20 minutes)
 
 ```
@@ -51,6 +63,23 @@ If the paywall says "the supporter tier isn't available right now", stop: that i
 RevenueCat configuration, and `5-REVENUECAT-CHECKLIST.md` lists the causes in order of
 likelihood. The top two are an offering not marked Current, and package identifiers that
 are not exactly `$rc_monthly` and `$rc_annual`.
+
+## 3b. Four small App Store Connect fields that will block Submit
+
+Found in the audit. All are a minute each.
+
+- **Sign-In Information: UNCHECK "Sign-in required".** It is currently checked with both
+  the username and password fields EMPTY, which blocks submission. No demo account is
+  needed: the app uses Sign in with Apple with `requestedScopes = []`, so a reviewer signs
+  in with their own Apple ID and we never receive a name or an email. The review notes
+  already explain this and offer a demo account if they would rather have one.
+- **Copyright is empty.** Fill it with the name on the developer account, which is the
+  entity that owns the listing.
+- **Release is scheduled for a date in the PAST** (Aug 29 2026, 7:00 PM). Change it to
+  "Automatically release this version" or manual release, or the schedule is meaningless.
+- **Export Compliance and IDFA do not appear until a build is attached.** That is normal,
+  not a missing setting. Answer them in the submit flow after build 2 lands: no
+  non-exempt encryption, and no IDFA.
 
 ## 4. Re-paste the App Review notes
 
