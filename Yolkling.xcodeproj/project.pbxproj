@@ -19,6 +19,7 @@
 		0A249C960574E1EBA727E0EF /* ScreenTimeShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCF8ECE26CC48006007F98E /* ScreenTimeShare.swift */; };
 		0A5BCB4BBDD1B38982E023B2 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = B946F4E30EF2C84EE207202E /* Router.swift */; };
 		0E078F29634C6933BB02219C /* WalletTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4B5E5BA8C8DEB8E7E6510C /* WalletTests.swift */; };
+		0F3501B72F4F9211BBBA9886 /* TrialAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2872CD6D62D6CC390C0CB796 /* TrialAccessTests.swift */; };
 		0F43BA5020257840F2122EAC /* YolkGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */; };
 		10085D4E418E087D48B2E2E8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 57E7F2809A70CE580B97F50B /* PrivacyInfo.xcprivacy */; };
 		115C413B6DCAC129F76CCDB3 /* WhileYouWereAwayStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */; };
@@ -73,6 +74,7 @@
 		7D316A3F6CA5988E2356DA7C /* PackRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C490033D514C40A0067B7 /* PackRevealView.swift */; };
 		84E321BD0A5CB442877C103B /* FoundingRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */; };
 		8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E45824D017316F04EAB9F /* YolkRoomWidget.swift */; };
+		8597B528569F7A794735B5C6 /* TrialAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E7EAB2F6FC0083027A9866 /* TrialAccess.swift */; };
 		8643941FECB35114AD0E6FF0 /* EventStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B11B8AC851E841F937667EF /* EventStore.swift */; };
 		869E24C3E4EACCF6044FCC01 /* RewardsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00E5F0B2E4AE46F432F74D6 /* RewardsTests.swift */; };
 		8A16161AA593A990544C3CD7 /* Rewards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4BB5586801A2B60F7F7A7 /* Rewards.swift */; };
@@ -213,6 +215,7 @@
 		245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomTheme.swift; sourceTree = "<group>"; };
 		270564D342B0AC858D8BD308 /* OnboardingBackdrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingBackdrop.swift; sourceTree = "<group>"; };
 		271C78981C0D5681EF94171E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		2872CD6D62D6CC390C0CB796 /* TrialAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccessTests.swift; sourceTree = "<group>"; };
 		2878B46B9482D667951C103B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		30CB0A1116928879DE203401 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		334D734661EDF43E80B4A217 /* SeasonBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonBanner.swift; sourceTree = "<group>"; };
@@ -313,6 +316,7 @@
 		E2E2092639E1FE04CE2057DA /* LivingTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivingTile.swift; sourceTree = "<group>"; };
 		E3E3DAFC3357CF16EDB765B2 /* FocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusView.swift; sourceTree = "<group>"; };
 		E55E15A3191441EF6DD5D2C0 /* YolkCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCard.swift; sourceTree = "<group>"; };
+		E5E7EAB2F6FC0083027A9866 /* TrialAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccess.swift; sourceTree = "<group>"; };
 		EDC43CFE7BE7D26FE43A29BE /* CardShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardShareCard.swift; sourceTree = "<group>"; };
 		EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = YolklingScreenTimeReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -690,6 +694,7 @@
 				77C4E64C5781F3C8518BCB9B /* SpeciesTests.swift */,
 				7BB9C33AA7D56912EC109F71 /* StreakEngineTests.swift */,
 				8DCD055E27868773534C0E1B /* SyncTests.swift */,
+				2872CD6D62D6CC390C0CB796 /* TrialAccessTests.swift */,
 				23B5B076C1A639A6479BBB95 /* TrustStageTests.swift */,
 				AB4B5E5BA8C8DEB8E7E6510C /* WalletTests.swift */,
 			);
@@ -732,6 +737,7 @@
 			children = (
 				D2CC9CFC6387FAE6A2C920A2 /* SupabaseAuth.swift */,
 				44A838C066C2D95AC131CF7A /* TokenStore.swift */,
+				E5E7EAB2F6FC0083027A9866 /* TrialAccess.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -1188,6 +1194,7 @@
 				56BB68B97AB5494561E8E6EE /* SyncClient.swift in Sources */,
 				921A18410B9EC93B4267D392 /* TokenStore.swift in Sources */,
 				DAAC52882B232B1980F924A5 /* TradeSheet.swift in Sources */,
+				8597B528569F7A794735B5C6 /* TrialAccess.swift in Sources */,
 				2C469F395804CE251D5A723B /* TutorialSpotlight.swift in Sources */,
 				8C53DF8310A4FFB8B27E6023 /* TypewriterText.swift in Sources */,
 				EE8A541C3D503283B576EFE5 /* VibeQuiz.swift in Sources */,
@@ -1245,6 +1252,7 @@
 				2AC2BDCF6B0A54ABC0D5F635 /* SpeciesTests.swift in Sources */,
 				AFCD4B498426B4ABD40F4804 /* StreakEngineTests.swift in Sources */,
 				76C65D3DC1A534CEC3160250 /* SyncTests.swift in Sources */,
+				0F3501B72F4F9211BBBA9886 /* TrialAccessTests.swift in Sources */,
 				20C60D20A52844E5B4EE79D8 /* TrustStageTests.swift in Sources */,
 				0E078F29634C6933BB02219C /* WalletTests.swift in Sources */,
 			);
@@ -1347,7 +1355,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1598,7 +1606,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_NS_ASSERTIONS = NO;

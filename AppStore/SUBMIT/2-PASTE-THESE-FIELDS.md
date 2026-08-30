@@ -246,7 +246,9 @@ Thanks for reviewing Yolkling.
 
 HealthKit is optional. The app is fully functional without granting Health access. If you decline the Health prompt, everything still works. To see the "grow by living" behavior, please add Steps and Sleep samples in the Apple Health app; the creature reads those to grow over time. (Note: the DEBUG-only sample-seeding path, seedSampleDay, is compiled out of the Release build, so real Health samples are the way to exercise this in review.)
 
-Sign in with Apple is required to create a creature. Only the stable user identifier is requested (requestedScopes is empty), so no name and no email is ever collected. It is required because the creature is backed up to the account and because the friend graph is keyed on it; without it a creature cannot survive a reinstall and cannot be found by friends. An existing creature made before this requirement is never locked out.
+No demo account is needed, and none exists. Sign in with Apple is the only sign-in method, so there is no user name or password to provide. You can either sign in with any Apple ID, or tap "look around for a day first" on the first screen to use the whole app immediately without an account. Every feature is available either way.
+
+Sign in with Apple is required to keep a creature past that first day. Only the stable user identifier is requested (requestedScopes is empty), so no name and no email is ever collected. It is required because the creature is backed up to the account and because the friend graph is keyed on it; without it a creature cannot survive a reinstall and cannot be found by friends. An existing creature made before this requirement is never locked out.
 
 Focus sessions use a Live Activity to show the resting creature on the lock screen while the phone is set down.
 

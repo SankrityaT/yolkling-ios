@@ -8,6 +8,7 @@ import YolklingCore
 /// straight to a demo home for deterministic App Store captures.
 struct RootView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
 
     /// Sorted, because `players.first` decides which creature you wake up to.
     ///
@@ -38,6 +39,12 @@ struct RootView: View {
     /// deliberately leaves this alone and lets the player branch win.
     private enum RestoreCheck { case idle, checking, done }
     @State private var restoreCheck: RestoreCheck = .idle
+
+    /// Mirrors `TrialAccess.isActive` as state, refreshed when the app comes forward.
+    /// Read directly it would be a plain function call that SwiftUI cannot observe, so a
+    /// trial expiring while the app sat in the background would not take effect until
+    /// something unrelated happened to redraw this view.
+    @State private var trialActive = TrialAccess.isActive
 
     // Launch ARGUMENTS as well as env vars: SIMCTL_CHILD_* propagates unreliably through
     // `simctl launch`, while --args always arrives. The App Store screenshot pipeline
@@ -153,7 +160,8 @@ struct RootView: View {
                 OnboardingView { _ in }
             } else if screenshotMode {
                 HomeView()
-            } else if let player = players.first {
+            } else if let player = players.first,
+                      player.appleUserID != nil || trialActive {
                 // An existing creature is never held hostage. Someone who made one on a
                 // build where sign-in was optional keeps their yolkling and is asked in
                 // Profile instead — locking them out of something they already made,
@@ -161,14 +169,36 @@ struct RootView: View {
                 // could do to a person.
                 HomeView(injected: creature(from: player), player: player)
                     .transition(.opacity)
-            } else if pendingAppleUserID == nil {
-                SignInGateView { userID in
-                    withAnimation(.easeInOut(duration: 0.4)) {
-                        pendingAppleUserID = userID
-                        restoreCheck = .checking
-                    }
-                    Task { await restoreIfPossible(userID) }
-                }
+            } else if pendingAppleUserID == nil && !trialActive {
+                SignInGateView(
+                    onSignedIn: { userID in
+                        // A creature already exists when the trial has run out. ADOPT it
+                        // onto the account rather than falling through to onboarding,
+                        // which would build a second one on top of the one they just
+                        // spent a day with. This is the single most important line on
+                        // this screen.
+                        if let existing = players.first {
+                            existing.appleUserID = userID
+                            try? context.save()
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                pendingAppleUserID = userID
+                            }
+                            return
+                        }
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            pendingAppleUserID = userID
+                            restoreCheck = .checking
+                        }
+                        Task { await restoreIfPossible(userID) }
+                    },
+                    // Offered once. `hasStarted` never goes back to false, so deleting
+                    // the creature does not buy another day.
+                    onSkip: TrialAccess.hasStarted ? nil : {
+                        TrialAccess.begin()
+                        withAnimation(.easeInOut(duration: 0.4)) { trialActive = true }
+                    },
+                    trialExpired: players.first != nil
+                )
                 .transition(.opacity)
             } else if restoreCheck == .checking {
                 RestoringView()
@@ -183,7 +213,23 @@ struct RootView: View {
         // The brand is a single warm light palette; lock the scheme so system
         // colours (text fields, placeholders) never flip to dark and vanish.
         .preferredColorScheme(.light)
-        .onAppear { YolkNotifications.reschedule() }
+        // The trial can lapse while the app is backgrounded, so re-read it on the way
+        // forward rather than trusting the value this view was built with.
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { trialActive = TrialAccess.isActive }
+        }
+        .onAppear {
+            YolkNotifications.reschedule()
+            #if DEBUG
+            // Screenshot seam: wind the look-around clock past its end so the expiry
+            // screen can be verified without waiting a day. DEBUG only, like every
+            // other seam, and inert in Release (see `seamsOn`).
+            if ProcessInfo.processInfo.environment["YOLK_TRIAL_EXPIRED"] != nil {
+                TrialAccess.expireNow()
+                trialActive = false
+            }
+            #endif
+        }
         .overlay(alignment: .bottom) { playerCountOverlay }
     }
 

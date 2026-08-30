@@ -21,6 +21,16 @@ struct SignInGateView: View {
     /// Called with the stable Apple user id once sign-in succeeds.
     var onSignedIn: (String) -> Void
 
+    /// Called when someone takes the one day look around. Nil hides the option entirely,
+    /// which is what happens once the trial has been used: it is offered once, and
+    /// deleting the creature does not renew it.
+    var onSkip: (() -> Void)?
+
+    /// The trial was taken and has run out, so this screen is now in front of a creature
+    /// that already exists. Changes the copy, because "first, so they can't get lost" is
+    /// wrong for somebody who already has a yolk and is being asked to keep it.
+    var trialExpired: Bool = false
+
     /// What went wrong, if anything. Typed rather than a string, because the two cases
     /// need different UI: one is fixable in Settings and the other is worth retrying.
     private enum Failure: Equatable {
@@ -49,7 +59,7 @@ struct SignInGateView: View {
                     .frame(height: 185)
 
                 VStack(spacing: YolkSpace.sm) {
-                    Text("first, so they can't get lost")
+                    Text(trialExpired ? "one more thing, to keep them" : "first, so they can't get lost")
                         .font(YolkType.title)
                         .foregroundStyle(YolkColor.ink)
                         .multilineTextAlignment(.center)
@@ -61,7 +71,9 @@ struct SignInGateView: View {
                         .minimumScaleFactor(0.8)
                         .yolkEntrance(0)
 
-                    Text("your yolkling lives on your phone, and signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day. it is also how friends find you.")
+                    Text(trialExpired
+                         ? "your yolkling is still here. signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day, and it is how friends find you. nothing is lost either way."
+                         : "your yolkling lives on your phone, and signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day. it is also how friends find you.")
                         .font(YolkType.body)
                         .foregroundStyle(YolkColor.inkSoft)
                         .multilineTextAlignment(.center)
@@ -119,6 +131,26 @@ struct SignInGateView: View {
                     .signInWithAppleButtonStyle(.black)
                     .frame(height: 52)
                     .clipShape(Capsule())
+
+                    // Deliberately a quiet text link under the loud black button, not a
+                    // second button beside it. Signing in is still the path we want and
+                    // the one that keeps the creature; this is the door for somebody who
+                    // is not ready, or whose Apple sign-in cannot work on this device.
+                    if let onSkip {
+                        Button {
+                            Haptics.shared.tick()
+                            onSkip()
+                        } label: {
+                            Text("look around for a day first")
+                                .font(YolkType.bodySmall)
+                                .foregroundStyle(YolkColor.inkSoft)
+                                .underline()
+                                .padding(.vertical, 10)
+                                .frame(maxWidth: .infinity)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
                 .padding(.horizontal, YolkSpace.lg)
                 .padding(.bottom, YolkSpace.lg)
