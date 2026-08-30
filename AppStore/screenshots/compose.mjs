@@ -21,15 +21,26 @@ const sizes = [
   { name: "6.5-inch", w: 1284, h: 2778 },
 ];
 
+// Captions are INDEXED, not just read. Since June 2025 Apple runs OCR over
+// screenshot captions and feeds them into search ranking, scanning the top and
+// bottom of each image. Unlike the metadata fields, keywords here do NOT compete
+// with the keyword field and repetition across the two is expected rather than
+// wasteful, so the same terms can appear in both.
+//
+// The previous captions spent that entire surface on mood ("a little yolk that's
+// yours", "tilt it to catch the light") and earned nothing from it. These carry the
+// search terms while keeping the voice, because captions are also the single
+// biggest conversion lever on the page and a keyword-stuffed one converts worse
+// than a warm one. Lowercase throughout, no exclamation marks, per the brand.
 const shots = [
-  { file: "01-hero.png",   caption: "a little yolk that's yours", accent: "#FFC23B" },
-  { file: "02-hatch.png",  caption: "hatch one of a kind",        accent: "#7B5CF0" },
-  { file: "03-health.png", caption: "your real life feeds it",     accent: "#73E0AE" },
-  { file: "04-focus.png",  caption: "it glows while you're away", accent: "#8FD0FF" },
-  { file: "05-dex.png",    caption: "collect a whole flock",      accent: "#FF94C2" },
-  { file: "06-closet.png", caption: "earn it, then dress it up",  accent: "#FFD25A" },
-  { file: "07-visit.png",  caption: "visit your friends' yolks",  accent: "#7B5CF0" },
-  { file: "08-card.png",   caption: "tilt it to catch the light", accent: "#FF94C2" },
+  { file: "01-hero.png",   caption: "a self care pet that's yours",  accent: "#FFC23B" },
+  { file: "02-hatch.png",  caption: "hatch a cute virtual creature", accent: "#7B5CF0" },
+  { file: "03-health.png", caption: "steps and sleep grow your pet", accent: "#73E0AE" },
+  { file: "04-focus.png",  caption: "less screen time, happier yolk",accent: "#8FD0FF" },
+  { file: "05-dex.png",    caption: "collect 203 cozy creatures",    accent: "#FF94C2" },
+  { file: "06-closet.png", caption: "earn Yolks, then dress them up",accent: "#FFD25A" },
+  { file: "07-visit.png",  caption: "visit your friends' creatures", accent: "#7B5CF0" },
+  { file: "08-card.png",   caption: "collect and trade rare cards",  accent: "#FF94C2" },
 ];
 
 const browser = await chromium.launch();
