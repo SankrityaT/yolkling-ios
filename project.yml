@@ -74,6 +74,13 @@ targets:
         INFOPLIST_KEY_NSHealthShareUsageDescription: "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life."
         INFOPLIST_KEY_NSHealthUpdateUsageDescription: "Yolkling can add a little sample activity while you try out grow-by-living."
         INFOPLIST_KEY_CFBundleDisplayName: Yolkling
+        # Declares the export-compliance answer in the binary so App Store Connect stops
+        # holding every upload at "Missing Compliance" for a human to answer the same
+        # question again. Build 3 stalled on exactly this.
+        #
+        # NO is correct: the only encryption is standard HTTPS provided by the OS, which
+        # is exempt. No proprietary or non-standard cryptography anywhere.
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait

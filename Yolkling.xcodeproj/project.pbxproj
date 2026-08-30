@@ -1504,6 +1504,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Yolkling;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Scan a friend's code to add them.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Yolkling can add a little sample activity while you try out grow-by-living.";
@@ -1553,6 +1554,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Yolkling;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Scan a friend's code to add them.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Yolkling can add a little sample activity while you try out grow-by-living.";
