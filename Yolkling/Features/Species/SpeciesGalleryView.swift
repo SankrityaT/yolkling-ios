@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A browsable gallery of the taxonomy, rendered with the real `YolklingView`
 /// (same animation, blink, and breath as the live creature). Reached via the

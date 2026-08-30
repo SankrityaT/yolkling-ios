@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// One cosmetic, shown the way you'd actually recognise it: **worn**.
 ///

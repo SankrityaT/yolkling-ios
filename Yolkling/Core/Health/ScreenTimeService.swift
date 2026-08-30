@@ -67,17 +67,38 @@ final class ScreenTimeService {
 
     /// Ask for Family Controls authorization, then read the latest figure. Returns
     /// whether we're approved. Fails gracefully (false) with no entitlement/device.
+    ///
+    /// **Success is "the request did not throw", NOT a re-read of the status.**
+    /// `requestAuthorization(for:)` throws on denial or failure and returns normally on
+    /// approval, so completing without throwing IS the approval. This used to swallow the
+    /// error and then re-read `AuthorizationCenter.shared.authorizationStatus`, which does
+    /// not reliably reflect the grant by the time the await returns. The result on a real
+    /// device was that somebody tapped Allow, the system granted it, and the app answered
+    /// with "time off your phone needs Screen Time access, and a real device" while
+    /// standing on a real device with access. Reported from a TestFlight build.
     @discardableResult
     func connect() async -> Bool {
         do {
             try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
+            status = .approved
+            refresh()
+            return true
         } catch {
-            // No entitlement, declined, or unsupported (simulator) -> stay gated.
+            // Declined, no entitlement, or unsupported (simulator). Re-reading here is
+            // safe precisely because we are already in the failure path.
+            status = AuthorizationCenter.shared.authorizationStatus
+            refresh()
+            return false
         }
-        status = AuthorizationCenter.shared.authorizationStatus
-        refresh()
-        return status == .approved
     }
+
+    /// Authorized, but the report extension has not produced a figure yet.
+    ///
+    /// This is a NORMAL state for the first minutes after granting access, not an error,
+    /// and the UI has to say so. `available` is deliberately false here (there is no real
+    /// number to show), so without this distinction the home tile reads as "not set up"
+    /// to somebody who just set it up.
+    var awaitingFirstReading: Bool { status == .approved && usedHours == nil }
 
     /// Re-read status + the latest shared figure without prompting (returning player).
     func resume() {

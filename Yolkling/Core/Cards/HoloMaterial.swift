@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The foils — the maths and the materials behind a card that catches the light.
 ///

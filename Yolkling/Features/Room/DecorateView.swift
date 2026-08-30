@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Snap-to-zones room editor. The live diorama stays on top; tapping a zone opens a
 /// tray of pieces that fit it (owned -> place, unowned -> buy-in-place, plus clear).

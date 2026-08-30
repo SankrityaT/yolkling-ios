@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A gentle daily mood check-in: pick how you feel, your yolkling feels it too,
 /// and you earn Yolks (once a day). The first real wellbeing primitive, and the

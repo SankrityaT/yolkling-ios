@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import YolklingCore
 @testable import Yolkling
 
 /// Exercises `StreakEngine.recordCare`. Source of truth:

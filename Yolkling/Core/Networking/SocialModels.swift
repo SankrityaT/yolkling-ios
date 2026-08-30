@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The publishable look of a player's creature + room, shared so a friend can VISIT
 /// (see your "pet house"). Opaque jsonb on the server; the client owns the shape.

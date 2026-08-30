@@ -1,5 +1,6 @@
 import SwiftUI
 import Observation
+import YolklingCore
 
 /// Bounded-context store for creation. The user directly picks a colour and a
 /// base look, then names their yolkling. No quiz, no inference. MV architecture:

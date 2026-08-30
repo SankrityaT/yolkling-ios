@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Swapping cosmetics with a friend.
 ///

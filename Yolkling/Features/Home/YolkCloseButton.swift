@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The close control every full-screen destination needs.
 ///

@@ -1,5 +1,6 @@
 import WidgetKit
 import SwiftUI
+import YolklingCore
 
 struct YolkEntry: TimelineEntry {
     let date: Date

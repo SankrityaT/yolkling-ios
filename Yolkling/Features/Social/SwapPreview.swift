@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Your creature, before and after the swap.
 ///

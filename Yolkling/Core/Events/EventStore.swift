@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import YolklingCore
 
 /// Live seasons, and the cache that keeps them from vanishing.
 ///

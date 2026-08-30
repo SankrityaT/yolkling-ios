@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// "Your yolkling went somewhere while you were away."
 ///

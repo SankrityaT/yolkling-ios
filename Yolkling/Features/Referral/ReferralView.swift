@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import YolklingCore
 
 /// Bring a friend: share your code, redeem a friend's (or your founder) code.
 /// Both parties get Yolks via the live backend (docs/sql/rewards.sql).

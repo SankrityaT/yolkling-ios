@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import YolklingCore
 
 /// The focus session screen. Pick a duration, then your yolkling rests and glows
 /// while you put the phone down. Finish it and earn Yolks. Leaving for another app

@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The collection (the Dex): species grouped into small completable sets. Found
 /// creatures show in colour; locked ones are cozy mystery eggs (the empty slots

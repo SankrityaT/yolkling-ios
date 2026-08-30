@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The yolk's little room: a cozy code-drawn interior (wall, floor, window, wall
 /// art, rug) with the creature living in it, plus any decor the player has bought

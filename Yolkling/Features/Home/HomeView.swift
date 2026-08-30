@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import YolklingCore
 
 /// The game hub. Top bar (streak + Yolks), your creature (tap to pet), today's
 /// care actions (which earn Yolks), and the bottom nav. Care actions are stubs
@@ -433,9 +434,17 @@ struct HomeView: View {
         }
     }
 
-    /// Publish the current yolk look to the App Group so the home-screen widget reflects it.
+    /// Publish the current yolk look to the App Group so the home-screen widget
+    /// reflects it, and across WatchConnectivity so the watch app does too.
     private func publishWidget() {
-        WidgetPublisher.publish(name: heading, room: mySnapshot())
+        let room = mySnapshot()
+        WidgetPublisher.publish(name: heading, room: room)
+        WatchPublisher.shared.publish(WatchCreatureSnapshot(
+            name: heading, colorHex: room.colorHex, styleRaw: room.styleRaw,
+            accentHex: room.accentHex, patternRaw: room.patternRaw,
+            activeFoundingID: room.activeFoundingID, moodRaw: room.moodRaw,
+            outfitIDs: room.outfitIDs, trust: trust, streak: careStreak
+        ))
     }
 
     /// Everything that runs once when home appears.
@@ -1004,8 +1013,16 @@ struct HomeView: View {
                 persist()
                 screenTime.refresh()
             } else {
+                // Says which of the two things actually happened. The old copy claimed
+                // "and a real device" unconditionally, which reads as nonsense to
+                // somebody holding a real device who just tapped Allow.
+                #if targetEnvironment(simulator)
+                let why = "time off your phone needs a real device. Screen Time does not run in the simulator."
+                #else
+                let why = "Screen Time access was not granted. you can turn it on any time from here, or in Settings > Screen Time."
+                #endif
                 dialog = YolkDialog(icon: .creature(vibe, .curious), title: "not yet",
-                                    message: "time off your phone needs Screen Time access, and a real device. you can turn it on later from here.", primaryTitle: "okay")
+                                    message: why, primaryTitle: "okay")
             }
         }
     }

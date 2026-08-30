@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A live mini-room card showing a friend's yolk in their decorated room,
 /// plus ambient status (new activity, mood, asleep, streak) and a wave button.
