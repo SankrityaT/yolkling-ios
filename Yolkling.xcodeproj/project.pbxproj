@@ -121,7 +121,6 @@
 		CCBCEC4E333CBD429A555E10 /* AppReviewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B97FCD4DE1CA31D530990F /* AppReviewTests.swift */; };
 		CD3BDC853E4D567D4ECD735D /* DecorateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCBEF321B406CD08787A8AD /* DecorateView.swift */; };
 		CD940F0368D4571EF8B4583E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30CB0A1116928879DE203401 /* Assets.xcassets */; };
-		D193B0EC4BA95055C674F6FD /* YolklingWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = F9D7499994CC77D4E8B2315C /* YolklingWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D1F0716DBE1CD83F845635F5 /* VisitSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */; };
 		D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
 		D7EED7F76DB872F530706E37 /* YolklingCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AD81837A764554C261EAF5 /* YolklingCore */; };
@@ -163,13 +162,6 @@
 			remoteGlobalIDString = D11C675502367D0547EDF59C;
 			remoteInfo = YolklingWidgets;
 		};
-		9B07D46842A0AF86845D8F54 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 69E0AAA1430A6FD73A3A4C78 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0380A3ADC7B50DF4DDD0B2A1;
-			remoteInfo = YolklingWatch;
-		};
 		A41C040C4B0FBB7D8F1E87FA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 69E0AAA1430A6FD73A3A4C78 /* Project object */;
@@ -187,17 +179,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		56D7E81FC894F6B7B4B2B83F /* Embed Watch Content */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
-			dstSubfolderSpec = 16;
-			files = (
-				D193B0EC4BA95055C674F6FD /* YolklingWatch.app in Embed Watch Content */,
-			);
-			name = "Embed Watch Content";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D285FE252D89964D5FA5EABC /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -325,8 +306,7 @@
 		D3023148FA25E063CED922DF /* SyncClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncClient.swift; sourceTree = "<group>"; };
 		D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticPreviewGrid.swift; sourceTree = "<group>"; };
 		D4FC884495811BB1821AF2CB /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
-		D934B6F2B67A9883D2A66D6D /* YolklingCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = YolklingCore; path = Packages/YolklingCore; sourceTree = SOURCE_ROOT; };
-		DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTilt.swift; sourceTree = "<group>"; };
+				DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTilt.swift; sourceTree = "<group>"; };
 		DC9DF2A1897F2D6B597F6A9B /* CardScratchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScratchView.swift; sourceTree = "<group>"; };
 		DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeStore.swift; sourceTree = "<group>"; };
 		E011F05F71F616426CCE0C22 /* YolklingWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingWatchApp.swift; sourceTree = "<group>"; };
@@ -727,7 +707,6 @@
 		AA07E7E05826E49AEF6E4D23 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				D934B6F2B67A9883D2A66D6D /* YolklingCore */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -999,14 +978,12 @@
 				04FDBD6A1787203A56F5088A /* Resources */,
 				60E9DA8CF82AEBC5335EE2C6 /* Frameworks */,
 				D285FE252D89964D5FA5EABC /* Embed Foundation Extensions */,
-				56D7E81FC894F6B7B4B2B83F /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				2C679BC68071E4BE4B526EB1 /* PBXTargetDependency */,
 				305A86CDBD810D744FCC67DF /* PBXTargetDependency */,
-				0799C3ED763A08251491609C /* PBXTargetDependency */,
 			);
 			name = Yolkling;
 			packageProductDependencies = (
@@ -1276,11 +1253,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0799C3ED763A08251491609C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0380A3ADC7B50DF4DDD0B2A1 /* YolklingWatch */;
-			targetProxy = 9B07D46842A0AF86845D8F54 /* PBXContainerItemProxy */;
-		};
 		2C679BC68071E4BE4B526EB1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D11C675502367D0547EDF59C /* YolklingWidgets */;
@@ -1375,7 +1347,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1626,7 +1598,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1738,6 +1710,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		1EF266223E6CA667789B7B66 /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 		7105AA21C4F6E3A47890C83D /* RevenueCat */ = {
@@ -1747,6 +1720,7 @@
 		};
 		84AD81837A764554C261EAF5 /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 		9E64CF6D045ACC42F06467FE /* RevenueCatUI */ = {
@@ -1756,10 +1730,12 @@
 		};
 		B9BC56A5A6215E934A19E1E0 /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 		D7F6707E384114D485D267DE /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 /* End XCSwiftPackageProductDependency section */
