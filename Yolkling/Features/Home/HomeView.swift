@@ -184,6 +184,7 @@ struct HomeView: View {
                 persist()
             }
             .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
         .fullScreenCover(isPresented: $showCollection) {
             CollectionView(discovered: discovered, events: events, vibe: vibe,
@@ -227,12 +228,14 @@ struct HomeView: View {
                           myName: heading,
                           onReward: { amt in wallet.earn(amt); persist() })
                 .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showDrift) {
             DriftSheet(store: SocialStore(userID: backendUserID, myCode: player?.referralCode ?? ""),
                        vibe: vibe, myName: heading, mySnapshot: mySnapshot(), wallet: wallet,
                        onReward: { amt in wallet.earn(amt); persist() })
                 .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showWidgetHowTo) {
             WidgetHowToView {
@@ -241,12 +244,16 @@ struct HomeView: View {
                 persist()
             }
             .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
         }
         .onChange(of: roomThemeID) { _, _ in persist() }
         .sheet(isPresented: $showCheckIn) {
             MoodCheckInView(vibe: vibe, alreadyToday: checkedInToday, onPick: checkIn)
                 .presentationDetents([.medium])
-                .presentationDragIndicator(.hidden)
+                // Was .hidden. A sheet with no grabber is a sheet people cannot tell is
+                // dismissable: they swipe, the ScrollView inside eats the gesture, and the
+                // screen appears stuck. Reported from device testing.
+                .presentationDragIndicator(.visible)
         }
         .fullScreenCover(isPresented: $showFocus) {
             FocusView(vibe: vibe, name: heading, colorHex: Int(injected?.colorHex ?? 0xFFC23B)) { minutes in

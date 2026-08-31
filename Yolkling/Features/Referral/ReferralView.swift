@@ -69,6 +69,7 @@ struct ReferralView: View {
         .yolkDialog($dialog)
         .sheet(item: $foundingReveal) { sp in
             FoundingRevealView(species: sp) { wear(sp) }
+            .presentationDragIndicator(.visible)
         }
     }
 

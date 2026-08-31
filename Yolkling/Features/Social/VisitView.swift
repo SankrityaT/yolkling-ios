@@ -48,18 +48,21 @@ struct VisitView: View {
         .sheet(isPresented: $composing) {
             PostcardCompose(subject: subject, store: store, vibe: vibe, onReward: onReward)
                 .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $swapping) {
             if case .friend(let f) = subject {
                 TradeSheet(store: store, friend: f, vibe: vibe,
                            wallet: wallet, myOutfit: myOutfit)
                     .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
         }
         .sheet(isPresented: $showCollection) {
             if case .friend(let f) = subject {
                 FriendCollectionView(friend: f, mine: myDiscovered)
                     .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
         }
         // Sits at the bottom of the screen, in the empty space BELOW the action row rather

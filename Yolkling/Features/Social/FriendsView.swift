@@ -81,13 +81,16 @@ struct FriendsView: View {
                       myDiscovered: Set(player?.discoveredSpeciesIDs ?? []),
                       onReward: onReward)
                 .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showInbox) {
             PostcardInbox(store: store).presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showInvite) {
             ReferralView(vibe: vibe, player: player) { onReward($0) }
                 .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .task {
             await store.ensureCode()

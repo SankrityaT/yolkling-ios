@@ -104,6 +104,7 @@ struct ShopHomeView: View {
         .sheet(isPresented: $showPlus) {
             PlusView(store: .shared, vibe: previewVibe)
                 .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .onAppear {
             if ProcessInfo.processInfo.environment["YOLK_TRYON"] != nil,
