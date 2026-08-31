@@ -86,58 +86,57 @@ invites the same rejection again.
 
 ## Paste into App Review Information > Notes
 
+**The field caps at 4,000 characters and fails SILENTLY.** Over the limit, Save appears to
+succeed, the button goes to its disabled "saved" state with no error, and a reload shows
+the old text back. The first version of this block was 5,033 characters and did exactly
+that. This one is 3,437, verified by count.
+
 ```
-DEVICES AND OS TESTED
-- iPhone 16 Pro Max, iOS 26
-- iPhone SE (3rd generation), iOS 26
-Both physical devices. Also verified on the iOS 26 simulator for layout across screen sizes.
+DEVICES TESTED (physical)
+iPhone 16 Pro Max (iOS 26), iPhone SE 3rd gen (iOS 26).
 
-WHAT THE APP DOES AND WHO IT IS FOR
-Yolkling is a virtual pet that grows when you take care of yourself in real life. Your step count, your sleep, and time spent away from your phone feed the creature, so looking after yourself is what makes it thrive.
+WHAT IT DOES AND WHO FOR
+Yolkling is a virtual pet that grows when you take care of yourself. Your steps, sleep, and time away from your phone feed the creature.
 
-The problem it addresses: most wellbeing apps ask you to log more, open the app more, and stay longer, which competes with the behaviour they claim to encourage. Yolkling inverts that. The highest-earning activity in the app is time spent NOT on your phone, and there is nothing to gain from a long session.
+Most wellbeing apps ask you to open them more, which competes with the behaviour they encourage. Yolkling inverts that: the highest-earning activity is time NOT on your phone, and there is nothing to gain from a long session.
 
-Target audience: adults and older teenagers who want a gentle, low-pressure way to build daily self-care habits. It is deliberately not a clinical or medical product, makes no health claims, and offers no diagnosis, treatment or advice.
+For adults and older teens wanting a gentle way to build daily self-care habits. Not a clinical product: no health claims, no diagnosis, treatment or advice.
 
-HOW TO SET UP AND ACCESS EVERYTHING
-No demo account is needed and none exists. Sign in with Apple is the only sign-in method, so there is no user name or password to provide.
+ACCESS (no demo account exists)
+Sign in with Apple is the only sign-in method, so there is no username or password to give. Two ways in, both with full access:
+1. Tap "look around for a day first" on the first screen. Opens the entire app with no account. This is our demonstration mode.
+2. Or Sign in with Apple with any Apple ID. We request no name and no email (requestedScopes empty), only the stable user id.
 
-Two ways in, both giving complete access:
-1. Tap "look around for a day first" on the first screen. This opens the entire app immediately with no account at all.
-2. Or tap "Sign in with Apple" with any Apple ID, including your own test account. The app requests no name and no email (requestedScopes is empty) and receives only the stable user identifier.
+WHERE THINGS ARE
+- Creature, check-in, focus: Home tab, after onboarding.
+- Purchases: You tab > "yolkling+", or Shop tab, bottom card. Restore is on the paywall.
+- Cancel or manage: You tab > "manage your support" (RevenueCat Customer Center, in-app).
+- User content, block and report: Friends tab. Add a friend by code or QR, open their profile.
+- Account deletion: You tab > delete account.
+- Health is optional; the app works fully if declined. Add Steps and Sleep samples in Apple Health to see growth.
 
-Reaching each area:
-- Creature, check-in and focus sessions: the Home tab, immediately after onboarding.
-- Purchases: the You tab > "yolkling+", or the Shop tab, scroll to the bottom card > "yolkling+". Restore Purchases is on the paywall itself.
-- Managing or cancelling a subscription: the You tab > "manage your support", which opens RevenueCat's Customer Center in-app.
-- User-generated content, blocking and reporting: the Friends tab. Add a friend by code or QR, open their profile, and Block and Report are there.
-- Account deletion: the You tab > delete account.
-- Health: optional. The app is fully functional if you decline. To see growth from real data, add Steps and Sleep samples in the Apple Health app.
+EXTERNAL SERVICES
+- RevenueCat: subscription management and entitlements.
+- Supabase (vlucekvrdxvpkvbizabz.supabase.co): creature backup, friend graph, trading and postcards. Authenticated per user from the Sign in with Apple identity token; the server does not trust client-supplied ids.
+- Apple frameworks only otherwise: AuthenticationServices, HealthKit, FamilyControls and DeviceActivity (Screen Time), ActivityKit (focus Live Activity), AVFoundation (QR scanner for adding friends), StoreKit via RevenueCat, local UserNotifications.
 
-EXTERNAL SERVICES USED
-- RevenueCat (purchases-ios SDK) — subscription management and entitlement checks. Handles the Yolkling Plus subscription and the monthly in-app currency grant.
-- Supabase (https://vlucekvrdxvpkvbizabz.supabase.co) — our backend. Stores the creature backup, the friend graph, and the trading and postcard records. Authenticated per user via an identity token exchanged from Sign in with Apple; the app does not trust client-supplied identifiers.
-- Apple frameworks only, beyond those two: Sign in with Apple (AuthenticationServices), HealthKit, Family Controls and DeviceActivity for Screen Time, ActivityKit for the focus Live Activity, AVFoundation for the QR code scanner used to add friends, StoreKit via RevenueCat, and local UserNotifications.
+No AI or ML services, no advertising SDKs, no analytics SDKs, no third-party data providers. No IDFA and no ATT prompt, because we do not track.
 
-There are no AI or machine learning services of any kind, no advertising SDKs, no analytics SDKs, and no third-party data providers. The app does not use the Advertising Identifier and presents no App Tracking Transparency prompt because it does not track.
-
-Health data never leaves the device. Steps and sleep are read on-device and converted into the creature's growth locally; the raw values are never uploaded to our servers or to anyone else.
+Health data never leaves the device. Steps and sleep are read and used on-device only; raw values are never uploaded anywhere.
 
 REGIONAL DIFFERENCES
-None. The app functions identically in all 175 regions where it is available. There is no region-locked content, no regional pricing logic beyond Apple's own storefront conversion, and no feature that varies by location. The app does not request location access.
+None. Identical in all 175 regions. No region-locked content, no location access, no feature that varies by region.
 
-REGULATED INDUSTRY AND THIRD-PARTY MATERIAL
-Not applicable. Yolkling is not a medical, health, financial or otherwise regulated product. It makes no medical or health claims, provides no diagnosis, treatment, advice or measurement of any condition, and is not a substitute for professional care.
+REGULATED INDUSTRY / THIRD-PARTY MATERIAL
+Not applicable. Not a medical, health, financial or regulated product; no medical claims, diagnosis, treatment or measurement. All artwork, characters, names and copy are original and drawn programmatically in code by the developer. No licensed, stock or third-party protected material anywhere.
 
-All artwork, characters, names and copy are original and drawn programmatically in code by the developer. There is no licensed, stock or third-party protected material anywhere in the app. "Yolkling" and all species names are our own.
+SUBSCRIPTION (3.1.2)
+One subscription, Yolkling Plus, two auto-renewable options: Monthly USD 4.99, Yearly USD 34.99. Both show title, length and price on the paywall before purchase, with Terms of Use and Privacy Policy links and Restore Purchases on the same screen.
 
-SUBSCRIPTION DETAILS (Guideline 3.1.2)
-One subscription, Yolkling Plus, offered as two auto-renewable options:
-- Monthly, USD 4.99 per month
-- Yearly, USD 34.99 per year
-Both display their title, length and price on the paywall before purchase, alongside links to the Terms of Use and the Privacy Policy. Restore Purchases is on the same screen.
+Plus grants a cosmetic supporter glow and 400 Yolks monthly. It gates no content: every species, cosmetic and feature is reachable without it.
 
-Yolkling Plus grants a cosmetic supporter glow on the creature and a monthly grant of 400 Yolks, the in-app currency. It gates no content: every species, cosmetic and feature is reachable without it.
-
-Yolks cannot be purchased at any price. There is no currency pack, no randomised purchase, no gacha and no loot box anywhere in the app. Cosmetics are bought at fixed prices with Yolks earned through daily use.
+Yolks cannot be bought at any price. No currency packs, no randomised purchases, no gacha, no loot boxes. Cosmetics are fixed-price, bought with Yolks earned through daily use.
 ```
+
+(3,437 / 4,000 characters. If you edit it, re-count before saving, because the UI will not
+tell you.)
