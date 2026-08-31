@@ -1,61 +1,61 @@
-# Prompt: resolve the Guideline 2.1 information request
+# Prompt: prepare the resubmission after the Guideline 2.1 rejection
 
-The screen recording is NOT in this list. It has to be made on a physical iPhone and
-cannot be delegated to a browser agent. Everything below can be.
+Everything here is doable now and none of it waits on the build. Two things are
+deliberately NOT in this list: the screen recording (physical device only) and the final
+reply and submit (needs the recording attached).
 
 ---
 
-You are resolving a Guideline 2.1 "Information Needed" rejection for Yolkling (Apple ID
-6804105200). Work in order and report what you find at each step, because step 1 may be
-the actual cause of the rejection.
+You are preparing Yolkling (Apple ID 6804105200) for resubmission after a Guideline 2.1
+"Information Needed" rejection. Work in order and report at each step.
 
-**1. FIRST, diagnose the In-App Purchases. Do not skip to step 2.**
+**1. Fix the In-App Purchases. This is the likely cause of the rejection.**
 
-Apple's submission guide requires that the In-App Purchases you want reviewed are
-submitted, not merely created. Our last audit found both subscriptions sitting at "Prepare
-for Submission" with no review screenshot attached, and a product cannot be submitted
-without one. If they went to review in that state, the reviewer opened the paywall, found
-nothing purchasable, and could not evaluate the purchase flow, which would explain why
-they asked us to record it.
+Both subscriptions were at "Prepare for Submission" with no review screenshot, and neither
+was in the submission: the rejection showed "Items Submitted (1)", the app version alone.
+So the reviewer opened the paywall, found nothing purchasable, and could not evaluate the
+purchase flow they then asked us to demonstrate.
 
-For BOTH `com.yolkling.ios.plus.monthly` and `com.yolkling.ios.plus.yearly`, report:
-- the current status, verbatim
-- whether a review screenshot is attached
-- whether the product is attached to THIS version's submission, not just present in the
-  products list
+For BOTH `com.yolkling.ios.plus.monthly` and `com.yolkling.ios.plus.yearly`:
 
-**2. Fix whatever step 1 found.** If a review screenshot is missing, upload this file to
-BOTH products:
+- Upload this file as the review screenshot. It exists and has been verified on disk:
+  ```
+  /Users/sankiii/Downloads/yolkling-submit/subscription-review-screenshot.png
+  ```
+  It shows the in-app paywall with both plans at their real prices, which is what the
+  field is for.
+- Then make sure BOTH products are included in this version's submission, not merely
+  present in the products list.
+- Report each product's status before and after.
 
-```
-/Users/sankiii/Downloads/yolkling-submit/subscription-review-screenshot.png
-```
+**2. Replace the App Review Information > Notes.**
 
-It shows the in-app paywall with both plans and their real prices, which is what the field
-is for. Then make sure both products are included in the version submission.
-
-**3. Replace the App Review Information > Notes** with the block from:
-
+Use the fenced block under "Paste into App Review Information > Notes" in:
 ```
 /Users/sankiii/Downloads/yolkling-submit/13-GUIDELINE-2.1-REPLY.md
 ```
 
-Use the fenced block under the heading "Paste into App Review Information > Notes". Paste
-it verbatim EXCEPT the two device lines at the top, which we will correct separately with
-the real test devices. Leave those as they are for now and flag that they need confirming.
+It is **3,437 characters**, inside the 4,000 cap. The previous attempt was 5,033 and the
+field silently reverted, so after saving, RELOAD the page and confirm the text is actually
+there before reporting success. Do not trust the save state.
 
-**4. Confirm these have not been lost**, and report each:
+**3. Confirm nothing has been lost.** Report each:
 - Release option still reads "Manually release this version"
-- "Sign-in required" remains UNCHECKED (there are no credentials; the app provides a
-  demonstration mode instead, which is what Apple's guide asks for)
-- Copyright is filled
-- Privacy Policy URL is set in App Privacy
-- Support URL is filled for every localization, including French, Russian, Portuguese
+- "Sign-in required" still UNCHECKED (no credentials exist; the app ships a demonstration
+  mode instead, which is what Apple's submission guide asks for)
+- Copyright filled
+- Privacy Policy URL set in App Privacy
+- Support URL filled for every localization, including French, Russian, Portuguese
   (Brazil) and Korean
 
-**5. Do NOT reply to App Review yet and do NOT resubmit.** A screen recording has to be
-attached to the reply and it is being made separately on a physical device. Report
-everything back first.
+**4. Attach the build, once it appears.** A new build, **1.0.0 (4)**, is being uploaded. If
+it has finished processing, attach it to the version. If only 1.0.0 (3) is available,
+report that and attach nothing.
 
-Report: the two product statuses before and after, anything you changed, and any remaining
-warning or error on the version page, verbatim.
+**5. STOP. Do not reply to App Review and do not submit.**
+
+The reply needs a screen recording attached, which is being made on a physical iPhone and
+cannot be delegated. Report everything back and wait.
+
+Report: the two product statuses before and after, whether the notes survived a reload,
+which build is attached, and any remaining error or warning on the version page, verbatim.
