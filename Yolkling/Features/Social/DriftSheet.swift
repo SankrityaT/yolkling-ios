@@ -51,6 +51,7 @@ struct DriftSheet: View {
             VisitView(subject: .stranger(t), store: store, vibe: vibe,
                       wallet: wallet, myOutfit: mySnapshot.outfit, onReward: onReward)
                 .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
     }
 

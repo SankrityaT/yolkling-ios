@@ -74,6 +74,7 @@ struct WanderArrival: View {
         .sheet(isPresented: $composing) {
             PostcardCompose(subject: .stranger(target), store: store, vibe: vibe, onReward: onReward)
                 .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .task { await renderCard() }
     }

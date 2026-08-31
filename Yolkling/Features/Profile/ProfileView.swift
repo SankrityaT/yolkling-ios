@@ -173,12 +173,15 @@ struct ProfileView: View {
         .sheet(isPresented: $showFeedback) {
             FeedbackView(vibe: vibe, userID: player?.backendUserID ?? InstallID.current)
                 .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showPlus) {
             PlusView(store: subs, vibe: vibe).presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showHowTo) {
             WidgetHowToView().presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
         }
         // Refresh entitlement on dismiss: someone may have just cancelled in here, and
         // the app should reflect that immediately rather than insisting they're still

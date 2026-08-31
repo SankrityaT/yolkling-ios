@@ -88,6 +88,7 @@ struct GrowFriendsView: View {
         .sheet(isPresented: $showQR) {
             QRSheet(myCode: myCode)
                 .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
         // 4. Scanner sheet
         .sheet(isPresented: $showScanner) {
@@ -97,6 +98,7 @@ struct GrowFriendsView: View {
             }
             .ignoresSafeArea()
             .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
         .task { await redeemPendingLink() }
     }
