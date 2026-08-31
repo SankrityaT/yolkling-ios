@@ -7,6 +7,52 @@ real iPhone.
 Paste the whole block below into **App Review Information > Notes**, then reply in the
 Resolution Center saying the notes are updated and the recording is attached.
 
+
+---
+
+## CHECK THIS FIRST: were the subscriptions actually submitted?
+
+Apple's own submission guide says, plainly:
+
+> Submit the In-App Purchases in App Store Connect that you'd like reviewed.
+
+Products **existing** is not the same as products being **submitted with the version**. The
+last audit found both subscriptions sitting at "Prepare for Submission" with **no review
+screenshot attached**, and a product cannot be submitted without one. If they went in that
+state, the reviewer opened the paywall, found nothing purchasable, and could not evaluate
+the purchase flow at all. That would explain why they asked for a recording of it.
+
+**Verify before replying:**
+1. Both products show a review screenshot
+2. Both are attached to this version's submission, not just sitting in the products list
+3. Their status is "Waiting for Review", the same as the build
+
+If they are not attached, fixing that may matter more than the recording does.
+
+The good news: the guide also confirms **"In-App Purchases don't need prior approval from
+App Review to function in review"**, and our paywall is already returning live prices
+($4.99 and $34.99) now the Paid Applications Agreement is active. So the sandbox side
+works; it is only the submission linkage to check.
+
+## Also confirmed by the guide
+
+**"We'll need to review the entire app experience, both with and without an account."**
+We satisfy this exactly: "look around for a day first" is the without-account path and
+Sign in with Apple is the with-account path. The notes above lead with both. This is the
+demonstration mode Apple asks for in place of demo credentials.
+
+## If a reply is not enough
+
+The guide offers two escalations worth knowing:
+
+- **Request a call.** Reply to App Review and ask, including a preferred time and
+  language. Faster than trading messages when something is being misunderstood.
+- **Meet with Apple appointments**, Tuesdays and Thursdays, to talk to a review expert
+  before resubmitting.
+
+Neither is needed yet. Use them if a second information request arrives, rather than
+guessing at a third reply.
+
 ---
 
 ## The recording (item 1) — the only part that needs a person
