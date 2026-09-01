@@ -236,11 +236,21 @@ struct PlusView: View {
     private func subscribe() {
         guard let plan = chosen else { return }
         Task {
-            let ok = await store.subscribe(planID: plan.id)
-            if ok {
+            switch await store.subscribe(planID: plan.id) {
+            case .success:
                 Haptics.shared.reward()
                 dialog = YolkDialog(icon: .creature(vibe, .affectionate), title: "you're a supporter!",
                                     message: "thank you for keeping yolkling alive. it means everything.", primaryTitle: "♥")
+            case .cancelled:
+                // Deliberately nothing. They changed their mind; saying so would be nagging.
+                break
+            case .failed(let why):
+                // Anything other than a deliberate cancel HAS to say something. This
+                // branch did not exist, so a failed purchase was a tap that did nothing
+                // at all on a payment screen.
+                Haptics.shared.warn()
+                dialog = YolkDialog(icon: .creature(vibe, .curious), title: "that didn't go through",
+                                    message: why, primaryTitle: "okay")
             }
         }
     }
