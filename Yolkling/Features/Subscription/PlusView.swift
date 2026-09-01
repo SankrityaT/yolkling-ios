@@ -156,7 +156,23 @@ struct PlusView: View {
                 }
             }
             HStack(spacing: YolkSpace.md) {
-                Button("restore") { Task { await store.restore() } }
+                Button("restore") {
+                    Task {
+                        switch await store.restore() {
+                        case .restored:
+                            Haptics.shared.reward()
+                            dialog = YolkDialog(icon: .creature(vibe, .affectionate), title: "welcome back",
+                                                message: "your supporter status is restored.", primaryTitle: "♥")
+                        case .nothingToRestore:
+                            dialog = YolkDialog(icon: .creature(vibe, .curious), title: "nothing to restore",
+                                                message: "no past purchase was found on this Apple ID.", primaryTitle: "okay")
+                        case .failed:
+                            Haptics.shared.warn()
+                            dialog = YolkDialog(icon: .creature(vibe, .curious), title: "couldn't check",
+                                                message: "couldn't reach the App Store. try again in a moment.", primaryTitle: "okay")
+                        }
+                    }
+                }
                 Link("terms", destination: URL(string: "https://yolkling.com/terms")!)
                 Link("privacy", destination: URL(string: "https://yolkling.com/privacy")!)
             }

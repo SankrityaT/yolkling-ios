@@ -75,9 +75,13 @@ struct SupabaseClient {
     }
 
     /// Your friends + each one's latest published room snapshot.
-    func friends(userID: String) async -> [Friend] {
-        guard let data = await postJSON("get_friends", ["p_user": userID]) else { return [] }
-        return (try? JSONDecoder().decode([Friend].self, from: data)) ?? []
+    /// nil means "the request failed", which is NOT the same as having no friends.
+    /// This returned [] for both, so a network blip rendered the brand-new-user empty
+    /// state ("no friends yet") to somebody with a full friends list — it read as data
+    /// loss. Same reasoning `activeEvents` already documents.
+    func friends(userID: String) async -> [Friend]? {
+        guard let data = await postJSON("get_friends", ["p_user": userID]) else { return nil }
+        return (try? JSONDecoder().decode([Friend].self, from: data))
     }
 
     /// Publish your own creature + room so friends can visit it.
@@ -96,9 +100,10 @@ struct SupabaseClient {
     }
 
     /// Your received postcards, newest first.
-    func postcards(userID: String) async -> [Postcard] {
-        guard let data = await postJSON("get_postcards", ["p_user": userID]) else { return [] }
-        return (try? JSONDecoder().decode([Postcard].self, from: data)) ?? []
+    /// nil = request failed; see `friends`. An unreachable inbox is not an empty inbox.
+    func postcards(userID: String) async -> [Postcard]? {
+        guard let data = await postJSON("get_postcards", ["p_user": userID]) else { return nil }
+        return (try? JSONDecoder().decode([Postcard].self, from: data))
     }
 
     /// Mark the whole inbox read.
@@ -138,11 +143,15 @@ struct SupabaseClient {
     }
 
     /// Opt this room in or out of being visited by strangers.
-    func publishRoom(userID: String, name: String, snapshot: RoomSnapshot, isPublic: Bool) async {
+    /// Returns whether the server actually recorded it. The result was discarded, and
+    /// DriftSheet then persisted roomIsPublic = true on the strength of nothing: reward
+    /// haptic, prompt gone forever, door never actually opened.
+    @discardableResult
+    func publishRoom(userID: String, name: String, snapshot: RoomSnapshot, isPublic: Bool) async -> Bool {
         let snapObj = (try? JSONEncoder().encode(snapshot))
             .flatMap { try? JSONSerialization.jsonObject(with: $0) } ?? [:]
-        _ = await postJSON("publish_room", ["p_user": userID, "p_name": name,
-                                            "p_snapshot": snapObj, "p_public": isPublic])
+        return await postJSON("publish_room", ["p_user": userID, "p_name": name,
+                                               "p_snapshot": snapObj, "p_public": isPublic]) != nil
     }
 
     // MARK: Trading. See docs/sql/trading.sql.
@@ -211,12 +220,14 @@ struct SupabaseClient {
         return try? JSONDecoder().decode([SeasonalEvent].self, from: data)
     }
 
-    /// Join a running season. Returns the item ids granted (idempotent server-side).
-    func joinEvent(userID: String, eventID: String) async -> [String] {
+    /// Join a running season. nil = the join FAILED (network or refusal); [] = joined
+    /// fine, nothing granted. These were collapsed into one [] and the button upstream
+    /// latched "joining…" forever on failure with no way to retry.
+    func joinEvent(userID: String, eventID: String) async -> [String]? {
         guard let data = await post("join_event", ["p_user": userID, "p_event": eventID]),
               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               obj["ok"] as? Bool == true
-        else { return [] }
+        else { return nil }
         return obj["granted"] as? [String] ?? []
     }
 
@@ -302,7 +313,12 @@ struct SupabaseClient {
         guard let data = await postJSON("push_wallet", ["p_user": userID, "p_coins": coins, "p_owned": owned]),
               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { return nil }
-        return (obj["coins"] as? Int ?? coins, obj["owned"] as? [String] ?? owned)
+        // STRICT. Echoing the client's own inputs back on a malformed 200 made a
+        // broken response indistinguishable from a confirmed sync, and the caller then
+        // marked items server-confirmed on the strength of what it had just sent.
+        guard let rCoins = obj["coins"] as? Int, let rOwned = obj["owned"] as? [String]
+        else { return nil }
+        return (rCoins, rOwned)
     }
 
     private func post(_ function: String, _ body: [String: String]) async -> Data? {

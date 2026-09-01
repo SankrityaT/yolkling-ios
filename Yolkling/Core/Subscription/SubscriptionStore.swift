@@ -206,9 +206,16 @@ final class SubscriptionStore {
         }
     }
 
-    func restore() async {
-        guard let info = try? await Purchases.shared.restorePurchases() else { return }
+    /// What a restore attempt came to. `restore()` was Void with a `try?`, so the
+    /// App-Store-mandated recovery path was a dead tap: no spinner, no "nothing to
+    /// restore", no error — the same defect as the original purchase button, on the
+    /// button a lapsed supporter reaches for when they are already unhappy.
+    enum RestoreOutcome { case restored, nothingToRestore, failed }
+
+    func restore() async -> RestoreOutcome {
+        guard let info = try? await Purchases.shared.restorePurchases() else { return .failed }
         apply(info)
+        return isPlus ? .restored : .nothingToRestore
     }
 
     // MARK: The stipend (RevenueCat Virtual Currency)

@@ -174,9 +174,18 @@ struct VisitView: View {
         Button {
             guard !waved else { return }
             Haptics.shared.select()
+            // Optimistic, WITH a rollback. This flipped to "waved!" before the request
+            // and never looked at the result, so a dropped wave showed the friend's
+            // creature waving back at a message that was never delivered, with the
+            // button locked. Reverting on failure makes retry possible and honest.
             waved = true
             theirWaveToken += 1
-            Task { await store.sendWave(to: subject.userID) }
+            Task {
+                if await !store.sendWave(to: subject.userID) {
+                    Haptics.shared.warn()
+                    withAnimation(.easeInOut(duration: 0.2)) { waved = false }
+                }
+            }
         } label: {
             actionLabel(.wave, waved ? "waved!" : "wave", filled: false)
                 .foregroundStyle(waved ? YolkColor.muted : YolkColor.ink)
