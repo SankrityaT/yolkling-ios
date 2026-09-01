@@ -269,9 +269,17 @@ final class SubscriptionStore {
     /// RevenueCat mint its own anonymous id at launch rather than passing `InstallID`,
     /// because `logIn` then handles the "bought before signing in" transfer for us —
     /// a path that is easy to get wrong by hand.
-    func identify(_ appUserID: String) async {
-        guard let result = try? await Purchases.shared.logIn(appUserID) else { return }
+    /// Returns whether RevenueCat is now definitely this customer.
+    ///
+    /// The Bool matters: reading the virtual-currency ledger while still on the anonymous
+    /// user gives another customer's balance (or zero), and the stipend anchor treats
+    /// whatever it reads as "already paid". Anchoring against the wrong identity is how
+    /// a lifetime balance gets credited twice.
+    @discardableResult
+    func identify(_ appUserID: String) async -> Bool {
+        guard let result = try? await Purchases.shared.logIn(appUserID) else { return false }
         apply(result.customerInfo)
         await loadOfferings()
+        return true
     }
 }

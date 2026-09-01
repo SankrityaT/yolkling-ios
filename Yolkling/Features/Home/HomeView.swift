@@ -287,10 +287,14 @@ struct HomeView: View {
             // mounts — so RevenueCat stayed on whatever id it had and a paying
             // subscriber's stipend could read zero forever after a reinstall. `logIn` is
             // idempotent, so repeating it costs nothing.
-            if let uid = player?.appleUserID {
-                // Its OWN task. `identify` is logIn + loadOfferings, two RevenueCat round
-                // trips, and awaiting it here put the season refresh, the wander
-                // homecoming and the stipend credit behind them on a slow network.
+            // Started here but NOT awaited here: `identify` is logIn + loadOfferings,
+            // two RevenueCat round trips, and blocking on them would put the season
+            // refresh and the wander homecoming behind them on a slow network. The handle
+            // is awaited further down, immediately before the ledger is read — reading
+            // the virtual-currency balance while still on the anonymous user would anchor
+            // the stipend against the wrong customer, which is the double-credit bug all
+            // over again.
+            let identified: Task<Bool, Never>? = player?.appleUserID.map { uid in
                 Task { await SubscriptionStore.shared.identify(uid) }
             }
 
@@ -321,10 +325,15 @@ struct HomeView: View {
 
             // Credit any Yolks RevenueCat has granted since we last looked. The
             // high-water mark lives on the Player (persisted + backed up alongside the
-            // coins), so a reinstall no longer re-credits the lifetime stipend. Mark and
-            // coins are written in the SAME persist(), so a crash between them cannot
-            // leave the mark ahead of the credit (or the reverse).
-            if let player, let balance = await SubscriptionStore.shared.lifetimeStipendBalance() {
+            // coins), so a reinstall no longer re-credits the lifetime stipend, and mark
+            // and coins are written in the SAME persist() so a crash between them cannot
+            // leave one ahead of the other.
+            //
+            // Gated on a CONFIRMED identity. A signed-out player has none and collects
+            // nothing; a failed logIn skips this launch and tries again on the next.
+            let identityReady = await identified?.value ?? false
+            if identityReady, let player,
+               let balance = await SubscriptionStore.shared.lifetimeStipendBalance() {
                 // ANCHOR before crediting. RevenueCat's balance is lifetime and survives
                 // account deletion, so on this creature's first look anything already in
                 // the ledger was earned by a previous life and has already been paid out.
