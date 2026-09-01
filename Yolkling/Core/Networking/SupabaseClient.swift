@@ -150,8 +150,14 @@ struct SupabaseClient {
     func publishRoom(userID: String, name: String, snapshot: RoomSnapshot, isPublic: Bool) async -> Bool {
         let snapObj = (try? JSONEncoder().encode(snapshot))
             .flatMap { try? JSONSerialization.jsonObject(with: $0) } ?? [:]
-        return await postJSON("publish_room", ["p_user": userID, "p_name": name,
-                                               "p_snapshot": snapObj, "p_public": isPublic]) != nil
+        // Inspect `ok`, not merely "did bytes come back". A 200 carrying {"ok": false}
+        // was reported as success, which put us straight back to the original symptom:
+        // roomIsPublic persisted true, prompt gone forever, wander list empty.
+        guard let data = await postJSON("publish_room", ["p_user": userID, "p_name": name,
+                                                         "p_snapshot": snapObj, "p_public": isPublic]),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return obj["ok"] as? Bool ?? false
     }
 
     // MARK: Trading. See docs/sql/trading.sql.

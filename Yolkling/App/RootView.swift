@@ -268,27 +268,36 @@ struct RootView: View {
     /// to this Apple ID (the trial was a throwaway). Runs before HomeView mounts, so the
     /// decision is settled before any backup push can overwrite the cloud creature.
     private func adoptOrRestore(_ userID: String, _ existing: Player) async {
+        // Look BEFORE writing the identity. Assigning `appleUserID` flips the body's
+        // `players.first, appleUserID != nil` branch, so HomeView mounts within a frame,
+        // runs onAppearWork -> persist -> PlayerBackup.push, and the throwaway creature
+        // replaces the cloud one — while this function is still awaiting the session.
+        // The whole ordering guarantee depends on deciding first and adopting after.
+        let snapshot: PlayerSnapshot? = await {
+            guard await waitForSession(upTo: 6) else { return nil }
+            let s = await PlayerBackup.pull(appleUserID: userID)
+            return s?.isWorthRestoring == true ? s : nil
+        }()
+
+        if let snapshot {
+            // Keep whichever creature actually has a life behind it. `isWorthRestoring`
+            // cannot distinguish these on its own (every player is seeded with the
+            // head-start Dex, so it is always true), and one check-in during the trial is
+            // enough to disqualify a "throwaway" test — which used to silently drop a
+            // 200-day creature. Compare care streaks and let the longer-lived one win;
+            // apply's max/union merge means coins and items survive either way.
+            let localIsThrowaway = existing.careStreak == 0
+                && existing.discoveredSpeciesIDs.count <= SpeciesSets.headStart.count
+                && existing.coins <= Wallet.welcomeGrant
+            if localIsThrowaway || snapshot.careStreak > existing.careStreak {
+                snapshot.apply(to: existing)
+            }
+        }
+
+        // Adopt onto the account only now that the decision is made, so the first push
+        // carries the creature we intend to keep.
         existing.appleUserID = userID
         try? context.save()
-
-        // No session, or no backup worth restoring → adopt the trial creature as-is.
-        // HomeView will back it up. This is the ordinary "first creature on this account".
-        guard await waitForSession(upTo: 6),
-              let snapshot = await PlayerBackup.pull(appleUserID: userID),
-              snapshot.isWorthRestoring
-        else { restoreCheck = .done; return }
-
-        // A real creature is saved under this id. Only auto-replace when the local one is
-        // an untouched trial — no streak, barely any Dex, welcome grant unspent. If they
-        // actually invested in the trial creature, keep it (apply's max/union merge means
-        // signing in still can't cost them coins or items either way).
-        let localIsThrowaway = existing.careStreak == 0
-            && existing.discoveredSpeciesIDs.count <= SpeciesSets.headStart.count
-            && existing.coins <= Wallet.welcomeGrant
-        if localIsThrowaway {
-            snapshot.apply(to: existing)
-            try? context.save()
-        }
         restoreCheck = .done
     }
 

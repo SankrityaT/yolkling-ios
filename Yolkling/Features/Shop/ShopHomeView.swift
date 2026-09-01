@@ -207,9 +207,12 @@ struct ShopHomeView: View {
     private func filteredCosmetics(for slot: CosmeticSlot) -> [Cosmetic] {
         applySort(
             CosmeticCatalog.items(in: slot)
-                // Season exclusives are earned, never sold; the curated strip already
-                // excludes them and the slot aisle must match or they show at "buy 0".
-                .filter { !$0.grantOnly }
+                // Season exclusives are earned, never sold: hide them from the aisle
+                // UNLESS you own one. The shop is also the wardrobe (`tapCosmetic` is the
+                // only equip surface), so an unconditional filter made the six spring
+                // exclusives permanently unwearable by the people who earned them —
+                // worse than the "buy 0" hole it was closing.
+                .filter { !$0.grantOnly || wallet.owns($0) }
                 .filter { searchText.isEmpty || $0.name.localizedCaseInsensitiveContains(searchText) }
                 .filter { !showOwned || wallet.owns($0) },
             cost: { $0.cost }, rarity: { $0.rarity }

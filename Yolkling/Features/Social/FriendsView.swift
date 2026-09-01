@@ -157,7 +157,7 @@ struct FriendsView: View {
                 .font(YolkType.body.weight(.semibold))
                 .foregroundStyle(YolkColor.inkSoft)
             Text(store.loadFailed
-                 ? "your friends are still there. check your connection, then pull down to retry."
+                 ? "your friends are still there. we just couldn't reach them. check your connection and reopen this tab."
                  : "add someone with their code or share yours below.")
                 .font(YolkType.bodySmall)
                 .foregroundStyle(YolkColor.muted)

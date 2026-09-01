@@ -281,6 +281,16 @@ struct HomeView: View {
         // buffered before a Player existed and Router restored it at init, so no
         // change ever fires); `.onChange` covers a link arriving while running.
         .task {
+            // Identify RevenueCat on EVERY launch for a signed-in player, not only on the
+            // onChange that fires when they sign in mid-session. That onChange never runs
+            // for a returning user — appleUserID is already set by the time this view
+            // mounts — so RevenueCat stayed on whatever id it had and a paying
+            // subscriber's stipend could read zero forever after a reinstall. `logIn` is
+            // idempotent, so repeating it costs nothing.
+            if let uid = player?.appleUserID {
+                await SubscriptionStore.shared.identify(uid)
+            }
+
             events.userID = backendUserID
             await events.refresh()
 
@@ -314,8 +324,16 @@ struct HomeView: View {
             if let player, let balance = await SubscriptionStore.shared.lifetimeStipendBalance() {
                 // One-time migration off the old device-local mark, so existing installs
                 // do not re-credit on the upgrade that moved it onto the Player.
-                if player.stipendSeen == 0 {
-                    player.stipendSeen = SubscriptionStore.legacyStipendSeen
+                //
+                // Scoped to the account that actually earned it. The legacy key is
+                // device-local, so seeding it into ANY player with a zero mark handed a
+                // second account on the same device a stranger's high-water mark and
+                // silently swallowed its first stipend. Migrate only when this player is
+                // the one RevenueCat is currently identifying, and never above the
+                // balance that account actually has.
+                if player.stipendSeen == 0, !SubscriptionStore.legacyMigrationDone {
+                    player.stipendSeen = min(SubscriptionStore.legacyStipendSeen, balance)
+                    SubscriptionStore.markLegacyMigrationDone()
                 }
                 let seen = player.stipendSeen
                 let stipend = max(0, balance - seen)
@@ -634,7 +652,6 @@ struct HomeView: View {
     private func rolloverWeekIfNeeded() {
         let cal = Calendar.current
         let now = Date()
-        guard let thisWeek = cal.dateInterval(of: .weekOfYear, for: now)?.start else { return }
         let isSameWeek: Bool = {
             guard let stored = weekStart else { return false }
             let a = cal.dateComponents([.weekOfYear, .yearForWeekOfYear], from: stored)
@@ -642,7 +659,12 @@ struct HomeView: View {
             return a.weekOfYear == b.weekOfYear && a.yearForWeekOfYear == b.yearForWeekOfYear
         }()
         if !isSameWeek {
-            weekStart = thisWeek
+            // Store the MOMENT OF CARE, not the week boundary. `dateInterval.start` sits
+            // exactly on midnight of the boundary, so any westward timezone move pushes
+            // that instant into the previous week and fires a spurious rollover — which
+            // is what re-opened the 100-Yolk claim on ordinary travel. A mid-week instant
+            // has half a week of slack in both directions.
+            weekStart = now
             weekCareDays = 0
             weeklyClaimed = false
         }

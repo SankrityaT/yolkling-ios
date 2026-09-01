@@ -39,7 +39,11 @@ final class SocialStore {
         // On failure keep whatever we already had rather than blanking the screen.
         if let fr { friends = fr }
         if let pc { inbox = pc }
-        loadFailed = (fr == nil && pc == nil)
+        // EITHER failing means we could not fully ask. With `&&`, a friends failure
+        // alongside a successful postcards call left loadFailed false and the empty
+        // state rendered "no friends yet" over a real friends list — the bug this flag
+        // exists to prevent.
+        loadFailed = (fr == nil || pc == nil)
         loading = false
     }
 

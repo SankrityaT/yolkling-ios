@@ -256,6 +256,22 @@ final class SubscriptionStore {
     /// not re-credit on the upgrade that moves the mark onto the Player.
     static var legacyStipendSeen: Int { UserDefaults.standard.integer(forKey: "yolk.stipendSeen") }
 
+    /// Whether the one-time migration off the device-local mark has already run. Without
+    /// this the seed re-applied on every launch while the mark was 0, so any NEW account
+    /// on this device inherited the previous one's high-water mark.
+    static var legacyMigrationDone: Bool {
+        UserDefaults.standard.bool(forKey: "yolk.stipendSeen.migrated")
+    }
+    static func markLegacyMigrationDone() {
+        UserDefaults.standard.set(true, forKey: "yolk.stipendSeen.migrated")
+    }
+
+    /// Forget this device's RevenueCat identity. Called on account deletion so the next
+    /// person to sign in on this phone is not treated as the deleted customer.
+    func signOutOfPurchases() async {
+        _ = try? await Purchases.shared.logOut()
+    }
+
     // MARK: Identity
 
     /// Alias the anonymous RevenueCat user onto the signed-in Apple user id.

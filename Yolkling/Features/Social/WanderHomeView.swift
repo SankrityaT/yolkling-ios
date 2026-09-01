@@ -37,7 +37,7 @@ struct WanderHomeView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        ZStack {
             YolkColor.shell.ignoresSafeArea()
 
             VStack(spacing: YolkSpace.md) {
@@ -56,10 +56,14 @@ struct WanderHomeView: View {
             }
             .padding(.bottom, YolkSpace.lg)
 
-            // A fullScreenCover cannot be swiped away, and the only other exit is
-            // finishing the scratch. Someone who sets the phone down mid-reveal, or
-            // simply does not want to scratch, was otherwise stranded. Claiming the card
-            // still happens on scratch; this just guarantees a door.
+        }
+        // In an OVERLAY, not as a ZStack child. Making the ZStack .topLeading to host it
+        // re-aligned every sibling, shoving the creature and card against the leading
+        // edge with dead space on the right.
+        //
+        // A fullScreenCover cannot be swiped away, and the only other exit is finishing
+        // the scratch, so someone who sets the phone down mid-reveal was stranded.
+        .overlay(alignment: .topLeading) {
             YolkCloseButton { onDone(); dismiss() }
                 .padding(.horizontal, YolkSpace.lg)
                 .padding(.top, YolkSpace.sm)

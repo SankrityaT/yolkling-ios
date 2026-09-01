@@ -352,6 +352,14 @@ struct ProfileView: View {
             _ = await SupabaseClient.shared.deleteAccount(userID: uid)
 
             YolkNotifications.disable()
+            // Drop the RevenueCat identity and the legacy migration flag with the account.
+            // The stipend high-water mark lives on the Player and dies with it, so a
+            // re-onboard under the same Apple ID would otherwise see a lifetime balance
+            // against a zero mark and re-credit the lot, repeatably.
+            await SubscriptionStore.shared.signOutOfPurchases()
+            UserDefaults.standard.removeObject(forKey: "yolk.stipendSeen")
+            UserDefaults.standard.removeObject(forKey: "yolk.stipendSeen.migrated")
+            SupabaseAuth.shared.signOut()
             if let player { context.delete(player) }
             try? context.save()
             InstallID.reset()   // otherwise the "deleted" player returns as the same user

@@ -190,9 +190,13 @@ final class SupabaseAuth {
               let http = response as? HTTPURLResponse
         else { return .failure(.unreachable) }          // offline, DNS, TLS, timeout
         guard (200..<300).contains(http.statusCode) else {
-            // 4xx is the server telling us this credential is no good. 5xx is the server
-            // having a bad day and says nothing about the credential.
-            return .failure((400..<500).contains(http.statusCode) ? .rejected : .unreachable)
+            // Only an explicit "this credential is no good" counts as a rejection.
+            // 429 (GoTrue rate-limits /token) and 408 are transient and were destroying
+            // sessions — the exact class of failure this change exists to stop.
+            switch http.statusCode {
+            case 400, 401, 403: return .failure(.rejected)
+            default:            return .failure(.unreachable)
+            }
         }
         guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { return .failure(.unreachable) }
