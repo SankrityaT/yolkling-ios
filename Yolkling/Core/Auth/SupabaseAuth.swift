@@ -76,14 +76,35 @@ final class SupabaseAuth {
     /// Returns false rather than throwing: a failure here must never block getting into
     /// the app. The player still has their Apple id and everything works locally, they
     /// simply do not have a server session yet and we try again next launch.
+    /// Trades the Apple identity token for a Supabase session, retrying a few times.
+    ///
+    /// **The retry is the whole point.** This gets exactly one attempt at the token in a
+    /// person's lifetime with the app: Apple hands the identity token over once, at the
+    /// moment they tap Sign in with Apple, and it cannot be asked for again silently. The
+    /// old code tried once and the doc comment claimed "we try again next launch", which
+    /// was not true and could not be true, because by the next launch there is no token
+    /// left to try with.
+    ///
+    /// So a single dropped packet on a train left somebody permanently without a server
+    /// session: every backup silently refused by `me()`, "not backed up yet" forever, and
+    /// a "try again" button that retried the wrong thing. Reported from device testing.
     @discardableResult
     func signIn(appleIdentityToken: String) async -> Bool {
         var body: [String: Any] = ["provider": "apple", "id_token": appleIdentityToken]
         if let nonce = pendingNonce { body["nonce"] = nonce }
         pendingNonce = nil
 
-        guard let json = await post("token?grant_type=id_token", body) else { return false }
-        return store(json)
+        // Three attempts, backing off. Short waits: somebody is watching a screen, and
+        // the identity token itself is short-lived, so there is no point being patient.
+        for attempt in 0..<3 {
+            if let json = await post("token?grant_type=id_token", body), store(json) {
+                return true
+            }
+            if attempt < 2 {
+                try? await Task.sleep(for: .milliseconds(400 * (attempt + 1)))
+            }
+        }
+        return false
     }
 
     // MARK: Session

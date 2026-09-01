@@ -77,6 +77,33 @@ struct ProfileView: View {
                         Label(backupLine, systemImage: "checkmark.seal.fill")
                             .font(YolkType.body)
                             .foregroundStyle(YolkColor.inkSoft)
+                    } else if !hasSession {
+                        // Signed in with Apple on THIS device, but the server session was
+                        // never established, so every backup is refused before it starts.
+                        // This used to fall into the branch below and offer "try again",
+                        // which retried the upload rather than the sign-in and could
+                        // therefore never succeed. Signing in again is the only thing that
+                        // fixes it, so that is what we offer.
+                        Label("sign in again to save a copy", systemImage: "exclamationmark.circle")
+                            .font(YolkType.body)
+                            .foregroundStyle(YolkColor.inkSoft)
+                        Text("\(name) is safe on this phone. we lost the connection to your account, so signing in again is what gets a copy saved.")
+                            .font(YolkType.bodySmall)
+                            .foregroundStyle(YolkColor.muted)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.horizontal, YolkSpace.lg)
+
+                        SignInWithAppleButton(.signIn) { request in
+                            request.requestedScopes = []
+                            request.nonce = SupabaseAuth.shared.beginNonce()
+                        } onCompletion: { result in
+                            handle(result)
+                        }
+                        .signInWithAppleButtonStyle(.black)
+                        .frame(height: 46)
+                        .clipShape(Capsule())
+                        .padding(.horizontal, YolkSpace.lg)
                     } else {
                         // Signed in with Apple, but nothing has reached the server. Says
                         // so plainly instead of showing a tick, and offers the one
@@ -363,7 +390,19 @@ struct ProfileView: View {
                 signInError = nil
                 if let tokenData = credential.identityToken,
                    let token = String(data: tokenData, encoding: .utf8) {
-                    Task { await SupabaseAuth.shared.signIn(appleIdentityToken: token) }
+                    Task {
+                        // Awaited, and followed straight by a forced push. Signing in
+                        // only establishes the session; without this the screen still
+                        // reads "not backed up yet" afterwards and the person has no way
+                        // to tell whether it worked. Now the fix is visibly the fix.
+                        if await SupabaseAuth.shared.signIn(appleIdentityToken: token) {
+                            if let player {
+                                await PlayerBackup.push(player, appleUserID: player.appleUserID, force: true)
+                            }
+                        } else {
+                            signInError = "couldn't reach your account. check your connection and try again."
+                        }
+                    }
                 }
             }
         case .failure(let error):
