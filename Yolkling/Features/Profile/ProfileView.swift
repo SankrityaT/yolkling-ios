@@ -47,13 +47,23 @@ struct ProfileView: View {
     }
 
     var body: some View {
-        VStack(spacing: YolkSpace.lg) {
-            // Was a drag grabber, which means nothing in a full-screen presentation.
+        // The close button lives OUTSIDE the scroll so it is always reachable, and the
+        // content scrolls under it. This screen was a plain VStack with a Spacer, which
+        // meant that once somebody subscribed and the supporter row appeared, the content
+        // grew past the screen: the top slid under the status bar and the close button
+        // became untappable. Reported from device testing as being unable to get out of
+        // this screen after paying, which is the worst possible place to trap somebody.
+        VStack(spacing: 0) {
             HStack {
                 YolkCloseButton { dismiss() }
-                Spacer()
+                Spacer(minLength: YolkSpace.lg)
             }
+            .padding(.horizontal, YolkSpace.lg)
             .padding(.top, YolkSpace.sm)
+            .padding(.bottom, YolkSpace.xs)
+
+            ScrollView {
+                VStack(spacing: YolkSpace.lg) {
 
             YolklingView(vibe: vibe, expression: .happy, size: 130, supporterGlow: subs.isPlus)
                 .frame(height: 160)
@@ -160,6 +170,10 @@ struct ProfileView: View {
             .buttonStyle(.plain)
             .disabled(deleting)
             .padding(.bottom, YolkSpace.lg)
+                }
+                .padding(.bottom, YolkSpace.xl)
+            }
+            .scrollBounceBehavior(.basedOnSize)
         }
         .confirmationDialog("delete your account?", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("delete everything", role: .destructive) { deleteAccount() }
@@ -202,6 +216,7 @@ struct ProfileView: View {
                         .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                     Text("put your yolk right on your home screen")
                         .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
                 Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(YolkColor.muted)
@@ -230,8 +245,9 @@ struct ProfileView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("manage your support")
                             .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
-                        Text("change plan, pause, or cancel — right here")
+                        Text("change plan, pause, or cancel, right here")
                             .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer()
                     Image(systemName: "chevron.right").font(.caption.weight(.semibold))
@@ -254,6 +270,7 @@ struct ProfileView: View {
                     Text(subs.isPlus ? "you're a supporter ♥" : "yolkling+")
                         .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                     Text(subs.isPlus ? "thank you for keeping us alive" : "keep the lights on, only if you love it")
+                        .fixedSize(horizontal: false, vertical: true)
                         .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                 }
                 Spacer()
