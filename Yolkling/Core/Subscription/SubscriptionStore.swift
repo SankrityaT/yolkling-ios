@@ -146,15 +146,64 @@ final class SubscriptionStore {
 
     // MARK: Buying
 
-    @discardableResult
-    func subscribe(planID: String) async -> Bool {
-        guard let package = (offering?.availablePackages.first { $0.identifier == planID }) else { return false }
+    /// The outcome of a purchase attempt, in the three shapes the UI has to treat
+    /// differently.
+    ///
+    /// This was a `Bool`, and the paywall did nothing at all when it came back false. Any
+    /// failure, a declined card, a store outage, a parental restriction, produced a tap
+    /// that visibly did nothing on a payment screen. Reported from device testing as
+    /// "clicked buy and then nothing happened", which is precisely what the code did.
+    ///
+    /// Cancelling has to stay silent, because someone who backed out on purpose does not
+    /// want to be told about it. Everything else has to say something.
+    enum PurchaseOutcome: Equatable {
+        case success
+        /// They backed out. Not an error, and deliberately shows no message.
+        case cancelled
+        /// Something went wrong, with a line already written for a person to read.
+        case failed(String)
+    }
+
+    func subscribe(planID: String) async -> PurchaseOutcome {
+        guard let package = (offering?.availablePackages.first { $0.identifier == planID }) else {
+            return .failed("that plan isn't available right now. try again in a moment.")
+        }
         purchasing = true
         defer { purchasing = false }
-        guard let result = try? await Purchases.shared.purchase(package: package) else { return false }
-        guard !result.userCancelled else { return false }
-        apply(result.customerInfo)
-        return isPlus
+        do {
+            let result = try await Purchases.shared.purchase(package: package)
+            if result.userCancelled { return .cancelled }
+            apply(result.customerInfo)
+            if isPlus { return .success }
+            // Paid, but the entitlement has not landed yet. Never say the purchase
+            // failed here: their money may well have moved.
+            return .failed("the purchase went through, but supporter status hasn't arrived yet. give it a moment, then tap restore.")
+        } catch {
+            return .failed(Self.readable(error))
+        }
+    }
+
+    /// Apple's and RevenueCat's errors, translated into something a person can act on.
+    /// The raw `localizedDescription` is usually either empty or a sentence about
+    /// StoreKit that means nothing to the person holding the phone.
+    nonisolated private static func readable(_ error: Error) -> String {
+        guard let code = (error as? RevenueCat.ErrorCode) else {
+            return "the purchase didn't go through. nothing was charged."
+        }
+        switch code {
+        case .productNotAvailableForPurchaseError:
+            return "this plan isn't available on your store yet. it can take a few hours after setup."
+        case .purchaseNotAllowedError:
+            return "purchases are turned off on this device. check Screen Time restrictions in Settings."
+        case .paymentPendingError:
+            return "the purchase is waiting on approval. supporter status appears once it clears."
+        case .storeProblemError, .networkError, .offlineConnectionError:
+            return "couldn't reach the App Store. nothing was charged. try again in a moment."
+        case .ineligibleError:
+            return "this offer isn't available on your account."
+        default:
+            return "the purchase didn't go through. nothing was charged."
+        }
     }
 
     func restore() async {

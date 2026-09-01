@@ -47,13 +47,23 @@ struct ProfileView: View {
     }
 
     var body: some View {
-        VStack(spacing: YolkSpace.lg) {
-            // Was a drag grabber, which means nothing in a full-screen presentation.
+        // The close button lives OUTSIDE the scroll so it is always reachable, and the
+        // content scrolls under it. This screen was a plain VStack with a Spacer, which
+        // meant that once somebody subscribed and the supporter row appeared, the content
+        // grew past the screen: the top slid under the status bar and the close button
+        // became untappable. Reported from device testing as being unable to get out of
+        // this screen after paying, which is the worst possible place to trap somebody.
+        VStack(spacing: 0) {
             HStack {
                 YolkCloseButton { dismiss() }
-                Spacer()
+                Spacer(minLength: YolkSpace.lg)
             }
+            .padding(.horizontal, YolkSpace.lg)
             .padding(.top, YolkSpace.sm)
+            .padding(.bottom, YolkSpace.xs)
+
+            ScrollView {
+                VStack(spacing: YolkSpace.lg) {
 
             YolklingView(vibe: vibe, expression: .happy, size: 130, supporterGlow: subs.isPlus)
                 .frame(height: 160)
@@ -67,6 +77,33 @@ struct ProfileView: View {
                         Label(backupLine, systemImage: "checkmark.seal.fill")
                             .font(YolkType.body)
                             .foregroundStyle(YolkColor.inkSoft)
+                    } else if !hasSession {
+                        // Signed in with Apple on THIS device, but the server session was
+                        // never established, so every backup is refused before it starts.
+                        // This used to fall into the branch below and offer "try again",
+                        // which retried the upload rather than the sign-in and could
+                        // therefore never succeed. Signing in again is the only thing that
+                        // fixes it, so that is what we offer.
+                        Label("sign in again to save a copy", systemImage: "exclamationmark.circle")
+                            .font(YolkType.body)
+                            .foregroundStyle(YolkColor.inkSoft)
+                        Text("\(name) is safe on this phone. we lost the connection to your account, so signing in again is what gets a copy saved.")
+                            .font(YolkType.bodySmall)
+                            .foregroundStyle(YolkColor.muted)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.horizontal, YolkSpace.lg)
+
+                        SignInWithAppleButton(.signIn) { request in
+                            request.requestedScopes = []
+                            request.nonce = SupabaseAuth.shared.beginNonce()
+                        } onCompletion: { result in
+                            handle(result)
+                        }
+                        .signInWithAppleButtonStyle(.black)
+                        .frame(height: 46)
+                        .clipShape(Capsule())
+                        .padding(.horizontal, YolkSpace.lg)
                     } else {
                         // Signed in with Apple, but nothing has reached the server. Says
                         // so plainly instead of showing a tick, and offers the one
@@ -160,6 +197,10 @@ struct ProfileView: View {
             .buttonStyle(.plain)
             .disabled(deleting)
             .padding(.bottom, YolkSpace.lg)
+                }
+                .padding(.bottom, YolkSpace.xl)
+            }
+            .scrollBounceBehavior(.basedOnSize)
         }
         .confirmationDialog("delete your account?", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("delete everything", role: .destructive) { deleteAccount() }
@@ -202,6 +243,7 @@ struct ProfileView: View {
                         .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                     Text("put your yolk right on your home screen")
                         .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
                 Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(YolkColor.muted)
@@ -230,8 +272,9 @@ struct ProfileView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("manage your support")
                             .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
-                        Text("change plan, pause, or cancel — right here")
+                        Text("change plan, pause, or cancel, right here")
                             .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer()
                     Image(systemName: "chevron.right").font(.caption.weight(.semibold))
@@ -254,6 +297,7 @@ struct ProfileView: View {
                     Text(subs.isPlus ? "you're a supporter ♥" : "yolkling+")
                         .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                     Text(subs.isPlus ? "thank you for keeping us alive" : "keep the lights on, only if you love it")
+                        .fixedSize(horizontal: false, vertical: true)
                         .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                 }
                 Spacer()
@@ -346,7 +390,19 @@ struct ProfileView: View {
                 signInError = nil
                 if let tokenData = credential.identityToken,
                    let token = String(data: tokenData, encoding: .utf8) {
-                    Task { await SupabaseAuth.shared.signIn(appleIdentityToken: token) }
+                    Task {
+                        // Awaited, and followed straight by a forced push. Signing in
+                        // only establishes the session; without this the screen still
+                        // reads "not backed up yet" afterwards and the person has no way
+                        // to tell whether it worked. Now the fix is visibly the fix.
+                        if await SupabaseAuth.shared.signIn(appleIdentityToken: token) {
+                            if let player {
+                                await PlayerBackup.push(player, appleUserID: player.appleUserID, force: true)
+                            }
+                        } else {
+                            signInError = "couldn't reach your account. check your connection and try again."
+                        }
+                    }
                 }
             }
         case .failure(let error):

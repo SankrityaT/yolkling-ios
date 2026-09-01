@@ -125,6 +125,7 @@
 		CD3BDC853E4D567D4ECD735D /* DecorateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCBEF321B406CD08787A8AD /* DecorateView.swift */; };
 		CD940F0368D4571EF8B4583E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30CB0A1116928879DE203401 /* Assets.xcassets */; };
 		D1F0716DBE1CD83F845635F5 /* VisitSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */; };
+		D274DBBA7B1918E229BAFB69 /* PurchasingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EB1D8B84CFC166582FD07F /* PurchasingIndicator.swift */; };
 		D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
 		D7EED7F76DB872F530706E37 /* YolklingCore in Frameworks */ = {isa = PBXBuildFile; productRef = 84AD81837A764554C261EAF5 /* YolklingCore */; };
 		DA18942E463092E17CD21C7A /* WatchSyncModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC2A9A993D94003C6B17422 /* WatchSyncModel.swift */; };
@@ -329,6 +330,7 @@
 		E3E3DAFC3357CF16EDB765B2 /* FocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusView.swift; sourceTree = "<group>"; };
 		E55E15A3191441EF6DD5D2C0 /* YolkCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCard.swift; sourceTree = "<group>"; };
 		E5E7EAB2F6FC0083027A9866 /* TrialAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccess.swift; sourceTree = "<group>"; };
+		E7EB1D8B84CFC166582FD07F /* PurchasingIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchasingIndicator.swift; sourceTree = "<group>"; };
 		EDC43CFE7BE7D26FE43A29BE /* CardShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardShareCard.swift; sourceTree = "<group>"; };
 		EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = YolklingScreenTimeReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -519,6 +521,7 @@
 			isa = PBXGroup;
 			children = (
 				FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */,
+				E7EB1D8B84CFC166582FD07F /* PurchasingIndicator.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -1177,6 +1180,7 @@
 				1FF4A7075EFF898A013EC2D9 /* PostcardViews.swift in Sources */,
 				5E20E43EF1B2BE7935FF881B /* PostcardVocabulary.swift in Sources */,
 				2E8A4379E8AC57C0E654C849 /* ProfileView.swift in Sources */,
+				D274DBBA7B1918E229BAFB69 /* PurchasingIndicator.swift in Sources */,
 				984F2FF722D79E95EDC451AB /* QRCodeView.swift in Sources */,
 				08D9901B447473F63656E17A /* QRScannerView.swift in Sources */,
 				62F892518BC4B84224E78C5D /* ReferralView.swift in Sources */,
@@ -1370,7 +1374,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1623,7 +1627,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_NS_ASSERTIONS = NO;

@@ -134,10 +134,19 @@ struct PlusView: View {
 
                     Button { subscribe() } label: {
                     VStack(spacing: 2) {
-                        Text(store.purchasing ? "…" : "become a supporter")
-                            .font(YolkType.body.weight(.semibold))
-                        Text(ctaSubtitle).font(.caption2).opacity(0.9)
+                        if store.purchasing {
+                            // Was a literal "…", which is indistinguishable from truncated
+                            // text and says nothing about whether anything is happening.
+                            PurchasingIndicator()
+                                .frame(height: 20)
+                                .transition(.opacity)
+                        } else {
+                            Text("become a supporter")
+                                .font(YolkType.body.weight(.semibold))
+                            Text(ctaSubtitle).font(.caption2).opacity(0.9)
+                        }
                     }
+                    .animation(.easeInOut(duration: 0.2), value: store.purchasing)
                     .foregroundStyle(YolkColor.shell)
                     .frame(maxWidth: .infinity).padding(.vertical, 13)
                     .background(YolkColor.ink, in: Capsule())
@@ -236,11 +245,21 @@ struct PlusView: View {
     private func subscribe() {
         guard let plan = chosen else { return }
         Task {
-            let ok = await store.subscribe(planID: plan.id)
-            if ok {
+            switch await store.subscribe(planID: plan.id) {
+            case .success:
                 Haptics.shared.reward()
                 dialog = YolkDialog(icon: .creature(vibe, .affectionate), title: "you're a supporter!",
                                     message: "thank you for keeping yolkling alive. it means everything.", primaryTitle: "♥")
+            case .cancelled:
+                // Deliberately nothing. They changed their mind; saying so would be nagging.
+                break
+            case .failed(let why):
+                // Anything other than a deliberate cancel HAS to say something. This
+                // branch did not exist, so a failed purchase was a tap that did nothing
+                // at all on a payment screen.
+                Haptics.shared.warn()
+                dialog = YolkDialog(icon: .creature(vibe, .curious), title: "that didn't go through",
+                                    message: why, primaryTitle: "okay")
             }
         }
     }
