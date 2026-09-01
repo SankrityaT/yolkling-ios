@@ -219,7 +219,13 @@ struct FocusView: View {
                 .fixedSize(horizontal: false, vertical: true)
             Spacer()
             VStack(spacing: YolkSpace.sm) {
-                primary("try again") { store.reset() }
+                primary("try again") {
+                    // Clear the payout guard too: this restarts the session in place
+                    // rather than re-presenting the view, so `collected` would otherwise
+                    // persist and silently block the next legitimate collect.
+                    collected = false
+                    store.reset()
+                }
                 secondary("close") { dismiss() }
             }
         }
