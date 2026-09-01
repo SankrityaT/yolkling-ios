@@ -360,6 +360,10 @@ struct ProfileView: View {
             UserDefaults.standard.removeObject(forKey: "yolk.stipendSeen")
             UserDefaults.standard.removeObject(forKey: "yolk.stipendSeen.migrated")
             SupabaseAuth.shared.signOut()
+            // The App Group outlives the SwiftData wipe, so the widget would keep showing
+            // the deleted creature by name until something else published over it.
+            WidgetSnapshot.clear()
+            WidgetPublisher.reload()
             if let player { context.delete(player) }
             try? context.save()
             InstallID.reset()   // otherwise the "deleted" player returns as the same user

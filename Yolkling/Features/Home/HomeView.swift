@@ -643,12 +643,18 @@ struct HomeView: View {
     /// Reset the weekly challenge when a new calendar week starts.
     /// Roll the weekly challenge over when the calendar week actually changes.
     ///
-    /// Compares week-of-year + year, NOT the stored instant. `weekStart` is an absolute
-    /// Date computed in whatever timezone the device was in, so comparing it by calendar
-    /// day meant flying west shifted it onto the previous day and fired a spurious
-    /// rollover mid-week: four days of progress destroyed, and `weeklyClaimed` reset to
-    /// false so the 100-Yolk reward could be claimed again. A round trip was 200 Yolks,
-    /// repeatable, and ordinary travel triggered it by accident.
+    /// Two things make this safe, and it needed both. It compares week-of-year plus
+    /// yearForWeekOfYear rather than calendar day, and `weekStart` now holds the MOMENT
+    /// OF CARE rather than the week boundary.
+    ///
+    /// The boundary instant was the real problem: it sits exactly on midnight, so any
+    /// westward timezone move pushed it into the previous week no matter how the
+    /// comparison was written. That fired a spurious mid-week rollover which destroyed
+    /// four days of progress AND reset `weeklyClaimed`, re-opening the 100-Yolk reward.
+    /// A round trip was 200 Yolks, repeatable, and ordinary travel triggered it by
+    /// accident. A mid-week instant has half a week of slack in either direction.
+    ///
+    /// Nothing else reads `weekStart` as a boundary; it is only ever compared to itself.
     private func rolloverWeekIfNeeded() {
         let cal = Calendar.current
         let now = Date()
