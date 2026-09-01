@@ -204,6 +204,9 @@ struct ShopHomeView: View {
     private func filteredCosmetics(for slot: CosmeticSlot) -> [Cosmetic] {
         applySort(
             CosmeticCatalog.items(in: slot)
+                // Season exclusives are earned, never sold; the curated strip already
+                // excludes them and the slot aisle must match or they show at "buy 0".
+                .filter { !$0.grantOnly }
                 .filter { searchText.isEmpty || $0.name.localizedCaseInsensitiveContains(searchText) }
                 .filter { !showOwned || wallet.owns($0) },
             cost: { $0.cost }, rarity: { $0.rarity }
