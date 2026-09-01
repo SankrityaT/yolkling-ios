@@ -134,10 +134,19 @@ struct PlusView: View {
 
                     Button { subscribe() } label: {
                     VStack(spacing: 2) {
-                        Text(store.purchasing ? "…" : "become a supporter")
-                            .font(YolkType.body.weight(.semibold))
-                        Text(ctaSubtitle).font(.caption2).opacity(0.9)
+                        if store.purchasing {
+                            // Was a literal "…", which is indistinguishable from truncated
+                            // text and says nothing about whether anything is happening.
+                            PurchasingIndicator()
+                                .frame(height: 20)
+                                .transition(.opacity)
+                        } else {
+                            Text("become a supporter")
+                                .font(YolkType.body.weight(.semibold))
+                            Text(ctaSubtitle).font(.caption2).opacity(0.9)
+                        }
                     }
+                    .animation(.easeInOut(duration: 0.2), value: store.purchasing)
                     .foregroundStyle(YolkColor.shell)
                     .frame(maxWidth: .infinity).padding(.vertical, 13)
                     .background(YolkColor.ink, in: Capsule())
