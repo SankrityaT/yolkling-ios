@@ -213,3 +213,71 @@ begin
 end $$;
 
 notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- Economy identity, applied live 2026-09-01.
+--
+-- These three executed for an UNAUTHENTICATED caller holding only the shipped
+-- anon key, because the sender/proposer was whatever the client said. Verified
+-- against production before and after: gift_yolks returned {"ok":false,
+-- "reason":"not_friends"} for a spoofed sender (i.e. it ran, and only failed a
+-- business check), and now returns "not authenticated".
+--
+-- gift_yolks was the live money hole: friend ids are handed out by get_friends,
+-- so anyone could drain 100 Yolks a day from each of their friends into their
+-- own balance. The p_from / p_to parameters are kept for wire compatibility and
+-- the sender is now always public.me().
+-- ---------------------------------------------------------------------------
+
+create or replace function public.gift_yolks(p_from text, p_to text, p_amount integer)
+returns jsonb language plpgsql security definer
+set search_path = public as $$
+declare v_from text := public.me();
+        v_today int; v_balance int; v_rel text; v_stranger_today int;
+begin
+  v_rel := can_reach(v_from, p_to);
+  if v_rel in ('self','blocked') then return jsonb_build_object('ok', false, 'reason', v_rel); end if;
+  if v_rel = 'no' then return jsonb_build_object('ok', false, 'reason', 'not_friends'); end if;
+  if v_rel = 'drifted' then
+    if p_amount <> 10 then return jsonb_build_object('ok', false, 'reason', 'stranger_amount'); end if;
+    select count(*) into v_stranger_today from public.gifts g
+      where g.from_id = v_from and g.created_at >= date_trunc('day', now())
+        and not exists (select 1 from public.friendships f
+                         where f.user_id = v_from and f.friend_id = g.to_id);
+    if v_stranger_today >= 1 then return jsonb_build_object('ok', false, 'reason', 'stranger_gift_cap'); end if;
+  elsif p_amount not in (10,20,50) then
+    return jsonb_build_object('ok', false, 'reason', 'bad_amount');
+  end if;
+  select coalesce(sum(amount),0) into v_today from public.gifts
+    where from_id = v_from and created_at >= date_trunc('day', now());
+  if v_today + p_amount > 100 then return jsonb_build_object('ok', false, 'reason', 'daily_cap'); end if;
+  select coins into v_balance from public.app_users where apple_user_id = v_from for update;
+  if coalesce(v_balance,0) < p_amount then return jsonb_build_object('ok', false, 'reason', 'insufficient'); end if;
+  update public.app_users set coins = coins - p_amount where apple_user_id = v_from;
+  update public.app_users set coins = coins + p_amount where apple_user_id = p_to;
+  insert into public.gifts(from_id, to_id, amount) values (v_from, p_to, p_amount);
+  return jsonb_build_object('ok', true);
+end $$;
+
+create or replace function public.send_wave(p_from text, p_to text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_from text := public.me(); v_rel text; v_today int;
+begin
+  v_rel := can_reach(v_from, p_to);
+  if v_rel in ('self','blocked') then return jsonb_build_object('ok', false, 'reason', v_rel); end if;
+  if v_rel = 'no' then return jsonb_build_object('ok', false, 'reason', 'not_friends'); end if;
+  if v_rel = 'drifted' then
+    select count(*) into v_today from public.waves w
+      where w.from_id = v_from and w.created_at >= date_trunc('day', now())
+        and not exists (select 1 from public.friendships f
+                         where f.user_id = v_from and f.friend_id = w.to_id);
+    if v_today >= 3 then return jsonb_build_object('ok', false, 'reason', 'wave_cap'); end if;
+  end if;
+  insert into public.waves(from_id, to_id) values (v_from, p_to);
+  return jsonb_build_object('ok', true);
+end $$;
+
+-- propose_trade: the proposer is the signed-in user. See trading.sql for the body;
+-- the live definition differs only in taking the identity from me().
+
+notify pgrst, 'reload schema';
