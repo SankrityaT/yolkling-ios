@@ -82,7 +82,7 @@ struct DriftSheet: View {
             YolklingView(vibe: vibe, expression: .curious, size: 130, frozenAt: YolklingView.posedT)
             Text("open your door?")
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
-            Text("your yolkling can only wander into rooms that are open. open yours and it can go exploring — and someone else's might drop by.")
+            Text("your yolkling can only wander into rooms that are open. open yours and it can go exploring, and someone else's might drop by.")
                 .font(YolkType.body).foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, YolkSpace.lg)

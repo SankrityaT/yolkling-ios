@@ -23,6 +23,11 @@ struct TypewriterText: View {
         .font(font)
         .foregroundStyle(color)
         .multilineTextAlignment(alignment)
+        // Every long onboarding paragraph flows through here into a height-constrained,
+        // non-scrolling VStack. Without this the sizing Text truncates to an ellipsis
+        // instead of wrapping, and the sentence that explains a permission gets cut off
+        // on the screen that asks for it. This one line repairs all of them at once.
+        .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: .infinity)
         .task(id: text) {
             // Reduce Motion: show the whole line at once. Onboarding copy is information,

@@ -821,6 +821,7 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("put your yolk on your home screen")
                     .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
+                    .fixedSize(horizontal: false, vertical: true)
                 Button { showWidgetHowTo = true } label: {
                     Text("see how")
                         .font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.shell)
@@ -930,6 +931,7 @@ struct HomeView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("grow by living").font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                         Text("let your steps + sleep feed your yolk").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer()
                     Text("connect").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.shell)
@@ -1137,6 +1139,7 @@ struct HomeView: View {
                     .font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.ink)
                 Text("want your yolk to notice your sleep too?")
                     .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
             Button { connectHealth() } label: {

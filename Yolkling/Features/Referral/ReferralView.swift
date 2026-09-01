@@ -33,6 +33,7 @@ struct ReferralView: View {
                 .font(YolkType.body).foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, YolkSpace.lg)
+                .fixedSize(horizontal: false, vertical: true)
 
             yourCode
 

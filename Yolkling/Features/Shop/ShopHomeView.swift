@@ -100,6 +100,9 @@ struct ShopHomeView: View {
         }
         .background(YolkColor.shell)
         .safeAreaInset(edge: .bottom, spacing: 0) { confirmBar }
+        // The sort button toggled showSort but the menu was never attached, so tapping
+        // it did nothing and the four sort orders were unreachable. Wired like HomeView's.
+        .yolkMenu(isPresented: $showSort, alignment: .top, anchor: .top) { sortMenu }
         .yolkDialog($dialog)
         .sheet(isPresented: $showPlus) {
             PlusView(store: .shared, vibe: previewVibe)
@@ -505,6 +508,7 @@ struct ShopHomeView: View {
                     Text("place pieces in your room from the Decorate sheet.")
                         .font(.caption).foregroundStyle(YolkColor.muted)
                         .padding(.top, -4)
+                        .fixedSize(horizontal: false, vertical: true)
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: YolkSpace.sm)], spacing: YolkSpace.sm) {
                         ForEach(decor) { decorCard($0) }
                     }

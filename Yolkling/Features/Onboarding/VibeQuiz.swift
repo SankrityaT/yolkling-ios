@@ -101,6 +101,7 @@ struct VibeQuizView: View {
                 Text(question.prompt)
                     .font(YolkType.heading).foregroundStyle(YolkColor.ink)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text("question \(index + 1) of \(VibeQuiz.questions.count)")
                     .font(.caption2).foregroundStyle(YolkColor.muted)
             }

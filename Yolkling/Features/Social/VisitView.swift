@@ -357,7 +357,7 @@ struct VisitView: View {
                 case "insufficient":        message = "you don't have enough \(Currency.name) for that."
                 case "daily_cap":           message = "you have hit today's gift limit. come back tomorrow."
                 case "stranger_gift_cap":   message = "one gift to a stranger a day. it means more that way."
-                case "stranger_amount":     message = "a stranger gets a small gift — that's the whole idea."
+                case "stranger_amount":     message = "a stranger gets a small gift. that's the whole idea."
                 case "blocked":             message = "you can't reach them."
                 case "not_friends":         message = "your yolkling isn't there any more."
                 default:                    message = "couldn't send that just now. try again in a sec."

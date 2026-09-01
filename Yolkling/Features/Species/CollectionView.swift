@@ -111,6 +111,7 @@ struct CollectionView: View {
                         }
                     }
                     Text(set.blurb).font(.footnote).foregroundStyle(YolkColor.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {

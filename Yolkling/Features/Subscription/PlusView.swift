@@ -45,7 +45,7 @@ struct PlusView: View {
                     // TestFlight and in App Review, where a human will see it. An
                     // `assert` cannot do this job — it's compiled out in release.
                     if RevenueCatConfig.isTestStore {
-                        Text("TEST STORE — purchases here are simulated, not real")
+                        Text("TEST STORE. purchases here are simulated, not real")
                             .font(.caption2.weight(.bold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)

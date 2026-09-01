@@ -37,7 +37,7 @@ struct WanderHomeView: View {
     }
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             YolkColor.shell.ignoresSafeArea()
 
             VStack(spacing: YolkSpace.md) {
@@ -55,6 +55,14 @@ struct WanderHomeView: View {
                 Spacer(minLength: 0)
             }
             .padding(.bottom, YolkSpace.lg)
+
+            // A fullScreenCover cannot be swiped away, and the only other exit is
+            // finishing the scratch. Someone who sets the phone down mid-reveal, or
+            // simply does not want to scratch, was otherwise stranded. Claiming the card
+            // still happens on scratch; this just guarantees a door.
+            YolkCloseButton { onDone(); dismiss() }
+                .padding(.horizontal, YolkSpace.lg)
+                .padding(.top, YolkSpace.sm)
         }
         .task { await run() }
     }

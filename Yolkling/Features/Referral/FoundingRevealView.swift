@@ -27,6 +27,7 @@ struct FoundingRevealView: View {
                 .font(YolkType.body).foregroundStyle(YolkColor.inkSoft)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, YolkSpace.lg).padding(.top, 4)
+                .fixedSize(horizontal: false, vertical: true)
 
             Spacer()
 

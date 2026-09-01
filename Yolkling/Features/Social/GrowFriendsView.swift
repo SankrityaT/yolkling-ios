@@ -75,6 +75,7 @@ struct GrowFriendsView: View {
                 .font(YolkType.bodySmall)
                 .foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
             // 6. Always-true nudge (the empty state itself lives in FriendsView)
             Text("add a friend by their code, or share yours")
@@ -82,6 +83,7 @@ struct GrowFriendsView: View {
                 .foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
                 .padding(.top, YolkSpace.xs)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .yolkDialog($dialog)
         // 3a. QR sheet
@@ -204,6 +206,7 @@ private struct QRSheet: View {
                 .font(YolkType.bodySmall)
                 .foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
             Button("done") { dismiss() }
                 .font(YolkType.body.weight(.semibold))
