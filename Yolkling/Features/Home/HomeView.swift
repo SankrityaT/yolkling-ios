@@ -623,10 +623,25 @@ struct HomeView: View {
     }
 
     /// Reset the weekly challenge when a new calendar week starts.
+    /// Roll the weekly challenge over when the calendar week actually changes.
+    ///
+    /// Compares week-of-year + year, NOT the stored instant. `weekStart` is an absolute
+    /// Date computed in whatever timezone the device was in, so comparing it by calendar
+    /// day meant flying west shifted it onto the previous day and fired a spurious
+    /// rollover mid-week: four days of progress destroyed, and `weeklyClaimed` reset to
+    /// false so the 100-Yolk reward could be claimed again. A round trip was 200 Yolks,
+    /// repeatable, and ordinary travel triggered it by accident.
     private func rolloverWeekIfNeeded() {
         let cal = Calendar.current
-        let thisWeek = cal.dateInterval(of: .weekOfYear, for: .now)?.start
-        if weekStart == nil || (thisWeek != nil && !cal.isDate(weekStart!, equalTo: thisWeek!, toGranularity: .day)) {
+        let now = Date()
+        guard let thisWeek = cal.dateInterval(of: .weekOfYear, for: now)?.start else { return }
+        let isSameWeek: Bool = {
+            guard let stored = weekStart else { return false }
+            let a = cal.dateComponents([.weekOfYear, .yearForWeekOfYear], from: stored)
+            let b = cal.dateComponents([.weekOfYear, .yearForWeekOfYear], from: now)
+            return a.weekOfYear == b.weekOfYear && a.yearForWeekOfYear == b.yearForWeekOfYear
+        }()
+        if !isSameWeek {
             weekStart = thisWeek
             weekCareDays = 0
             weeklyClaimed = false

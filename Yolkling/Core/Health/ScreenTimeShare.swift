@@ -25,8 +25,20 @@ enum ScreenTimeShare {
     }
 
     /// App reads today's on-screen hours, or nil if the extension hasn't run yet.
+    /// Today's figure, or nil if it is stale.
+    ///
+    /// The freshness timestamp was written and never read, and `ScreenTimeService.refresh`
+    /// only assigns when non-nil, so `usedHours` was sticky forever. Yesterday's 6 hours
+    /// drove this morning's off-phone pillar: ~0 hours off after a full night's sleep,
+    /// `hitGoal` false, and the progress bar starting drained — the exact "starts empty
+    /// every morning" failure this subsystem was designed to avoid. An expired figure is
+    /// no figure.
     static func readUsedHours() -> Double? {
         guard let d = defaults, d.object(forKey: usedHoursKey) != nil else { return nil }
+        let stamp = d.double(forKey: updatedKey)
+        guard stamp > 0,
+              Calendar.current.isDateInToday(Date(timeIntervalSince1970: stamp))
+        else { return nil }
         return d.double(forKey: usedHoursKey)
     }
 }

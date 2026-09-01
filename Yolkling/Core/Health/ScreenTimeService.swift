@@ -107,8 +107,14 @@ final class ScreenTimeService {
     }
 
     /// Pull the newest off-phone figure the report extension wrote to the App Group.
+    /// Adopt the shared figure, and CLEAR it when it has gone stale.
+    ///
+    /// This only ever assigned when non-nil, which made the value sticky forever: once
+    /// the day rolled over, `readUsedHours` correctly returned nil and the old number
+    /// stayed on screen driving the off-phone pillar and the creature's vitality.
+    /// Yesterday's total is not a smaller number, it is no number.
     func refresh() {
-        if let used = ScreenTimeShare.readUsedHours() { usedHours = used }
+        usedHours = ScreenTimeShare.readUsedHours()
     }
 
     #if DEBUG
