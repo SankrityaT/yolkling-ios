@@ -103,6 +103,12 @@ final class Player {
     /// by virtue of being on the Player, and migration-safe (defaulted).
     var stipendSeen: Int = 0
 
+    /// Whether `stipendSeen` has been anchored to RevenueCat's ledger for this creature.
+    /// Until it has, any balance already sitting in RevenueCat belongs to a PREVIOUS life
+    /// (a deleted account on the same Apple ID), not to this one, and must not be paid
+    /// out again. Defaulted, so migration-safe.
+    var stipendInitialized: Bool = false
+
     /// The Sign in with Apple stable user id, once they sign in. nil = local-only.
     var appleUserID: String?
 

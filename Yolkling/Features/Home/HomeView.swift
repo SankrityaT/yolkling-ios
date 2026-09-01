@@ -288,7 +288,10 @@ struct HomeView: View {
             // subscriber's stipend could read zero forever after a reinstall. `logIn` is
             // idempotent, so repeating it costs nothing.
             if let uid = player?.appleUserID {
-                await SubscriptionStore.shared.identify(uid)
+                // Its OWN task. `identify` is logIn + loadOfferings, two RevenueCat round
+                // trips, and awaiting it here put the season refresh, the wander
+                // homecoming and the stipend credit behind them on a slow network.
+                Task { await SubscriptionStore.shared.identify(uid) }
             }
 
             events.userID = backendUserID
@@ -322,18 +325,20 @@ struct HomeView: View {
             // coins are written in the SAME persist(), so a crash between them cannot
             // leave the mark ahead of the credit (or the reverse).
             if let player, let balance = await SubscriptionStore.shared.lifetimeStipendBalance() {
-                // One-time migration off the old device-local mark, so existing installs
-                // do not re-credit on the upgrade that moved it onto the Player.
+                // ANCHOR before crediting. RevenueCat's balance is lifetime and survives
+                // account deletion, so on this creature's first look anything already in
+                // the ledger was earned by a previous life and has already been paid out.
+                // Paying it again is the reinstall/delete-and-re-onboard double credit.
                 //
-                // Scoped to the account that actually earned it. The legacy key is
-                // device-local, so seeding it into ANY player with a zero mark handed a
-                // second account on the same device a stranger's high-water mark and
-                // silently swallowed its first stipend. Migrate only when this player is
-                // the one RevenueCat is currently identifying, and never above the
-                // balance that account actually has.
-                if player.stipendSeen == 0, !SubscriptionStore.legacyMigrationDone {
-                    player.stipendSeen = min(SubscriptionStore.legacyStipendSeen, balance)
-                    SubscriptionStore.markLegacyMigrationDone()
+                // This subsumes the old device-local migration, and is strictly safer: a
+                // fresh install of an existing subscriber anchors at their current
+                // balance rather than at a UserDefaults value that may not exist. A
+                // restored creature arrives already anchored via the snapshot, so it
+                // keeps crediting normally.
+                if !player.stipendInitialized {
+                    player.stipendSeen = max(player.stipendSeen, balance)
+                    player.stipendInitialized = true
+                    persist()
                 }
                 let seen = player.stipendSeen
                 let stipend = max(0, balance - seen)

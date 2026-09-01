@@ -44,6 +44,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
 
     var coins: Int = 0
     var stipendSeen: Int = 0
+    var stipendInitialized: Bool = false
     var ownedItemIDs: [String] = []
     var equippedItemIDs: [String] = []
 
@@ -92,6 +93,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         placedDecorByZone = try? c.decodeIfPresent([String: String].self, forKey: .placedDecorByZone)
         coins             = get(.coins, d.coins)
         stipendSeen       = get(.stipendSeen, d.stipendSeen)
+        stipendInitialized = get(.stipendInitialized, d.stipendInitialized)
         ownedItemIDs      = get(.ownedItemIDs, d.ownedItemIDs)
         equippedItemIDs   = get(.equippedItemIDs, d.equippedItemIDs)
         trust             = get(.trust, d.trust)
@@ -119,6 +121,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         placedDecorByZone = p.placedDecorByZone
         coins = p.coins
         stipendSeen = p.stipendSeen
+        stipendInitialized = p.stipendInitialized
         ownedItemIDs = p.ownedItemIDs
         equippedItemIDs = p.equippedItemIDs
         trust = p.trust
@@ -152,6 +155,8 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         // the two ledgers. Restoring can never move the mark backwards and re-open the
         // double-credit window.
         p.stipendSeen = max(p.stipendSeen, stipendSeen)
+        // Sticky: once either side has anchored, the restored creature is anchored.
+        p.stipendInitialized = p.stipendInitialized || stipendInitialized
         p.ownedItemIDs = Array(Set(p.ownedItemIDs).union(ownedItemIDs))
         p.equippedItemIDs = equippedItemIDs
         p.trust = trust

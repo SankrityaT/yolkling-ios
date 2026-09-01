@@ -289,7 +289,23 @@ struct RootView: View {
             let localIsThrowaway = existing.careStreak == 0
                 && existing.discoveredSpeciesIDs.count <= SpeciesSets.headStart.count
                 && existing.coins <= Wallet.welcomeGrant
-            if localIsThrowaway || snapshot.careStreak > existing.careStreak {
+
+            // Streak alone is a poor discriminator: it resets to 1 after a gap, so a
+            // long-lapsed 200-day creature and a one-check-in trial can BOTH read 1, and
+            // a tie used to silently discard the cloud one — irrecoverably, because the
+            // next push overwrites it. Fall back to how much has actually been collected,
+            // then to which creature is older.
+            let cloudIsRicher: Bool = {
+                if snapshot.careStreak != existing.careStreak {
+                    return snapshot.careStreak > existing.careStreak
+                }
+                if snapshot.discoveredSpeciesIDs.count != existing.discoveredSpeciesIDs.count {
+                    return snapshot.discoveredSpeciesIDs.count > existing.discoveredSpeciesIDs.count
+                }
+                return snapshot.createdAt < existing.createdAt
+            }()
+
+            if localIsThrowaway || cloudIsRicher {
                 snapshot.apply(to: existing)
             }
         }

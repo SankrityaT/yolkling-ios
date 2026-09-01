@@ -94,12 +94,22 @@ begin
   return jsonb_build_object('ok', true);
 end $$;
 
+-- Returns the {found, state, updated_at} ENVELOPE the client parses, not the raw state.
+-- This returned the bare jsonb, so SupabaseClient.pullPlayerState's `obj["found"] == true`
+-- guard never passed and the function returned nil UNCONDITIONALLY — cloud restore was
+-- dead app-wide, and any caller treating nil as "no backup" would happily overwrite a
+-- real one. Applied live 2026-09-01.
 create or replace function public.pull_player_state(p_user text)
 returns jsonb language plpgsql stable security definer
 set search_path = public as $$
-declare v_user text := public.me();
+declare v_user text := public.me(); v_state jsonb; v_at timestamptz;
 begin
-  return coalesce((select state from public.player_state where user_id = v_user), 'null'::jsonb);
+  select state, updated_at into v_state, v_at
+    from public.player_state where user_id = v_user;
+  if v_state is null then
+    return jsonb_build_object('found', false);
+  end if;
+  return jsonb_build_object('found', true, 'state', v_state, 'updated_at', v_at);
 end $$;
 
 notify pgrst, 'reload schema';
@@ -279,5 +289,30 @@ end $$;
 
 -- propose_trade: the proposer is the signed-in user. See trading.sql for the body;
 -- the live definition differs only in taking the identity from me().
+
+notify pgrst, 'reload schema';
+
+
+-- ---------------------------------------------------------------------------
+-- publish_room (4-arg): returns a result, and enforces identity.
+--
+-- It returned void, so the client could not tell success from failure at all —
+-- and a client checking for {ok} reads every call as a failure, which makes
+-- "open my door" impossible and drift/wander permanently unreachable. It was
+-- also unguarded: p_user was taken on trust. Applied live 2026-09-01.
+-- ---------------------------------------------------------------------------
+drop function if exists public.publish_room(text, text, jsonb, boolean);
+create or replace function public.publish_room(p_user text, p_name text, p_snapshot jsonb, p_public boolean)
+returns jsonb language plpgsql security definer
+set search_path = public as $$
+declare v_user text := public.me();
+begin
+  insert into public.room_snapshots(user_id, name, snapshot, is_public, updated_at)
+    values (v_user, p_name, coalesce(p_snapshot, '{}'::jsonb), p_public, now())
+  on conflict (user_id) do update
+    set name = excluded.name, snapshot = excluded.snapshot,
+        is_public = excluded.is_public, updated_at = now();
+  return jsonb_build_object('ok', true);
+end $$;
 
 notify pgrst, 'reload schema';
