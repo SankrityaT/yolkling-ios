@@ -95,6 +95,14 @@ final class Player {
     /// first reconcile a no-op — intended).
     var syncedItemIDs: [String] = []
 
+    /// Lifetime RevenueCat stipend Yolks ALREADY folded into `coins`. The credit
+    /// high-water mark. It lives on the Player, not in UserDefaults, so it travels with
+    /// the creature through the same cloud backup as the coins it guards. When it sat in
+    /// device-local UserDefaults, a reinstall reset it to 0 while the coins came back
+    /// from the backup, and the entire lifetime stipend re-credited. Keyed to the account
+    /// by virtue of being on the Player, and migration-safe (defaulted).
+    var stipendSeen: Int = 0
+
     /// The Sign in with Apple stable user id, once they sign in. nil = local-only.
     var appleUserID: String?
 

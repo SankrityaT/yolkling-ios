@@ -234,23 +234,27 @@ final class SubscriptionStore {
     /// That split is the design, not a workaround: RevenueCat records the Yolks that came
     /// from money, Supabase records the ones that came from living, and neither can be
     /// mistaken for the other.
-    @discardableResult
-    func claimStipend() async -> Int {
+    /// The lifetime Yolks RevenueCat has granted this customer, or nil if it could not
+    /// be read. Append-only. The caller compares it against the per-account high-water
+    /// mark it persists on the Player, credits the delta, and stores the two together.
+    ///
+    /// This deliberately no longer owns the "already seen" mark. It used to live in
+    /// device-local UserDefaults, which reset on reinstall while the coins it guarded
+    /// came back from the cloud backup, re-crediting the entire lifetime stipend. The
+    /// mark now rides on the Player (see `Player.stipendSeen`) so it can never drift from
+    /// the coins again.
+    func lifetimeStipendBalance() async -> Int? {
         Purchases.shared.invalidateVirtualCurrenciesCache()
         guard let currencies = try? await Purchases.shared.virtualCurrencies(),
               let balance = currencies[RevenueCatConfig.yolksCurrency]?.balance
-        else { return 0 }
-
+        else { return nil }
         stipendGranted = balance
-        let key = Self.seenKey
-        let seen = UserDefaults.standard.integer(forKey: key)
-        guard balance > seen else { return 0 }
-
-        UserDefaults.standard.set(balance, forKey: key)
-        return balance - seen
+        return balance
     }
 
-    private static let seenKey = "yolk.stipendSeen"
+    /// The legacy device-local mark, read ONCE to migrate existing installs so they do
+    /// not re-credit on the upgrade that moves the mark onto the Player.
+    static var legacyStipendSeen: Int { UserDefaults.standard.integer(forKey: "yolk.stipendSeen") }
 
     // MARK: Identity
 

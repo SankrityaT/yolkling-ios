@@ -177,19 +177,24 @@ struct RootView: View {
                         // which would build a second one on top of the one they just
                         // spent a day with. This is the single most important line on
                         // this screen.
-                        if let existing = players.first {
-                            existing.appleUserID = userID
-                            try? context.save()
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                pendingAppleUserID = userID
-                            }
-                            return
-                        }
                         withAnimation(.easeInOut(duration: 0.4)) {
                             pendingAppleUserID = userID
                             restoreCheck = .checking
                         }
-                        Task { await restoreIfPossible(userID) }
+                        if let existing = players.first {
+                            // A trial creature exists. Before adopting it onto the account
+                            // — which the next persist() would push over any cloud backup
+                            // — check whether a REAL creature is already saved to this
+                            // Apple ID. If so, bring it back rather than letting the
+                            // throwaway overwrite it. This runs while RestoringView is up,
+                            // BEFORE HomeView mounts and can push, so the correct creature
+                            // is in place before anything reaches the server. Without it,
+                            // a returning user who took the 24h trial on a fresh install
+                            // lost their real creature the instant they signed in.
+                            Task { await adoptOrRestore(userID, existing) }
+                        } else {
+                            Task { await restoreIfPossible(userID) }
+                        }
                     },
                     // Offered once. `hasStarted` never goes back to false, so deleting
                     // the creature does not buy another day.
@@ -258,6 +263,35 @@ struct RootView: View {
     ///
     /// Falls through to onboarding on every failure, which is exactly the old behaviour,
     /// so the worst case here is the status quo rather than a person stuck on a spinner.
+    /// A trial creature exists locally and the person just signed in. Decide between
+    /// keeping it (they invested in it) and bringing back a real creature already saved
+    /// to this Apple ID (the trial was a throwaway). Runs before HomeView mounts, so the
+    /// decision is settled before any backup push can overwrite the cloud creature.
+    private func adoptOrRestore(_ userID: String, _ existing: Player) async {
+        existing.appleUserID = userID
+        try? context.save()
+
+        // No session, or no backup worth restoring → adopt the trial creature as-is.
+        // HomeView will back it up. This is the ordinary "first creature on this account".
+        guard await waitForSession(upTo: 6),
+              let snapshot = await PlayerBackup.pull(appleUserID: userID),
+              snapshot.isWorthRestoring
+        else { restoreCheck = .done; return }
+
+        // A real creature is saved under this id. Only auto-replace when the local one is
+        // an untouched trial — no streak, barely any Dex, welcome grant unspent. If they
+        // actually invested in the trial creature, keep it (apply's max/union merge means
+        // signing in still can't cost them coins or items either way).
+        let localIsThrowaway = existing.careStreak == 0
+            && existing.discoveredSpeciesIDs.count <= SpeciesSets.headStart.count
+            && existing.coins <= Wallet.welcomeGrant
+        if localIsThrowaway {
+            snapshot.apply(to: existing)
+            try? context.save()
+        }
+        restoreCheck = .done
+    }
+
     private func restoreIfPossible(_ userID: String) async {
         // The gate fires `onSignedIn` without awaiting the Supabase exchange, on purpose:
         // a server hiccup must not stand between someone and their creature. But the

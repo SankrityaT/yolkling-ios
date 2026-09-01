@@ -306,18 +306,29 @@ struct HomeView: View {
                 wandered = await social.wanderIfDue()
             }
 
-            // Credit any Yolks RevenueCat has granted since we last looked. Idempotent:
-            // the high-water mark only moves after a successful credit, so a crash
-            // between the two costs the player nothing.
-            let stipend = await SubscriptionStore.shared.claimStipend()
-            if stipend > 0 {
-                wallet.earn(stipend)
-                persist()
-                dialog = YolkDialog(
-                    icon: .coins, title: "thank you",
-                    message: "\(stipend) \(Currency.name) landed, for keeping this going.",
-                    primaryTitle: "lovely"
-                )
+            // Credit any Yolks RevenueCat has granted since we last looked. The
+            // high-water mark lives on the Player (persisted + backed up alongside the
+            // coins), so a reinstall no longer re-credits the lifetime stipend. Mark and
+            // coins are written in the SAME persist(), so a crash between them cannot
+            // leave the mark ahead of the credit (or the reverse).
+            if let player, let balance = await SubscriptionStore.shared.lifetimeStipendBalance() {
+                // One-time migration off the old device-local mark, so existing installs
+                // do not re-credit on the upgrade that moved it onto the Player.
+                if player.stipendSeen == 0 {
+                    player.stipendSeen = SubscriptionStore.legacyStipendSeen
+                }
+                let seen = player.stipendSeen
+                let stipend = max(0, balance - seen)
+                if stipend > 0 {
+                    player.stipendSeen = balance
+                    wallet.earn(stipend)
+                    persist()
+                    dialog = YolkDialog(
+                        icon: .coins, title: "thank you",
+                        message: "\(stipend) \(Currency.name) landed, for keeping this going.",
+                        primaryTitle: "lovely"
+                    )
+                }
             }
         }
         .task { if router.pending != nil { showFriends = true } }

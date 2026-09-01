@@ -27,7 +27,7 @@ struct PlusView: View {
     /// every place the app renders your own creature: here, Home, Profile and Focus.
     ///
     /// The other two lines are checked and true. The monthly Yolks are real via
-    /// `SubscriptionStore.claimStipend()`, wired into HomeView, reading the RevenueCat
+    /// `SubscriptionStore.lifetimeStipendBalance()`, wired into HomeView, reading RevenueCat
     /// virtual-currency balance. There is no ad SDK anywhere in the project.
     private let perks: [(String, String)] = [
         ("sparkles",   "a supporter glow on your yolk, so it's visibly yours"),

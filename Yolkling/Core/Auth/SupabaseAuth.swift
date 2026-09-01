@@ -120,16 +120,26 @@ final class SupabaseAuth {
         return accessToken
     }
 
+    /// Refresh the access token. Only signs out when the server EXPLICITLY rejects the
+    /// refresh token.
+    ///
+    /// This used to sign out on any failure at all, because `post` flattened every
+    /// outcome to nil. One tunnel, one captive portal, one 500, and the refresh token was
+    /// deleted from the Keychain — a permanent, silent session loss recoverable only by a
+    /// fresh Sign in with Apple, which nothing outside Profile even offers. A transient
+    /// network failure must leave the session intact to be retried later.
     private func refresh() async {
         guard let refreshToken else { return }
-        guard let json = await post("token?grant_type=refresh_token",
-                                    ["refresh_token": refreshToken]) else {
-            // A refresh token the server has rejected is worse than none: it will fail
-            // forever. Drop the session so the next sign-in starts clean.
+        switch await postResult("token?grant_type=refresh_token", ["refresh_token": refreshToken]) {
+        case .success(let json):
+            _ = store(json)
+        case .failure(.rejected):
+            // Genuinely dead: it will fail forever. Drop it so the next sign-in is clean.
             signOut()
-            return
+        case .failure(.unreachable):
+            // Keep the session. We simply could not ask.
+            break
         }
-        _ = store(json)
     }
 
     func signOut() {
@@ -158,16 +168,34 @@ final class SupabaseAuth {
         return true
     }
 
+    /// Whether a failed auth call was the server REFUSING or the network being absent.
+    /// The difference decides whether it is safe to destroy a session.
+    enum PostFailure: Error { case rejected, unreachable }
+
     private func post(_ path: String, _ body: [String: Any]) async -> [String: Any]? {
+        switch await postResult(path, body) {
+        case .success(let json): return json
+        case .failure: return nil
+        }
+    }
+
+    /// As `post`, but distinguishes a 4xx rejection from an unreachable server.
+    private func postResult(_ path: String, _ body: [String: Any]) async -> Result<[String: Any], PostFailure> {
         var request = URLRequest(url: AppEnvironment.supabaseURL.appending(path: "auth/v1/\(path)"))
         request.httpMethod = "POST"
         request.setValue(AppEnvironment.supabaseAnonKey, forHTTPHeaderField: "apikey")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         guard let (data, response) = try? await URLSession.shared.data(for: request),
-              let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-        else { return nil }
-        return json
+              let http = response as? HTTPURLResponse
+        else { return .failure(.unreachable) }          // offline, DNS, TLS, timeout
+        guard (200..<300).contains(http.statusCode) else {
+            // 4xx is the server telling us this credential is no good. 5xx is the server
+            // having a bad day and says nothing about the credential.
+            return .failure((400..<500).contains(http.statusCode) ? .rejected : .unreachable)
+        }
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return .failure(.unreachable) }
+        return .success(json)
     }
 }

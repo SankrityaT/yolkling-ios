@@ -409,8 +409,19 @@ struct ProfileView: View {
                         // reads "not backed up yet" afterwards and the person has no way
                         // to tell whether it worked. Now the fix is visibly the fix.
                         if await SupabaseAuth.shared.signIn(appleIdentityToken: token) {
-                            if let player {
-                                await PlayerBackup.push(player, appleUserID: player.appleUserID, force: true)
+                            if let player, let uid = player.appleUserID {
+                                // Look BEFORE pushing. A forced push here used to race
+                                // HomeView's restore pull, and when the push won it
+                                // replaced the cloud creature with this device's one —
+                                // then the pull returned the thing it had just
+                                // overwritten, `isWorthRestoring` was false, and the
+                                // other device's creature was gone with no dialog.
+                                // If a real backup exists, leave it alone and let
+                                // offerRestore ask; otherwise back this creature up.
+                                let existing = await PlayerBackup.pull(appleUserID: uid)
+                                if existing?.isWorthRestoring != true {
+                                    await PlayerBackup.push(player, appleUserID: uid, force: true)
+                                }
                             }
                         } else {
                             signInError = "couldn't reach your account. check your connection and try again."
