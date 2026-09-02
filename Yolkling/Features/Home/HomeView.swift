@@ -329,9 +329,20 @@ struct HomeView: View {
             // and coins are written in the SAME persist() so a crash between them cannot
             // leave one ahead of the other.
             //
-            // Gated on a CONFIRMED identity. A signed-out player has none and collects
-            // nothing; a failed logIn skips this launch and tries again on the next.
-            let identityReady = await identified?.value ?? false
+            // Gated on identity RESOLUTION, not on having an Apple ID.
+            //
+            // "No Apple ID" is a supported, paying state: the 24-hour look-around trial
+            // reaches Home with appleUserID nil, and nothing gates the paywall on signing
+            // in. For that player RevenueCat's current anonymous customer IS the right
+            // customer, so the ledger is safe to read and anchoring at their real balance
+            // is correct. Treating them as "not ready" skipped the anchor entirely, and
+            // when they later signed in, logIn aliased the anonymous customer across and
+            // the anchor finally fired at the post-purchase balance — swallowing the
+            // first 400 Yolks they had paid for, permanently and silently.
+            //
+            // Only an Apple ID whose logIn has NOT confirmed is unsafe, because then the
+            // ledger belongs to whoever RevenueCat currently thinks we are.
+            let identityReady: Bool = if let identified { await identified.value } else { true }
             if identityReady, let player,
                let balance = await SubscriptionStore.shared.lifetimeStipendBalance() {
                 // ANCHOR before crediting. RevenueCat's balance is lifetime and survives
@@ -344,15 +355,14 @@ struct HomeView: View {
                 // balance rather than at a UserDefaults value that may not exist. A
                 // restored creature arrives already anchored via the snapshot, so it
                 // keeps crediting normally.
-                if !player.stipendInitialized {
-                    player.stipendSeen = max(player.stipendSeen, balance)
-                    player.stipendInitialized = true
-                    persist()
-                }
-                let seen = player.stipendSeen
-                let stipend = max(0, balance - seen)
+                var seen = player.stipendSeen
+                var anchored = player.stipendInitialized
+                let stipend = StipendLedger.credit(balance: balance, seen: &seen, anchored: &anchored)
+                player.stipendSeen = seen
+                player.stipendInitialized = anchored
                 if stipend > 0 {
-                    player.stipendSeen = balance
+                    // The mark was already advanced by `credit`; earn and persist both in
+                    // the same transaction so neither can land without the other.
                     wallet.earn(stipend)
                     persist()
                     dialog = YolkDialog(
@@ -360,6 +370,10 @@ struct HomeView: View {
                         message: "\(stipend) \(Currency.name) landed, for keeping this going.",
                         primaryTitle: "lovely"
                     )
+                } else {
+                    // Nothing owed, but anchoring still changed state and must be saved
+                    // or the next launch re-anchors against a newer balance.
+                    persist()
                 }
             }
         }

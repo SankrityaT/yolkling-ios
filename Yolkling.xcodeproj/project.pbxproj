@@ -61,6 +61,7 @@
 		5FD85F1FB9F1B41CA3D88428 /* DMSans-VF.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C79354CB80CA860721463727 /* DMSans-VF.ttf */; };
 		62D7FC75B888F2739AA05C96 /* RoomZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7558E421CB8F49D94D63FD7 /* RoomZone.swift */; };
 		62F892518BC4B84224E78C5D /* ReferralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7409FEFD12957C004BB91D /* ReferralView.swift */; };
+		64F68151B6DA342A13392B0B /* StipendLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B3EC916605FEBDC14D7228 /* StipendLedger.swift */; };
 		661AD66CBC76712E89119F7E /* FocusLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE7AD43C334266A4F352AB8 /* FocusLiveActivity.swift */; };
 		67DE977A41A081CB1B37F8C0 /* SupabaseAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CC9CFC6387FAE6A2C920A2 /* SupabaseAuth.swift */; };
 		69D11733107EDC3AA9EDB710 /* SeasonBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334D734661EDF43E80B4A217 /* SeasonBanner.swift */; };
@@ -253,6 +254,7 @@
 		689CB056088DED814BB7D8E5 /* TypewriterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterText.swift; sourceTree = "<group>"; };
 		6B11B8AC851E841F937667EF /* EventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventStore.swift; sourceTree = "<group>"; };
 		6EDE9C10856F89329BB3D8BF /* YolksExplainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolksExplainer.swift; sourceTree = "<group>"; };
+		71B3EC916605FEBDC14D7228 /* StipendLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StipendLedger.swift; sourceTree = "<group>"; };
 		7271B792C6CDA97F073DDC10 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		72FD5561EB45544F72742563 /* WatchPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchPublisher.swift; sourceTree = "<group>"; };
 		74D18639CD1E9A7E85A6D96B /* VibeQuiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeQuiz.swift; sourceTree = "<group>"; };
@@ -776,6 +778,7 @@
 			isa = PBXGroup;
 			children = (
 				43FF8FE4B124490B3815CD5B /* Entitlements.swift */,
+				71B3EC916605FEBDC14D7228 /* StipendLedger.swift */,
 				B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */,
 			);
 			path = Subscription;
@@ -1197,6 +1200,7 @@
 				370441F2076020435ED5FD7C /* SocialModels.swift in Sources */,
 				B6F1A002A4884531D733EF46 /* SocialStore.swift in Sources */,
 				06CFCBF306F3A0FDCAFD2653 /* SpeciesGalleryView.swift in Sources */,
+				64F68151B6DA342A13392B0B /* StipendLedger.swift in Sources */,
 				59DE5860CD52D0A5C2A9961F /* SubscriptionStore.swift in Sources */,
 				67DE977A41A081CB1B37F8C0 /* SupabaseAuth.swift in Sources */,
 				F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */,
