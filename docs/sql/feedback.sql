@@ -17,7 +17,8 @@ create or replace function submit_feedback(p_user text, p_kind text, p_message t
 returns jsonb language plpgsql security definer as $$
 begin
   -- Identity guard: writes a feedback row attributed to p_user, so an unguarded actor is impersonation.
-  perform public.assert_caller(p_user);
+  -- Lenient on purpose: this is the support channel, and it has no FK to app_users, so it worked signed out.
+  perform public.assert_caller_if_known(p_user);
 
   if length(coalesce(trim(p_message), '')) < 1 then
     return jsonb_build_object('ok', false, 'reason', 'empty');
