@@ -126,6 +126,7 @@
 		CC95E3840269A681FB2E0953 /* SharePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9EA7652B10E7A58EC9A965 /* SharePreview.swift */; };
 		CCBCEC4E333CBD429A555E10 /* AppReviewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B97FCD4DE1CA31D530990F /* AppReviewTests.swift */; };
 		CD3BDC853E4D567D4ECD735D /* DecorateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DCBEF321B406CD08787A8AD /* DecorateView.swift */; };
+		CD40F595358E91A69DF91F27 /* YolklingScreenTimeReport.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CD940F0368D4571EF8B4583E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 30CB0A1116928879DE203401 /* Assets.xcassets */; };
 		D1F0716DBE1CD83F845635F5 /* VisitSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8119A47DF6A19DA6E05DC232 /* VisitSubject.swift */; };
 		D274DBBA7B1918E229BAFB69 /* PurchasingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EB1D8B84CFC166582FD07F /* PurchasingIndicator.swift */; };
@@ -151,7 +152,6 @@
 		F29F2FF867AF2585B6D5A545 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F554785860AE53390D69233E /* SupabaseClient.swift */; };
 		F2C5878F99269B2EDA41761C /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FC884495811BB1821AF2CB /* CollectionView.swift */; };
 		F31A3E2F41BFF29944253D77 /* PostcardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593CF31848BF060E5D52D091 /* PostcardCard.swift */; };
-		F6C38D5F76F0AC1ED9BF1D17 /* YolklingScreenTimeReport.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F6E72741E88E322E12CFF18B /* FriendCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */; };
 		F881D46D850C51D7C10D8613 /* DMMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */; };
 		F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */; };
@@ -186,6 +186,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		50404D2EB684F63B6EB6D679 /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				CD40F595358E91A69DF91F27 /* YolklingScreenTimeReport.appex in Embed ExtensionKit Extensions */,
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D285FE252D89964D5FA5EABC /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -195,17 +206,6 @@
 				4702ED8BB128D89E453FFCF6 /* YolklingWidgets.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1A6B4C55A0B04FF8B23F8D22 /* Embed ExtensionKit Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
-			dstSubfolderSpec = 16;
-			files = (
-				F6C38D5F76F0AC1ED9BF1D17 /* YolklingScreenTimeReport.appex in Embed ExtensionKit Extensions */,
-			);
-			name = "Embed ExtensionKit Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1009,7 +1009,7 @@
 				04FDBD6A1787203A56F5088A /* Resources */,
 				60E9DA8CF82AEBC5335EE2C6 /* Frameworks */,
 				D285FE252D89964D5FA5EABC /* Embed Foundation Extensions */,
-				1A6B4C55A0B04FF8B23F8D22 /* Embed ExtensionKit Extensions */,
+				50404D2EB684F63B6EB6D679 /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
 			);
@@ -1436,7 +1436,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.ScreenTimeReport;
 				PRODUCT_NAME = YolklingScreenTimeReport;
@@ -1515,7 +1514,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.ScreenTimeReport;
 				PRODUCT_NAME = YolklingScreenTimeReport;

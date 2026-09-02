@@ -119,7 +119,17 @@ targets:
         CODE_SIGN_ENTITLEMENTS: YolklingWidgets/YolklingWidgets.entitlements
         SKIP_INSTALL: YES
   YolklingScreenTimeReport:
-    type: app-extension
+    # ExtensionKit, NOT a legacy app-extension. A DeviceActivityReport extension is an
+    # ExtensionKit extension: it ships in $(EXTENSIONS_FOLDER_PATH) rather than PlugIns,
+    # and its Info.plist declares EXAppExtensionAttributes / EXExtensionPointIdentifier
+    # instead of the NSExtension pair. Built as an app-extension it embeds in the wrong
+    # folder and the report never loads.
+    #
+    # This has to live HERE and not only in the .pbxproj. Havi fixed it by hand in Xcode,
+    # which is the natural way to find it, but the .pbxproj is GENERATED from this file --
+    # so the next `xcodegen generate` silently reverted it. Verified: regenerating with
+    # `type: app-extension` drops every extensionkit-extension line and the embed phase.
+    type: extensionkit-extension
     platform: iOS
     deploymentTarget: "18.0"
     sources:
