@@ -172,6 +172,20 @@ final class SupabaseAuth {
     /// The difference decides whether it is safe to destroy a session.
     enum PostFailure: Error { case rejected, unreachable }
 
+
+    /// Resolve an auth path that may carry a query string.
+    ///
+    /// Split rather than appended, because the query must survive as a query. Kept
+    /// separate and non-private so a test can check the "?" does not get encoded.
+    nonisolated static func authURL(_ path: String, base: URL) -> URL? {
+        let parts = path.split(separator: "?", maxSplits: 1, omittingEmptySubsequences: false)
+        let base = base.appending(path: "auth/v1/\(parts[0])")
+        guard parts.count > 1 else { return base }
+        guard var comps = URLComponents(url: base, resolvingAgainstBaseURL: false) else { return nil }
+        comps.percentEncodedQuery = String(parts[1])
+        return comps.url
+    }
+
     private func post(_ path: String, _ body: [String: Any]) async -> [String: Any]? {
         switch await postResult(path, body) {
         case .success(let json): return json
@@ -181,7 +195,24 @@ final class SupabaseAuth {
 
     /// As `post`, but distinguishes a 4xx rejection from an unreachable server.
     private func postResult(_ path: String, _ body: [String: Any]) async -> Result<[String: Any], PostFailure> {
-        var request = URLRequest(url: AppEnvironment.supabaseURL.appending(path: "auth/v1/\(path)"))
+        // Build the URL by hand. `URL.appending(path:)` treats its argument as a single
+        // PATH COMPONENT and percent-encodes reserved characters, so the "?" in
+        // "token?grant_type=id_token" became "%3F" and the whole thing was swallowed into
+        // the path:
+        //
+        //     https://<project>.supabase.co/auth/v1/token%3Fgrant_type=id_token
+        //
+        // GoTrue has no such route, so every request 404'd. 404 is not in the
+        // 400/401/403 set below, so it was classified `.unreachable` -- retried three
+        // times, then returned false, and the sign-in call site discards the result. The
+        // failure was therefore completely silent, on both grant types.
+        //
+        // The effect was total: not one Supabase session has ever been created for this
+        // project (auth.users, auth.identities and auth.sessions are all empty), so
+        // `current_apple_user()` always returned null and every `assert_caller` guard
+        // refused every real signed-in player. Verified against production.
+        guard let url = Self.authURL(path, base: AppEnvironment.supabaseURL) else { return .failure(.unreachable) }
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(AppEnvironment.supabaseAnonKey, forHTTPHeaderField: "apikey")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

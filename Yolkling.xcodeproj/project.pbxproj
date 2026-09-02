@@ -37,6 +37,7 @@
 		262E1FF02C82FE14972FB107 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95D3E4FE309120014CA4B4F /* DeepLink.swift */; };
 		2AC2BDCF6B0A54ABC0D5F635 /* SpeciesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77C4E64C5781F3C8518BCB9B /* SpeciesTests.swift */; };
 		2C469F395804CE251D5A723B /* TutorialSpotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF269F8705D1C1273019B7C /* TutorialSpotlight.swift */; };
+		2D6B27C0314B7C7B64AEA0AC /* SupabaseAuthURLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2C2FD69FBE3E4A8F125FE9 /* SupabaseAuthURLTests.swift */; };
 		2DD5ED2695A90EFCD302A043 /* WidgetPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DC24772B748D797777AB22 /* WidgetPublisher.swift */; };
 		2E8A4379E8AC57C0E654C849 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC6AD7229641595F1324223 /* ProfileView.swift */; };
 		339169F8EB3C2F3BEAB56081 /* MoodCheckInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EE358D6CD83AA87EA6358B2 /* MoodCheckInView.swift */; };
@@ -335,6 +336,7 @@
 		F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCollectionView.swift; sourceTree = "<group>"; };
 		F84182C7549CD2B980C79766 /* AppReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReview.swift; sourceTree = "<group>"; };
 		F9D7499994CC77D4E8B2315C /* YolklingWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YolklingWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC2C2FD69FBE3E4A8F125FE9 /* SupabaseAuthURLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseAuthURLTests.swift; sourceTree = "<group>"; };
 		FD20DDA9932DC37F8B2B837F /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		FD45FAF49212DA1B82C7A4E4 /* PlusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusView.swift; sourceTree = "<group>"; };
 		FE819215FD090FE423F75193 /* YolklingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingApp.swift; sourceTree = "<group>"; };
@@ -703,6 +705,7 @@
 				77C4E64C5781F3C8518BCB9B /* SpeciesTests.swift */,
 				27D552FC0712259E2922DA94 /* StipendTests.swift */,
 				7BB9C33AA7D56912EC109F71 /* StreakEngineTests.swift */,
+				FC2C2FD69FBE3E4A8F125FE9 /* SupabaseAuthURLTests.swift */,
 				8DCD055E27868773534C0E1B /* SyncTests.swift */,
 				2872CD6D62D6CC390C0CB796 /* TrialAccessTests.swift */,
 				23B5B076C1A639A6479BBB95 /* TrustStageTests.swift */,
@@ -1267,6 +1270,7 @@
 				2AC2BDCF6B0A54ABC0D5F635 /* SpeciesTests.swift in Sources */,
 				1383CEA8FE592E603B3E6862 /* StipendTests.swift in Sources */,
 				AFCD4B498426B4ABD40F4804 /* StreakEngineTests.swift in Sources */,
+				2D6B27C0314B7C7B64AEA0AC /* SupabaseAuthURLTests.swift in Sources */,
 				76C65D3DC1A534CEC3160250 /* SyncTests.swift in Sources */,
 				0F3501B72F4F9211BBBA9886 /* TrialAccessTests.swift in Sources */,
 				20C60D20A52844E5B4EE79D8 /* TrustStageTests.swift in Sources */,
