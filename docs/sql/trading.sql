@@ -170,6 +170,9 @@ create or replace function my_trades(p_user text)
 returns jsonb language plpgsql security definer as $$
 declare v jsonb;
 begin
+  -- Identity guard: reads another player's trades, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   select coalesce(jsonb_agg(to_jsonb(x)), '[]'::jsonb) into v from (
     select o.id, o.from_id, o.to_id, o.offer_item, o.want_item, o.status, o.expires_at,
            (o.to_id = p_user) as incoming,
@@ -205,6 +208,9 @@ create or replace function tradeable_between(p_user text, p_other text)
 returns jsonb language plpgsql security definer as $$
 declare v_mine jsonb; v_theirs jsonb;
 begin
+  -- Identity guard: reads two players' inventories, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   select coalesce(jsonb_agg(item_id), '[]'::jsonb) into v_mine
     from public.inventory i
    where i.user_id = p_user

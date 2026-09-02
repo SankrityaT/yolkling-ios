@@ -31,6 +31,9 @@ create or replace function get_waves(p_user text)
 returns jsonb language plpgsql security definer as $$
 declare v jsonb;
 begin
+  -- Identity guard: reads another player's waves, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   select coalesce(jsonb_agg(jsonb_build_object('from_id', w.from_id, 'name', rs.name,
            'created_at', w.created_at) order by w.created_at desc), '[]'::jsonb)
     into v
@@ -53,6 +56,9 @@ create index if not exists visits_owner on public.visits(owner_id, created_at);
 create or replace function log_visit(p_visitor text, p_owner text)
 returns void language plpgsql security definer as $$
 begin
+  -- Identity guard: writes a visit attributed to p_visitor, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_visitor);
+
   if exists (select 1 from public.visits where visitor_id = p_visitor and owner_id = p_owner
              and created_at >= date_trunc('day', now())) then
     return;

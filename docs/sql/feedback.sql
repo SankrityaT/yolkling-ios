@@ -16,6 +16,9 @@ alter table public.app_feedback enable row level security;  -- no policies: only
 create or replace function submit_feedback(p_user text, p_kind text, p_message text, p_version text default null)
 returns jsonb language plpgsql security definer as $$
 begin
+  -- Identity guard: writes a feedback row attributed to p_user, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   if length(coalesce(trim(p_message), '')) < 1 then
     return jsonb_build_object('ok', false, 'reason', 'empty');
   end if;

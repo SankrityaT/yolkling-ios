@@ -344,3 +344,43 @@ revoke execute on function public.ensure_app_user(text) from public;
 revoke execute on function public.ensure_app_user(text) from anon, authenticated;
 
 notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- grant_founding hands out founding species, which are the exclusive tier. It is an
+-- INTERNAL helper -- the client never calls it, and founding_grant.sql calls it with a
+-- REFERRER's id, so it cannot take a caller assertion without breaking referrals.
+--
+-- Left exposed, anyone with the shipped anon key could grant themselves any founding
+-- species. Revoke from PUBLIC first; revoking only from anon leaves the default grant.
+-- ---------------------------------------------------------------------------
+revoke execute on function public.grant_founding(text, text, text) from public;
+revoke execute on function public.grant_founding(text, text, text) from anon, authenticated;
+
+notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- Two more internal helpers the client never calls.
+--
+-- can_reach(from, to) reports the relationship between any two players, so exposing it
+-- lets the anon key enumerate who is friends with, or blocked by, whom. It is called by
+-- gift_yolks and send_wave, which run as definer, so revoking does not affect them.
+--
+-- gen_yolk_code mints invite codes. Harmless in isolation, but there is no reason for it
+-- to be reachable from outside the functions that assign codes.
+-- ---------------------------------------------------------------------------
+revoke execute on function public.can_reach(text, text) from public;
+revoke execute on function public.can_reach(text, text) from anon, authenticated;
+revoke execute on function public.gen_yolk_code() from public;
+revoke execute on function public.gen_yolk_code() from anon, authenticated;
+
+notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- roll_nightly_drifts is the scheduled job. pg_cron runs it as the table owner, so it
+-- has no business being reachable from the client: exposed, anyone with the anon key
+-- could re-roll every eligible player's drift on demand, as often as they liked.
+-- ---------------------------------------------------------------------------
+revoke execute on function public.roll_nightly_drifts() from public;
+revoke execute on function public.roll_nightly_drifts() from anon, authenticated;
+
+notify pgrst, 'reload schema';

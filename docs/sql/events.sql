@@ -40,6 +40,9 @@ create or replace function active_events(p_user text)
 returns jsonb language plpgsql security definer as $$
 declare v jsonb;
 begin
+  -- Identity guard: reads another player's event state, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   select coalesce(jsonb_agg(to_jsonb(x)), '[]'::jsonb) into v from (
     select e.id, e.kind, e.payload_id, e.title, e.blurb,
            e.starts_at, e.ends_at, e.requires_entitlement,

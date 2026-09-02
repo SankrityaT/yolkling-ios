@@ -119,6 +119,9 @@ create or replace function send_postcard(p_from text, p_to text, p_message text)
 returns jsonb language plpgsql security definer as $$
 declare v_reward int := 0; v_daily int; v_friend_today int; v_msg text;
 begin
+  -- Identity guard: sends a postcard as p_from, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_from);
+
   if not exists (select 1 from public.friendships where user_id = p_from and friend_id = p_to) then
     return jsonb_build_object('ok', false, 'reason', 'not_friends');
   end if;

@@ -57,6 +57,9 @@ create or replace function get_drift(p_user text)
 returns jsonb language plpgsql security definer as $$
 declare v_rows jsonb;
 begin
+  -- Identity guard: reads another player's drift, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   perform ensure_app_user(p_user);
   select coalesce(jsonb_agg(to_jsonb(x)), '[]'::jsonb) into v_rows from (
     select rs.user_id, rs.name, rs.snapshot
@@ -81,6 +84,9 @@ create or replace function log_drift(p_user text, p_target text)
 returns jsonb language plpgsql security definer as $$
 declare v_today int;
 begin
+  -- Identity guard: writes a drift record for p_user, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   if p_user = p_target then
     return jsonb_build_object('ok', false, 'reason', 'thats_you');
   end if;
