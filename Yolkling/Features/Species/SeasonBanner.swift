@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The running season, surfaced where species live.
 ///
@@ -10,7 +11,10 @@ import SwiftUI
 struct SeasonBanner: View {
     let event: SeasonalEvent
     let vibe: Vibe
-    var onJoin: () -> Void
+    /// Async so the button can await the real outcome. `joining` used to be set true
+    /// with no reset anywhere in the file: one flaky request left "joining…" latched,
+    /// disabled, for the life of the sheet, on a time-limited event.
+    var onJoin: () async -> Void
 
     @State private var joining = false
 
@@ -46,7 +50,12 @@ struct SeasonBanner: View {
             } else {
                 Button {
                     joining = true
-                    onJoin()
+                    Task {
+                        await onJoin()
+                        // Always resolves. On success `event.joined` flips and this
+                        // whole branch disappears; on failure the button comes back.
+                        joining = false
+                    }
                 } label: {
                     Text(joining ? "joining…" : "join the season")
                         .font(YolkType.bodySmall.weight(.semibold))

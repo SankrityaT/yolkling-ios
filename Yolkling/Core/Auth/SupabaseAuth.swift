@@ -76,14 +76,35 @@ final class SupabaseAuth {
     /// Returns false rather than throwing: a failure here must never block getting into
     /// the app. The player still has their Apple id and everything works locally, they
     /// simply do not have a server session yet and we try again next launch.
+    /// Trades the Apple identity token for a Supabase session, retrying a few times.
+    ///
+    /// **The retry is the whole point.** This gets exactly one attempt at the token in a
+    /// person's lifetime with the app: Apple hands the identity token over once, at the
+    /// moment they tap Sign in with Apple, and it cannot be asked for again silently. The
+    /// old code tried once and the doc comment claimed "we try again next launch", which
+    /// was not true and could not be true, because by the next launch there is no token
+    /// left to try with.
+    ///
+    /// So a single dropped packet on a train left somebody permanently without a server
+    /// session: every backup silently refused by `me()`, "not backed up yet" forever, and
+    /// a "try again" button that retried the wrong thing. Reported from device testing.
     @discardableResult
     func signIn(appleIdentityToken: String) async -> Bool {
         var body: [String: Any] = ["provider": "apple", "id_token": appleIdentityToken]
         if let nonce = pendingNonce { body["nonce"] = nonce }
         pendingNonce = nil
 
-        guard let json = await post("token?grant_type=id_token", body) else { return false }
-        return store(json)
+        // Three attempts, backing off. Short waits: somebody is watching a screen, and
+        // the identity token itself is short-lived, so there is no point being patient.
+        for attempt in 0..<3 {
+            if let json = await post("token?grant_type=id_token", body), store(json) {
+                return true
+            }
+            if attempt < 2 {
+                try? await Task.sleep(for: .milliseconds(400 * (attempt + 1)))
+            }
+        }
+        return false
     }
 
     // MARK: Session
@@ -99,16 +120,26 @@ final class SupabaseAuth {
         return accessToken
     }
 
+    /// Refresh the access token. Only signs out when the server EXPLICITLY rejects the
+    /// refresh token.
+    ///
+    /// This used to sign out on any failure at all, because `post` flattened every
+    /// outcome to nil. One tunnel, one captive portal, one 500, and the refresh token was
+    /// deleted from the Keychain — a permanent, silent session loss recoverable only by a
+    /// fresh Sign in with Apple, which nothing outside Profile even offers. A transient
+    /// network failure must leave the session intact to be retried later.
     private func refresh() async {
         guard let refreshToken else { return }
-        guard let json = await post("token?grant_type=refresh_token",
-                                    ["refresh_token": refreshToken]) else {
-            // A refresh token the server has rejected is worse than none: it will fail
-            // forever. Drop the session so the next sign-in starts clean.
+        switch await postResult("token?grant_type=refresh_token", ["refresh_token": refreshToken]) {
+        case .success(let json):
+            _ = store(json)
+        case .failure(.rejected):
+            // Genuinely dead: it will fail forever. Drop it so the next sign-in is clean.
             signOut()
-            return
+        case .failure(.unreachable):
+            // Keep the session. We simply could not ask.
+            break
         }
-        _ = store(json)
     }
 
     func signOut() {
@@ -137,16 +168,69 @@ final class SupabaseAuth {
         return true
     }
 
+    /// Whether a failed auth call was the server REFUSING or the network being absent.
+    /// The difference decides whether it is safe to destroy a session.
+    enum PostFailure: Error { case rejected, unreachable }
+
+
+    /// Resolve an auth path that may carry a query string.
+    ///
+    /// Split rather than appended, because the query must survive as a query. Kept
+    /// separate and non-private so a test can check the "?" does not get encoded.
+    nonisolated static func authURL(_ path: String, base: URL) -> URL? {
+        let parts = path.split(separator: "?", maxSplits: 1, omittingEmptySubsequences: false)
+        let base = base.appending(path: "auth/v1/\(parts[0])")
+        guard parts.count > 1 else { return base }
+        guard var comps = URLComponents(url: base, resolvingAgainstBaseURL: false) else { return nil }
+        comps.percentEncodedQuery = String(parts[1])
+        return comps.url
+    }
+
     private func post(_ path: String, _ body: [String: Any]) async -> [String: Any]? {
-        var request = URLRequest(url: AppEnvironment.supabaseURL.appending(path: "auth/v1/\(path)"))
+        switch await postResult(path, body) {
+        case .success(let json): return json
+        case .failure: return nil
+        }
+    }
+
+    /// As `post`, but distinguishes a 4xx rejection from an unreachable server.
+    private func postResult(_ path: String, _ body: [String: Any]) async -> Result<[String: Any], PostFailure> {
+        // Build the URL by hand. `URL.appending(path:)` treats its argument as a single
+        // PATH COMPONENT and percent-encodes reserved characters, so the "?" in
+        // "token?grant_type=id_token" became "%3F" and the whole thing was swallowed into
+        // the path:
+        //
+        //     https://<project>.supabase.co/auth/v1/token%3Fgrant_type=id_token
+        //
+        // GoTrue has no such route, so every request 404'd. 404 is not in the
+        // 400/401/403 set below, so it was classified `.unreachable` -- retried three
+        // times, then returned false, and the sign-in call site discards the result. The
+        // failure was therefore completely silent, on both grant types.
+        //
+        // The effect was total: not one Supabase session has ever been created for this
+        // project (auth.users, auth.identities and auth.sessions are all empty), so
+        // `current_apple_user()` always returned null and every `assert_caller` guard
+        // refused every real signed-in player. Verified against production.
+        guard let url = Self.authURL(path, base: AppEnvironment.supabaseURL) else { return .failure(.unreachable) }
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(AppEnvironment.supabaseAnonKey, forHTTPHeaderField: "apikey")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         guard let (data, response) = try? await URLSession.shared.data(for: request),
-              let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-        else { return nil }
-        return json
+              let http = response as? HTTPURLResponse
+        else { return .failure(.unreachable) }          // offline, DNS, TLS, timeout
+        guard (200..<300).contains(http.statusCode) else {
+            // Only an explicit "this credential is no good" counts as a rejection.
+            // 429 (GoTrue rate-limits /token) and 408 are transient and were destroying
+            // sessions — the exact class of failure this change exists to stop.
+            switch http.statusCode {
+            case 400, 401, 403: return .failure(.rejected)
+            default:            return .failure(.unreachable)
+            }
+        }
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return .failure(.unreachable) }
+        return .success(json)
     }
 }

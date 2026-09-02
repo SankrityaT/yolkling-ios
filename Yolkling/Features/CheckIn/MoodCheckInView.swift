@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A gentle daily mood check-in: pick how you feel, your yolkling feels it too,
 /// and you earn Yolks (once a day). The first real wellbeing primitive, and the
@@ -31,6 +32,7 @@ struct MoodCheckInView: View {
                 .font(YolkType.bodySmall)
                 .foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: YolkSpace.md), count: 3), spacing: YolkSpace.lg) {
                 ForEach(feelings, id: \.label) { feeling in

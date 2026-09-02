@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Swapping cosmetics with a friend.
 ///
@@ -126,7 +127,7 @@ struct TradeSheet: View {
                     .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
 
                 if mine.isEmpty || theirs.isEmpty {
-                    Text(loading ? "looking…" : "nothing to swap yet — you'd both need something the other hasn't got.")
+                    Text(loading ? "looking…" : "nothing to swap yet. you'd both need something the other hasn't got.")
                         .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, YolkSpace.md)

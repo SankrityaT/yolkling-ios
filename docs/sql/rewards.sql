@@ -58,6 +58,11 @@ create or replace function redeem_code(p_code text, p_user text)
 returns jsonb language plpgsql security definer as $$
 declare v_referrer text; v_bonus int := 0; v_kind text;
 begin
+  -- Identity guard. redeem_code credits coins to p_user, so a spoofed p_user redeems
+  -- into any account. This file is applied AFTER founding_grant.sql and re-creates the
+  -- function, so the guard has to exist in both copies or a full deploy reopens the hole.
+  perform public.assert_caller(p_user);
+
   if exists (select 1 from public.redemptions where redeemed_by = p_user) then
     return jsonb_build_object('ok', false, 'reason', 'already_redeemed');
   end if;
@@ -89,5 +94,10 @@ alter table public.redemptions enable row level security;
 -- instead of apple_user_id text, or (b) store the mapping and call redeem_code from a trusted
 -- edge function with the service role. The policies below assume option (a)-style equality;
 -- adjust to your setup.
+-- create policy has no "if not exists", so re-running this file errors with 42710 and
+-- aborts everything below it. Dropping first makes the file re-runnable, which the
+-- README promises of every file here.
+drop policy if exists "own user row"  on public.app_users;
+drop policy if exists "own inventory" on public.inventory;
 create policy "own user row"  on public.app_users  for select using (auth.uid()::text = apple_user_id);
 create policy "own inventory" on public.inventory  for select using (auth.uid()::text = user_id);

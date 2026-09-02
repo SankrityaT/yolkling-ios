@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Creation, kept short and direct: pick a colour, pick a base look, then a
 /// little hatch reveal, then name it. The creature stays hidden in the egg so
@@ -8,6 +9,14 @@ import SwiftUI
 /// safe-area inset, so the button floats above the keyboard and the content
 /// never overflows on small phones.
 struct OnboardingView: View {
+    /// "I already have an account", from the first screen only.
+    ///
+    /// Onboarding now runs BEFORE sign-up, which is right for a new player and wrong for
+    /// a returning one: without this door, somebody reinstalling would have to pick a
+    /// vibe, hatch an egg and name a creature before they could sign in, and then watch
+    /// that creature be replaced by the one they actually own. Nil hides the link.
+    var onSignInInstead: (() -> Void)?
+
     var onFinish: (HatchedCreature) -> Void
     @State private var model = HatchModel()
 
@@ -28,7 +37,7 @@ struct OnboardingView: View {
             Group {
                 switch model.step {
                 case .welcome:
-                    WelcomeView(hero: hero) {
+                    WelcomeView(hero: hero, onSignInInstead: onSignInInstead) {
                         withAnimation(.onboardingStep) { model.begin() }
                     }
                     .transition(.onboardingStep)
@@ -507,6 +516,7 @@ private struct ClosetIntroView: View {
 
 private struct WelcomeView: View {
     let hero: Namespace.ID
+    var onSignInInstead: (() -> Void)?
     var onBegin: () -> Void
 
     var body: some View {
@@ -534,7 +544,30 @@ private struct WelcomeView: View {
         }
         .padding(.horizontal, YolkSpace.lg)
         .safeAreaInset(edge: .bottom) {
-            BottomBar { HatchButton("begin", action: onBegin) }
+            BottomBar {
+                VStack(spacing: YolkSpace.xs) {
+                    HatchButton("begin", action: onBegin)
+
+                    // Quiet, and under the real button. Making a creature is the path
+                    // this screen is for; this is only a door for somebody who already
+                    // has one somewhere else, and it should not compete.
+                    if let onSignInInstead {
+                        Button {
+                            Haptics.shared.tick()
+                            onSignInInstead()
+                        } label: {
+                            Text("i already have a yolkling")
+                                .font(YolkType.bodySmall)
+                                .foregroundStyle(YolkColor.inkSoft)
+                                .underline()
+                                .padding(.vertical, 10)
+                                .frame(maxWidth: .infinity)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
         }
     }
 

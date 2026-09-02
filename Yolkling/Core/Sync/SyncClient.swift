@@ -43,6 +43,9 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
     var placedDecorByZone: [String: String]?
 
     var coins: Int = 0
+    var stipendSeen: Int = 0
+    var stipendInitialized: Bool = false
+    var stipendAnchorID: String? = nil
     var ownedItemIDs: [String] = []
     var equippedItemIDs: [String] = []
 
@@ -90,6 +93,9 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         roomThemeID       = get(.roomThemeID, d.roomThemeID)
         placedDecorByZone = try? c.decodeIfPresent([String: String].self, forKey: .placedDecorByZone)
         coins             = get(.coins, d.coins)
+        stipendSeen       = get(.stipendSeen, d.stipendSeen)
+        stipendInitialized = get(.stipendInitialized, d.stipendInitialized)
+        stipendAnchorID   = try? c.decodeIfPresent(String.self, forKey: .stipendAnchorID)
         ownedItemIDs      = get(.ownedItemIDs, d.ownedItemIDs)
         equippedItemIDs   = get(.equippedItemIDs, d.equippedItemIDs)
         trust             = get(.trust, d.trust)
@@ -116,6 +122,9 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         roomThemeID = p.roomThemeID
         placedDecorByZone = p.placedDecorByZone
         coins = p.coins
+        stipendSeen = p.stipendSeen
+        stipendInitialized = p.stipendInitialized
+        stipendAnchorID = p.stipendAnchorID
         ownedItemIDs = p.ownedItemIDs
         equippedItemIDs = p.equippedItemIDs
         trust = p.trust
@@ -145,6 +154,16 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         // Coins take the HIGHER of the two, matching push_wallet's merge — a restore must
         // never be a way to lose Yolks you earned on this device before signing in.
         p.coins = max(p.coins, coins)
+        // Monotonic like coins: you have seen at least as much stipend as the higher of
+        // the two ledgers. Restoring can never move the mark backwards and re-open the
+        // double-credit window.
+        p.stipendSeen = max(p.stipendSeen, stipendSeen)
+        // Sticky: once either side has anchored, the restored creature is anchored.
+        p.stipendInitialized = p.stipendInitialized || stipendInitialized
+        // Only adopt a restored anchor when there is no local one. A local anchor
+        // describes the customer this device is actually signed in as; a snapshot's
+        // may name a customer we are no longer using, which would look like a switch.
+        p.stipendAnchorID = p.stipendAnchorID ?? stipendAnchorID
         p.ownedItemIDs = Array(Set(p.ownedItemIDs).union(ownedItemIDs))
         p.equippedItemIDs = equippedItemIDs
         p.trust = trust

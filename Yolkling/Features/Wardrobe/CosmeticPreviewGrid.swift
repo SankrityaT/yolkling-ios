@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Dev-only: renders each cosmetic in a slot worn on a small creature, so new
 /// hand-drawn assets can be eyeballed at a glance. Gated behind YOLK_COSMETICS.

@@ -1,6 +1,7 @@
 import SwiftUI
 import CoreMotion
 import QuartzCore
+import YolklingCore
 
 /// Where the card is pointing, and how hard it is being moved.
 ///

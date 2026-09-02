@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import YolklingCore
 
 /// Live seasons, and the cache that keeps them from vanishing.
 ///
@@ -51,9 +52,10 @@ final class EventStore {
     }
 
     @discardableResult
-    func join(_ event: SeasonalEvent) async -> [String] {
+    /// nil = the join failed; [] = joined, nothing granted. See `joinEvent`.
+    func join(_ event: SeasonalEvent) async -> [String]? {
         let granted = await client.joinEvent(userID: userID, eventID: event.id)
-        await refresh()
+        if granted != nil { await refresh() }
         return granted
     }
 

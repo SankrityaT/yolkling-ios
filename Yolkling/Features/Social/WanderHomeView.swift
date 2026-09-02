@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Your yolkling walking back in, carrying what it found.
 ///
@@ -54,6 +55,18 @@ struct WanderHomeView: View {
                 Spacer(minLength: 0)
             }
             .padding(.bottom, YolkSpace.lg)
+
+        }
+        // In an OVERLAY, not as a ZStack child. Making the ZStack .topLeading to host it
+        // re-aligned every sibling, shoving the creature and card against the leading
+        // edge with dead space on the right.
+        //
+        // A fullScreenCover cannot be swiped away, and the only other exit is finishing
+        // the scratch, so someone who sets the phone down mid-reveal was stranded.
+        .overlay(alignment: .topLeading) {
+            YolkCloseButton { onDone(); dismiss() }
+                .padding(.horizontal, YolkSpace.lg)
+                .padding(.top, YolkSpace.sm)
         }
         .task { await run() }
     }

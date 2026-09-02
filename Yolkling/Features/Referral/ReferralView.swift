@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import YolklingCore
 
 /// Bring a friend: share your code, redeem a friend's (or your founder) code.
 /// Both parties get Yolks via the live backend (docs/sql/rewards.sql).
@@ -32,6 +33,7 @@ struct ReferralView: View {
                 .font(YolkType.body).foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, YolkSpace.lg)
+                .fixedSize(horizontal: false, vertical: true)
 
             yourCode
 
@@ -68,6 +70,7 @@ struct ReferralView: View {
         .yolkDialog($dialog)
         .sheet(item: $foundingReveal) { sp in
             FoundingRevealView(species: sp) { wear(sp) }
+            .presentationDragIndicator(.visible)
         }
     }
 

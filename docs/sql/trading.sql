@@ -46,6 +46,13 @@ create or replace function propose_trade(p_from text, p_to text, p_offer text, p
 returns jsonb language plpgsql security definer as $$
 declare v_pending int;
 begin
+  -- Identity guard. This is the ONLY definition of these functions anywhere, so
+  -- without it a routine re-run of this file leaves trading open to a spoofed
+  -- actor: proposing offers as someone else, or accepting a trade on a victim's
+  -- behalf to take a season exclusive. Enforcement that lives only in the live
+  -- database and in no file is enforcement that a deploy silently removes.
+  perform public.assert_caller(p_from);
+
   if p_from = p_to then return jsonb_build_object('ok', false, 'reason', 'thats_you'); end if;
   if p_offer = p_want then return jsonb_build_object('ok', false, 'reason', 'same_item'); end if;
 
@@ -100,6 +107,13 @@ create or replace function respond_trade(p_user text, p_trade bigint, p_accept b
 returns jsonb language plpgsql security definer as $$
 declare t record;
 begin
+  -- Identity guard. This is the ONLY definition of these functions anywhere, so
+  -- without it a routine re-run of this file leaves trading open to a spoofed
+  -- actor: proposing offers as someone else, or accepting a trade on a victim's
+  -- behalf to take a season exclusive. Enforcement that lives only in the live
+  -- database and in no file is enforcement that a deploy silently removes.
+  perform public.assert_caller(p_user);
+
   select * into t from public.trade_offers where id = p_trade for update;
   if t is null then return jsonb_build_object('ok', false, 'reason', 'gone'); end if;
   if t.to_id <> p_user then return jsonb_build_object('ok', false, 'reason', 'not_yours'); end if;
@@ -156,6 +170,9 @@ create or replace function my_trades(p_user text)
 returns jsonb language plpgsql security definer as $$
 declare v jsonb;
 begin
+  -- Identity guard: reads another player's trades, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   select coalesce(jsonb_agg(to_jsonb(x)), '[]'::jsonb) into v from (
     select o.id, o.from_id, o.to_id, o.offer_item, o.want_item, o.status, o.expires_at,
            (o.to_id = p_user) as incoming,
@@ -171,7 +188,10 @@ begin
   return v;
 end $$;
 
-grant execute on function is_tradeable(text)                          to anon, authenticated;
+-- is_tradeable is DEFINED (and granted, at its definition site) in tradeable_items.sql,
+-- which README applies AFTER this file. Granting it here aborts a fresh deploy of
+-- trading.sql, so the grant stays with the definition.
+-- grant execute on function is_tradeable(text)                       to anon, authenticated;
 grant execute on function propose_trade(text, text, text, text)       to anon, authenticated;
 grant execute on function respond_trade(text, bigint, boolean)        to anon, authenticated;
 grant execute on function my_trades(text)                             to anon, authenticated;
@@ -188,6 +208,9 @@ create or replace function tradeable_between(p_user text, p_other text)
 returns jsonb language plpgsql security definer as $$
 declare v_mine jsonb; v_theirs jsonb;
 begin
+  -- Identity guard: reads two players' inventories, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   select coalesce(jsonb_agg(item_id), '[]'::jsonb) into v_mine
     from public.inventory i
    where i.user_id = p_user

@@ -1,5 +1,16 @@
 # Applying the SQL
 
+> **APPLY `auth_identity.sql` THEN `auth_enforce.sql` LAST, ALWAYS.**
+>
+> They were missing from this list, which meant a by-the-book deploy shipped with no
+> identity enforcement at all. Worse, several files below `create or replace` the guarded
+> functions with unguarded twins that trust a client-supplied `p_user` — `wallet.sql`,
+> `account.sql`, `backup.sql`, `social.sql`, `friend_cards.sql`, `social-living.sql`,
+> `founding_grant.sql`, and `drift.sql` (gift_yolks / send_wave) all do. Re-running any
+> of them to pick up an unrelated change silently reopens the IDOR that `auth_identity.sql`
+> documents as demonstrated live. This is the same trap the `is_tradeable` note below
+> describes, applied to the entire auth layer.
+
 Every file here is idempotent — `create table if not exists`, `create or replace
 function` — so re-running one is safe on its own. **Order is not arbitrary, though.**
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 extension RoomDecor {
     /// A single display slot in the room. Each zone shows at most `RoomZones.capacity`

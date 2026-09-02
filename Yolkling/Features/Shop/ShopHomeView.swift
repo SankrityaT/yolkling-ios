@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The unified store: one sheet, three aisles. Colours repaints your yolk,
 /// Outfit clips on cosmetics per slot, Room picks themes and decor for your
@@ -36,6 +37,10 @@ struct ShopHomeView: View {
     @State private var previewVibe: Vibe
     @State private var tryOn: TryOn?
     @State private var dialog: YolkDialog?
+    /// The Shop is where somebody is already thinking about spending, so it is the honest
+    /// place to say where Yolks come from and that a subscription exists. See
+    /// `YolksExplainer` for why it leads with "never bought".
+    @State private var showPlus = false
     @State private var searchText: String = ""
     @State private var showOwned: Bool = false
     @State private var sortOrder: SortOrder = .newest
@@ -81,6 +86,13 @@ struct ShopHomeView: View {
                     case .outfit:  outfitAisle
                     case .room:    roomAisle
                     }
+
+                    // AFTER the aisles, not before. Somebody arriving at the Shop wants to
+                    // see things, not be told about money; this answers the question once
+                    // they have scrolled past something they cannot afford yet.
+                    if searchText.isEmpty {
+                        YolksExplainer { showPlus = true }
+                    }
                 }
                 .padding(.horizontal, YolkSpace.lg)
                 .padding(.bottom, YolkSpace.xl)
@@ -89,7 +101,15 @@ struct ShopHomeView: View {
         .background(YolkColor.shell)
         .swipeToDismiss()
         .safeAreaInset(edge: .bottom, spacing: 0) { confirmBar }
+        // The sort button toggled showSort but the menu was never attached, so tapping
+        // it did nothing and the four sort orders were unreachable. Wired like HomeView's.
+        .yolkMenu(isPresented: $showSort, alignment: .top, anchor: .top) { sortMenu }
         .yolkDialog($dialog)
+        .sheet(isPresented: $showPlus) {
+            PlusView(store: .shared, vibe: previewVibe)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
         .onAppear {
             if ProcessInfo.processInfo.environment["YOLK_TRYON"] != nil,
                let item = CosmeticCatalog.all.first(where: { $0.id == "flower" }) {
@@ -188,6 +208,12 @@ struct ShopHomeView: View {
     private func filteredCosmetics(for slot: CosmeticSlot) -> [Cosmetic] {
         applySort(
             CosmeticCatalog.items(in: slot)
+                // Season exclusives are earned, never sold: hide them from the aisle
+                // UNLESS you own one. The shop is also the wardrobe (`tapCosmetic` is the
+                // only equip surface), so an unconditional filter made the six spring
+                // exclusives permanently unwearable by the people who earned them —
+                // worse than the "buy 0" hole it was closing.
+                .filter { !$0.grantOnly || wallet.owns($0) }
                 .filter { searchText.isEmpty || $0.name.localizedCaseInsensitiveContains(searchText) }
                 .filter { !showOwned || wallet.owns($0) },
             cost: { $0.cost }, rarity: { $0.rarity }
@@ -486,6 +512,7 @@ struct ShopHomeView: View {
                     Text("place pieces in your room from the Decorate sheet.")
                         .font(.caption).foregroundStyle(YolkColor.muted)
                         .padding(.top, -4)
+                        .fixedSize(horizontal: false, vertical: true)
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 84), spacing: YolkSpace.sm)], spacing: YolkSpace.sm) {
                         ForEach(decor) { decorCard($0) }
                     }

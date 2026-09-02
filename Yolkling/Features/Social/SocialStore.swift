@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Holds the live social state for the friends surface: your code, your friends
 /// (with their pet-house snapshots), and your postcard inbox. Thin wrapper over
@@ -25,13 +26,24 @@ final class SocialStore {
         if myCode.isEmpty, let c = await client.ensureUser(userID) { myCode = c }
     }
 
+    /// True when the last load could not reach the server. The UI needs it to tell
+    /// "you have no friends" apart from "we couldn't ask", which used to render the
+    /// brand-new-user empty state over a full friends list.
+    private(set) var loadFailed = false
+
     func load() async {
         loading = true
         async let f = client.friends(userID: userID)
         async let p = client.postcards(userID: userID)
         let (fr, pc) = await (f, p)
-        friends = fr
-        inbox = pc
+        // On failure keep whatever we already had rather than blanking the screen.
+        if let fr { friends = fr }
+        if let pc { inbox = pc }
+        // EITHER failing means we could not fully ask. With `&&`, a friends failure
+        // alongside a successful postcards call left loadFailed false and the empty
+        // state rendered "no friends yet" over a real friends list — the bug this flag
+        // exists to prevent.
+        loadFailed = (fr == nil || pc == nil)
         loading = false
     }
 
@@ -39,11 +51,15 @@ final class SocialStore {
     ///
     /// `isPublic` nil leaves the existing opt-in untouched — a routine sync must never
     /// silently un-publish a room its owner deliberately opened up.
-    func publish(name: String, snapshot: RoomSnapshot, isPublic: Bool? = nil) async {
+    /// Returns whether the server confirmed it. Only meaningful when `isPublic` is set;
+    /// the routine no-flag sync stays best-effort and callers may ignore the result.
+    @discardableResult
+    func publish(name: String, snapshot: RoomSnapshot, isPublic: Bool? = nil) async -> Bool {
         if let isPublic {
-            await client.publishRoom(userID: userID, name: name, snapshot: snapshot, isPublic: isPublic)
+            return await client.publishRoom(userID: userID, name: name, snapshot: snapshot, isPublic: isPublic)
         } else {
             await client.publishRoom(userID: userID, name: name, snapshot: snapshot)
+            return true
         }
     }
 
@@ -186,8 +202,11 @@ final class SocialStore {
 
     // MARK: Living Friends tab - waves, visits, gifts, lastVisited tracking.
 
-    func sendWave(to: String) async {
-        _ = await client.sendWave(from: userID, to: to)
+    /// Whether the wave was actually delivered. This discarded the result, so both
+    /// wave buttons flipped to "waved!" and locked out whether or not anything sent —
+    /// an affirmative lie with no retry.
+    func sendWave(to: String) async -> Bool {
+        await client.sendWave(from: userID, to: to).ok
     }
 
     func loadWaves() async -> [Wave] {

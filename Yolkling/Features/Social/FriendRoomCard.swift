@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A live mini-room card showing a friend's yolk in their decorated room,
 /// plus ambient status (new activity, mood, asleep, streak) and a wave button.
@@ -139,10 +140,14 @@ struct FriendRoomCard: View {
         Button {
             guard !waved else { return }
             Haptics.shared.select()
+            // Optimistic with a rollback; see VisitView.waveButton for the reasoning.
             waved = true
             friendWaveToken += 1   // their yolk waves back
             Task {
-                await store.sendWave(to: friend.user_id)
+                if await !store.sendWave(to: friend.user_id) {
+                    Haptics.shared.warn()
+                    withAnimation(.easeInOut(duration: 0.2)) { waved = false }
+                }
             }
         } label: {
             HStack(spacing: 4) {

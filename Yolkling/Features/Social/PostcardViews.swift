@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// Compose a kind note to a friend by PICKING what your yolkling says — there is no
 /// free-text field, by design. See `PostcardVocabulary` for the reasoning.
@@ -64,9 +65,10 @@ struct PostcardCompose: View {
             // Strangers earn nothing, so don't dangle a reward that isn't coming — and
             // don't lead with the payout for friends either. The point is the note.
             Text(subject.isStranger
-                 ? "one note per stranger, per day. no reward — that's the point."
+                 ? "one note per stranger, per day. no reward, that's the point."
                  : "kindness earns a few \(Currency.name), capped so it stays genuine.")
                 .font(.caption2).foregroundStyle(YolkColor.muted)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(YolkSpace.lg)
         .background(YolkColor.shell)

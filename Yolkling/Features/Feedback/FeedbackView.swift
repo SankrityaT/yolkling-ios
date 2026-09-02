@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A warm, direct line to the maker. Writes to Supabase (write-only RPC). Reached
 /// from the profile sheet. No account needed; tagged with the install/Apple id so
@@ -68,6 +69,15 @@ struct FeedbackView: View {
             }
             .buttonStyle(.plain).disabled(trimmed.isEmpty || working)
             .padding(.horizontal, YolkSpace.lg)
+
+            if sendFailed {
+                Text("couldn't send. your note is still here. check your connection and try again.")
+                    .font(.caption2).foregroundStyle(YolkColor.muted)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, YolkSpace.lg)
+                    .transition(.opacity)
+            }
         }
         .padding(.top, YolkSpace.sm)
     }
@@ -89,9 +99,12 @@ struct FeedbackView: View {
         .padding(.top, YolkSpace.xl)
     }
 
+    @State private var sendFailed = false
+
     private func send() async {
         guard !trimmed.isEmpty, !working else { return }
         working = true
+        sendFailed = false
         let ok = await SupabaseClient.shared.submitFeedback(userID: userID, kind: kind, message: trimmed, version: appVersion)
         working = false
         if ok {
@@ -99,6 +112,10 @@ struct FeedbackView: View {
             withAnimation(.easeInOut(duration: 0.3)) { sent = true }
         } else {
             Haptics.shared.warn()
+            // A warn haptic alone is invisible on a muted phone and silent in the
+            // simulator; every other failure in this app uses words. Text is intact,
+            // button says "send" again, and now the person knows why.
+            withAnimation(.easeInOut(duration: 0.2)) { sendFailed = true }
         }
     }
 }

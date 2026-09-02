@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A quiet, warm reveal when a founding yolkling is granted (a founder code, or a
 /// completed referral). No fanfare, just a soft "this is yours", per the grant
@@ -26,6 +27,7 @@ struct FoundingRevealView: View {
                 .font(YolkType.body).foregroundStyle(YolkColor.inkSoft)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, YolkSpace.lg).padding(.top, 4)
+                .fixedSize(horizontal: false, vertical: true)
 
             Spacer()
 

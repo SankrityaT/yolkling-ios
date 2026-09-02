@@ -24,4 +24,12 @@ struct WidgetSnapshot: Codable, Sendable {
         guard let data = try? JSONEncoder().encode(self) else { return }
         WidgetShare.defaults?.set(data, forKey: WidgetShare.key)
     }
+
+    /// Forget the published creature. Called on account deletion: the App Group survives
+    /// the SwiftData wipe, so without this the deleted yolk kept rendering on the home
+    /// screen by name, indefinitely, on a screen the person can still see. That makes a
+    /// data-deletion promise visibly untrue.
+    static func clear() {
+        WidgetShare.defaults?.removeObject(forKey: WidgetShare.key)
+    }
 }

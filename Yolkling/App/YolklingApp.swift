@@ -1,5 +1,6 @@
 import RevenueCat
 import SwiftUI
+import YolklingCore
 
 @main
 struct YolklingApp: App {

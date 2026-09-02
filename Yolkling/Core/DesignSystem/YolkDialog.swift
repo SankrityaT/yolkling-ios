@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// A reusable, cute modal dialog. Present it by setting a `YolkDialog?` state and
 /// attaching `.yolkDialog($state)`. Used for over-budget, confirmations, gentle

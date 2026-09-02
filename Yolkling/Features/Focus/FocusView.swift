@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import YolklingCore
 
 /// The focus session screen. Pick a duration, then your yolkling rests and glows
 /// while you put the phone down. Finish it and earn Yolks. Leaving for another app
@@ -16,6 +17,9 @@ struct FocusView: View {
     @State private var customMinutes = 30
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dismiss) private var dismiss
+
+    /// One payout per completed session. See the collect button.
+    @State private var collected = false
 
     private let durations = [15, 25, 45]
 
@@ -191,6 +195,13 @@ struct FocusView: View {
             }
             Spacer()
             primary("collect") {
+                // Guarded. `dismiss()` animates over ~0.35s and the button stays
+                // hit-testable throughout, so three taps on a 25-minute session paid
+                // 25 + 25 + 10 against the daily cap and inflated totalFocusMinutes 3x.
+                // This was the only wallet call site in the app with no idempotency
+                // guard at all.
+                guard !collected else { return }
+                collected = true
                 onComplete(store.durationMinutes)
                 dismiss()
             }
@@ -210,7 +221,13 @@ struct FocusView: View {
                 .fixedSize(horizontal: false, vertical: true)
             Spacer()
             VStack(spacing: YolkSpace.sm) {
-                primary("try again") { store.reset() }
+                primary("try again") {
+                    // Clear the payout guard too: this restarts the session in place
+                    // rather than re-presenting the view, so `collected` would otherwise
+                    // persist and silently block the next legitimate collect.
+                    collected = false
+                    store.reset()
+                }
                 secondary("close") { dismiss() }
             }
         }

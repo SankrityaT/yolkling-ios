@@ -1,5 +1,6 @@
 import SwiftData
 import Foundation
+import YolklingCore
 
 /// A stable id for this install, kept in UserDefaults so it survives launches
 /// (lost only on uninstall). Used for the backend until Sign in with Apple.
@@ -93,6 +94,30 @@ final class Player {
     /// Defaulted, so existing saves migrate lightly (they start empty, which makes the
     /// first reconcile a no-op — intended).
     var syncedItemIDs: [String] = []
+
+    /// Lifetime RevenueCat stipend Yolks ALREADY folded into `coins`. The credit
+    /// high-water mark. It lives on the Player, not in UserDefaults, so it travels with
+    /// the creature through the same cloud backup as the coins it guards. When it sat in
+    /// device-local UserDefaults, a reinstall reset it to 0 while the coins came back
+    /// from the backup, and the entire lifetime stipend re-credited. Keyed to the account
+    /// by virtue of being on the Player, and migration-safe (defaulted).
+    var stipendSeen: Int = 0
+
+    /// Whether `stipendSeen` has been anchored to RevenueCat's ledger for this creature.
+    /// Until it has, any balance already sitting in RevenueCat belongs to a PREVIOUS life
+    /// (a deleted account on the same Apple ID), not to this one, and must not be paid
+    /// out again. Defaulted, so migration-safe.
+    var stipendInitialized: Bool = false
+
+    /// Which RevenueCat customer `stipendSeen` was anchored against.
+    ///
+    /// `stipendInitialized` alone cannot tell a real earning from a customer switch:
+    /// deleting the account calls logOut, which mints a fresh anonymous customer whose
+    /// balance is 0, and signing back in switches to one whose lifetime balance is not.
+    /// Without this, that jump reads as newly earned and pays the whole lifetime balance
+    /// out a second time. nil means "anchored before this field existed" (see
+    /// StipendLedger) or never anchored at all.
+    var stipendAnchorID: String? = nil
 
     /// The Sign in with Apple stable user id, once they sign in. nil = local-only.
     var appleUserID: String?

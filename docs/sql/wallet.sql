@@ -22,6 +22,18 @@ $$;
 create or replace function push_wallet(p_user text, p_coins int, p_owned jsonb)
 returns jsonb language plpgsql security definer as $$
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_user);
+
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_user);
+
   perform ensure_app_user(p_user);
   -- Take the HIGHER of server and client rather than blindly adopting the client's
   -- number. gift_yolks (social-living.sql) also writes this column server-side, and

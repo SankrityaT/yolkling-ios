@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// One card, full screen, live: tilt it, then share it.
 ///

@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import YolklingCore
 @testable import Yolkling
 
 /// Exercises `StreakEngine.recordCare`. Source of truth:
@@ -115,4 +116,26 @@ struct StreakEngineTests {
         #expect(r.restUsed == false)
         #expect(r.restTokens == 3)      // tokens are preserved on a gentle reset
     }
+
+    @Test("a future lastCare (clock moved back) does not bank a streak day")
+    func futureLastCareIsNotConsecutive() {
+        let cal = Calendar.current
+        let today = Date()
+        // lastCare a day AHEAD of today: the shape produced by winding the clock forward,
+        // caring, then winding it back.
+        let future = cal.date(byAdding: .day, value: 1, to: today)!
+        let r = StreakEngine.recordCare(streak: 5, lastCare: future, restTokens: 2, today: today)
+        #expect(r.streak == 1, "a negative day-delta was treated as consecutive")
+        #expect(r.restUsed == false)
+    }
+
+    @Test("an ordinary consecutive day still advances")
+    func consecutiveStillWorks() {
+        let cal = Calendar.current
+        let today = Date()
+        let yesterday = cal.date(byAdding: .day, value: -1, to: today)!
+        let r = StreakEngine.recordCare(streak: 5, lastCare: yesterday, restTokens: 2, today: today)
+        #expect(r.streak == 6)
+    }
+
 }

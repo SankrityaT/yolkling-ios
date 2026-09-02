@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The Yolkling+ paywall. Free play is never gated — this is the supporter tier
 /// ("only if you love it, it keeps the servers on"). Clear price, restore, and
@@ -26,7 +27,7 @@ struct PlusView: View {
     /// every place the app renders your own creature: here, Home, Profile and Focus.
     ///
     /// The other two lines are checked and true. The monthly Yolks are real via
-    /// `SubscriptionStore.claimStipend()`, wired into HomeView, reading the RevenueCat
+    /// `SubscriptionStore.lifetimeStipendBalance()`, wired into HomeView, reading RevenueCat
     /// virtual-currency balance. There is no ad SDK anywhere in the project.
     private let perks: [(String, String)] = [
         ("sparkles",   "a supporter glow on your yolk, so it's visibly yours"),
@@ -44,7 +45,7 @@ struct PlusView: View {
                     // TestFlight and in App Review, where a human will see it. An
                     // `assert` cannot do this job — it's compiled out in release.
                     if RevenueCatConfig.isTestStore {
-                        Text("TEST STORE — purchases here are simulated, not real")
+                        Text("TEST STORE. purchases here are simulated, not real")
                             .font(.caption2.weight(.bold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
@@ -133,10 +134,19 @@ struct PlusView: View {
 
                     Button { subscribe() } label: {
                     VStack(spacing: 2) {
-                        Text(store.purchasing ? "…" : "become a supporter")
-                            .font(YolkType.body.weight(.semibold))
-                        Text(ctaSubtitle).font(.caption2).opacity(0.9)
+                        if store.purchasing {
+                            // Was a literal "…", which is indistinguishable from truncated
+                            // text and says nothing about whether anything is happening.
+                            PurchasingIndicator()
+                                .frame(height: 20)
+                                .transition(.opacity)
+                        } else {
+                            Text("become a supporter")
+                                .font(YolkType.body.weight(.semibold))
+                            Text(ctaSubtitle).font(.caption2).opacity(0.9)
+                        }
                     }
+                    .animation(.easeInOut(duration: 0.2), value: store.purchasing)
                     .foregroundStyle(YolkColor.shell)
                     .frame(maxWidth: .infinity).padding(.vertical, 13)
                     .background(YolkColor.ink, in: Capsule())
@@ -146,7 +156,23 @@ struct PlusView: View {
                 }
             }
             HStack(spacing: YolkSpace.md) {
-                Button("restore") { Task { await store.restore() } }
+                Button("restore") {
+                    Task {
+                        switch await store.restore() {
+                        case .restored:
+                            Haptics.shared.reward()
+                            dialog = YolkDialog(icon: .creature(vibe, .affectionate), title: "welcome back",
+                                                message: "your supporter status is restored.", primaryTitle: "♥")
+                        case .nothingToRestore:
+                            dialog = YolkDialog(icon: .creature(vibe, .curious), title: "nothing to restore",
+                                                message: "no past purchase was found on this Apple ID.", primaryTitle: "okay")
+                        case .failed:
+                            Haptics.shared.warn()
+                            dialog = YolkDialog(icon: .creature(vibe, .curious), title: "couldn't check",
+                                                message: "couldn't reach the App Store. try again in a moment.", primaryTitle: "okay")
+                        }
+                    }
+                }
                 Link("terms", destination: URL(string: "https://yolkling.com/terms")!)
                 Link("privacy", destination: URL(string: "https://yolkling.com/privacy")!)
             }
@@ -235,11 +261,21 @@ struct PlusView: View {
     private func subscribe() {
         guard let plan = chosen else { return }
         Task {
-            let ok = await store.subscribe(planID: plan.id)
-            if ok {
+            switch await store.subscribe(planID: plan.id) {
+            case .success:
                 Haptics.shared.reward()
                 dialog = YolkDialog(icon: .creature(vibe, .affectionate), title: "you're a supporter!",
                                     message: "thank you for keeping yolkling alive. it means everything.", primaryTitle: "♥")
+            case .cancelled:
+                // Deliberately nothing. They changed their mind; saying so would be nagging.
+                break
+            case .failed(let why):
+                // Anything other than a deliberate cancel HAS to say something. This
+                // branch did not exist, so a failed purchase was a tap that did nothing
+                // at all on a payment screen.
+                Haptics.shared.warn()
+                dialog = YolkDialog(icon: .creature(vibe, .curious), title: "that didn't go through",
+                                    message: why, primaryTitle: "okay")
             }
         }
     }

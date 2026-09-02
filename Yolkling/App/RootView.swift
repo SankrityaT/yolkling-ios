@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import YolklingCore
 
 /// Decides the first surface. A returning player (one saved `Player`) lands on
 /// home; a new user gets onboarding, and finishing it saves their creature so
@@ -7,6 +8,7 @@ import SwiftData
 /// straight to a demo home for deterministic App Store captures.
 struct RootView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
 
     /// Sorted, because `players.first` decides which creature you wake up to.
     ///
@@ -28,6 +30,27 @@ struct RootView: View {
     /// on. Not persisted separately: the Player is the record, and until one exists
     /// there is nothing to attach an identity to.
     @State private var pendingAppleUserID: String?
+
+    /// Whether we are still looking for a creature this account already owns.
+    ///
+    /// `.checking` is also the state we STAY in after a successful restore: `@Query` does
+    /// not republish within the same runloop turn, so flipping to `.done` here would show
+    /// a frame of onboarding before `players.first` takes over. The restore path
+    /// deliberately leaves this alone and lets the player branch win.
+    private enum RestoreCheck { case idle, checking, done }
+    @State private var restoreCheck: RestoreCheck = .idle
+
+    /// Mirrors `TrialAccess.isActive` as state, refreshed when the app comes forward.
+    /// Read directly it would be a plain function call that SwiftUI cannot observe, so a
+    /// trial expiring while the app sat in the background would not take effect until
+    /// something unrelated happened to redraw this view.
+    @State private var trialActive = TrialAccess.isActive
+
+    /// Set by "I already have an account" on the first onboarding screen. Without it,
+    /// onboarding-first would force a returning player to build a creature they are
+    /// about to lose: adoptOrRestore would bring their real one back and discard the
+    /// throwaway, which is safe but a horrible thing to do to somebody.
+    @State private var wantsSignIn = false
 
     // Launch ARGUMENTS as well as env vars: SIMCTL_CHILD_* propagates unreliably through
     // `simctl launch`, while --args always arrives. The App Store screenshot pipeline
@@ -143,7 +166,8 @@ struct RootView: View {
                 OnboardingView { _ in }
             } else if screenshotMode {
                 HomeView()
-            } else if let player = players.first {
+            } else if let player = players.first,
+                      player.appleUserID != nil || trialActive {
                 // An existing creature is never held hostage. Someone who made one on a
                 // build where sign-in was optional keeps their yolkling and is asked in
                 // Profile instead — locking them out of something they already made,
@@ -151,12 +175,75 @@ struct RootView: View {
                 // could do to a person.
                 HomeView(injected: creature(from: player), player: player)
                     .transition(.opacity)
-            } else if pendingAppleUserID == nil {
-                SignInGateView { userID in
-                    withAnimation(.easeInOut(duration: 0.4)) { pendingAppleUserID = userID }
+            } else if players.isEmpty && !wantsSignIn && restoreCheck == .idle {
+                // ONBOARDING FIRST, sign-up after. This used to be the other way round.
+                //
+                // Asking for an account before someone has seen anything asks them to
+                // pay a price for a thing they cannot yet value. Afterwards, they have
+                // chosen a vibe, hatched an egg and named a creature, and signing in
+                // reads as protecting something of theirs rather than a toll on the way
+                // in. It is also the friendlier reading of App Store 5.1.1(v): the app
+                // is fully usable before any account exists.
+                //
+                // Nothing else had to move. The trial path already ran onboarding before
+                // sign-in, so `save(creature)` on an account-less player, and
+                // `adoptOrRestore` attaching it afterwards, are both paths that already
+                // existed and are exercised.
+                OnboardingView(onSignInInstead: { wantsSignIn = true }) { creature in
+                    withAnimation(.easeInOut(duration: 0.5)) { save(creature) }
                 }
                 .transition(.opacity)
+            } else if pendingAppleUserID == nil && !trialActive {
+                SignInGateView(
+                    onSignedIn: { userID in
+                        // A creature already exists when the trial has run out. ADOPT it
+                        // onto the account rather than falling through to onboarding,
+                        // which would build a second one on top of the one they just
+                        // spent a day with. This is the single most important line on
+                        // this screen.
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            pendingAppleUserID = userID
+                            restoreCheck = .checking
+                        }
+                        if let existing = players.first {
+                            // A trial creature exists. Before adopting it onto the account
+                            // — which the next persist() would push over any cloud backup
+                            // — check whether a REAL creature is already saved to this
+                            // Apple ID. If so, bring it back rather than letting the
+                            // throwaway overwrite it. This runs while RestoringView is up,
+                            // BEFORE HomeView mounts and can push, so the correct creature
+                            // is in place before anything reaches the server. Without it,
+                            // a returning user who took the 24h trial on a fresh install
+                            // lost their real creature the instant they signed in.
+                            Task { await adoptOrRestore(userID, existing) }
+                        } else {
+                            Task { await restoreIfPossible(userID) }
+                        }
+                    },
+                    // Two different doors behind one link. For somebody who came here
+                    // from "I already have an account" it is the way BACK to onboarding,
+                    // and must not silently spend their one trial. Otherwise it is the
+                    // look-around, offered once: `hasStarted` never goes back to false,
+                    // so deleting the creature does not buy another day.
+                    onSkip: players.isEmpty
+                        ? { withAnimation(.easeInOut(duration: 0.3)) { wantsSignIn = false } }
+                        : (TrialAccess.hasStarted ? nil : {
+                            TrialAccess.begin()
+                            withAnimation(.easeInOut(duration: 0.4)) { trialActive = true }
+                        }),
+                    // players.isEmpty here means they came from "I already have an
+                    // account" on the first onboarding screen, so there is nothing on
+                    // this device yet to lose.
+                    context: players.isEmpty ? .returning
+                           : (TrialAccess.hasStarted ? .trialExpired : .justHatched)
+                )
+                .transition(.opacity)
+            } else if restoreCheck == .checking {
+                RestoringView()
+                    .transition(.opacity)
             } else {
+                // Reached when a creature exists but is mid-adoption, or when the trial
+                // is running. Onboarding is the first branch now, not this one.
                 OnboardingView { creature in
                     withAnimation(.easeInOut(duration: 0.5)) { save(creature) }
                 }
@@ -166,7 +253,23 @@ struct RootView: View {
         // The brand is a single warm light palette; lock the scheme so system
         // colours (text fields, placeholders) never flip to dark and vanish.
         .preferredColorScheme(.light)
-        .onAppear { YolkNotifications.reschedule() }
+        // The trial can lapse while the app is backgrounded, so re-read it on the way
+        // forward rather than trusting the value this view was built with.
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { trialActive = TrialAccess.isActive }
+        }
+        .onAppear {
+            YolkNotifications.reschedule()
+            #if DEBUG
+            // Screenshot seam: wind the look-around clock past its end so the expiry
+            // screen can be verified without waiting a day. DEBUG only, like every
+            // other seam, and inert in Release (see `seamsOn`).
+            if ProcessInfo.processInfo.environment["YOLK_TRIAL_EXPIRED"] != nil {
+                TrialAccess.expireNow()
+                trialActive = false
+            }
+            #endif
+        }
         .overlay(alignment: .bottom) { playerCountOverlay }
     }
 
@@ -186,6 +289,112 @@ struct RootView: View {
                 .allowsHitTesting(false)
         }
         #endif
+    }
+
+    /// Bring back the creature this Apple id already owns, if there is one.
+    ///
+    /// Runs BEFORE onboarding, which is the whole point: `HomeView`'s restore cannot help
+    /// a fresh install because it needs a `Player` that does not exist yet.
+    ///
+    /// Falls through to onboarding on every failure, which is exactly the old behaviour,
+    /// so the worst case here is the status quo rather than a person stuck on a spinner.
+    /// A trial creature exists locally and the person just signed in. Decide between
+    /// keeping it (they invested in it) and bringing back a real creature already saved
+    /// to this Apple ID (the trial was a throwaway). Runs before HomeView mounts, so the
+    /// decision is settled before any backup push can overwrite the cloud creature.
+    private func adoptOrRestore(_ userID: String, _ existing: Player) async {
+        // Look BEFORE writing the identity. Assigning `appleUserID` flips the body's
+        // `players.first, appleUserID != nil` branch, so HomeView mounts within a frame,
+        // runs onAppearWork -> persist -> PlayerBackup.push, and the throwaway creature
+        // replaces the cloud one — while this function is still awaiting the session.
+        // The whole ordering guarantee depends on deciding first and adopting after.
+        let snapshot: PlayerSnapshot? = await {
+            guard await waitForSession(upTo: 6) else { return nil }
+            let s = await PlayerBackup.pull(appleUserID: userID)
+            return s?.isWorthRestoring == true ? s : nil
+        }()
+
+        if let snapshot {
+            // Keep whichever creature actually has a life behind it. `isWorthRestoring`
+            // cannot distinguish these on its own (every player is seeded with the
+            // head-start Dex, so it is always true), and one check-in during the trial is
+            // enough to disqualify a "throwaway" test — which used to silently drop a
+            // 200-day creature. Compare care streaks and let the longer-lived one win;
+            // apply's max/union merge means coins and items survive either way.
+            let localIsThrowaway = existing.careStreak == 0
+                && existing.discoveredSpeciesIDs.count <= SpeciesSets.headStart.count
+                && existing.coins <= Wallet.welcomeGrant
+
+            // Streak alone is a poor discriminator: it resets to 1 after a gap, so a
+            // long-lapsed 200-day creature and a one-check-in trial can BOTH read 1, and
+            // a tie used to silently discard the cloud one — irrecoverably, because the
+            // next push overwrites it. Fall back to how much has actually been collected,
+            // then to which creature is older.
+            let cloudIsRicher: Bool = {
+                if snapshot.careStreak != existing.careStreak {
+                    return snapshot.careStreak > existing.careStreak
+                }
+                if snapshot.discoveredSpeciesIDs.count != existing.discoveredSpeciesIDs.count {
+                    return snapshot.discoveredSpeciesIDs.count > existing.discoveredSpeciesIDs.count
+                }
+                return snapshot.createdAt < existing.createdAt
+            }()
+
+            if localIsThrowaway || cloudIsRicher {
+                snapshot.apply(to: existing)
+            }
+        }
+
+        // Adopt onto the account only now that the decision is made, so the first push
+        // carries the creature we intend to keep.
+        existing.appleUserID = userID
+        try? context.save()
+        restoreCheck = .done
+    }
+
+    private func restoreIfPossible(_ userID: String) async {
+        // The gate fires `onSignedIn` without awaiting the Supabase exchange, on purpose:
+        // a server hiccup must not stand between someone and their creature. But the
+        // backup RPC authenticates from that session (it ignores any client-supplied id,
+        // which is what closed the IDOR), so a restore genuinely cannot happen until the
+        // session lands. Wait briefly, then give up rather than block.
+        guard await waitForSession(upTo: 6) else { restoreCheck = .done; return }
+
+        guard let snapshot = await PlayerBackup.pull(appleUserID: userID),
+              snapshot.isWorthRestoring,
+              players.isEmpty, !saving
+        else { restoreCheck = .done; return }
+
+        saving = true
+        // createdAt comes from the snapshot, not `.now`. It is the creature's birthday and
+        // the dateline on its card; a restore that resets it quietly rewrites how long
+        // someone has had their yolkling.
+        let player = Player(
+            name: snapshot.name,
+            colorHex: snapshot.colorHex,
+            styleRaw: snapshot.styleRaw,
+            startingMoodRaw: snapshot.startingMoodRaw,
+            appleUserID: userID,
+            createdAt: snapshot.createdAt
+        )
+        snapshot.apply(to: player)
+        context.insert(player)
+        // Explicit, unlike `save(_:)` below. A restored creature that is lost to a
+        // not-yet-flushed autosave would send the person straight back into onboarding,
+        // which is the exact bug this method exists to fix.
+        try? context.save()
+        // restoreCheck stays `.checking`; the `players.first` branch takes over.
+    }
+
+    /// Poll for the Supabase session rather than awaiting the sign-in task directly,
+    /// because the gate owns that task and deliberately does not hand it back.
+    private func waitForSession(upTo seconds: Double) async -> Bool {
+        let deadline = Date().addingTimeInterval(seconds)
+        while Date() < deadline {
+            if SupabaseAuth.shared.isSignedIn { return true }
+            try? await Task.sleep(for: .milliseconds(150))
+        }
+        return SupabaseAuth.shared.isSignedIn
     }
 
     private func save(_ creature: HatchedCreature) {

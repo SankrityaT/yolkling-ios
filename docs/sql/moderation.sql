@@ -34,6 +34,10 @@ create table if not exists public.content_reports (
 create or replace function block_user(p_user text, p_blocked text)
 returns jsonb language plpgsql security definer as $$
 begin
+  -- Identity guard. Block and report are the Guideline 1.2 moderation controls;
+  -- a spoofed p_user lets anyone block or report on a stranger's behalf.
+  perform public.assert_caller(p_user);
+
   if p_user = p_blocked then
     return jsonb_build_object('ok', false, 'reason', 'cannot block yourself');
   end if;
@@ -53,6 +57,10 @@ create or replace function report_content(p_user text, p_postcard bigint, p_reas
 returns jsonb language plpgsql security definer as $$
 declare v_msg text;
 begin
+  -- Identity guard. Block and report are the Guideline 1.2 moderation controls;
+  -- a spoofed p_user lets anyone block or report on a stranger's behalf.
+  perform public.assert_caller(p_user);
+
   select message into v_msg from public.postcards where id = p_postcard;
   insert into public.content_reports(reporter_id, postcard_id, reason, message)
     values (p_user, p_postcard, coalesce(p_reason, 'objectionable'), v_msg);

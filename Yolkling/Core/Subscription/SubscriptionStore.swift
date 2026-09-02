@@ -146,20 +146,76 @@ final class SubscriptionStore {
 
     // MARK: Buying
 
-    @discardableResult
-    func subscribe(planID: String) async -> Bool {
-        guard let package = (offering?.availablePackages.first { $0.identifier == planID }) else { return false }
-        purchasing = true
-        defer { purchasing = false }
-        guard let result = try? await Purchases.shared.purchase(package: package) else { return false }
-        guard !result.userCancelled else { return false }
-        apply(result.customerInfo)
-        return isPlus
+    /// The outcome of a purchase attempt, in the three shapes the UI has to treat
+    /// differently.
+    ///
+    /// This was a `Bool`, and the paywall did nothing at all when it came back false. Any
+    /// failure, a declined card, a store outage, a parental restriction, produced a tap
+    /// that visibly did nothing on a payment screen. Reported from device testing as
+    /// "clicked buy and then nothing happened", which is precisely what the code did.
+    ///
+    /// Cancelling has to stay silent, because someone who backed out on purpose does not
+    /// want to be told about it. Everything else has to say something.
+    enum PurchaseOutcome: Equatable {
+        case success
+        /// They backed out. Not an error, and deliberately shows no message.
+        case cancelled
+        /// Something went wrong, with a line already written for a person to read.
+        case failed(String)
     }
 
-    func restore() async {
-        guard let info = try? await Purchases.shared.restorePurchases() else { return }
+    func subscribe(planID: String) async -> PurchaseOutcome {
+        guard let package = (offering?.availablePackages.first { $0.identifier == planID }) else {
+            return .failed("that plan isn't available right now. try again in a moment.")
+        }
+        purchasing = true
+        defer { purchasing = false }
+        do {
+            let result = try await Purchases.shared.purchase(package: package)
+            if result.userCancelled { return .cancelled }
+            apply(result.customerInfo)
+            if isPlus { return .success }
+            // Paid, but the entitlement has not landed yet. Never say the purchase
+            // failed here: their money may well have moved.
+            return .failed("the purchase went through, but supporter status hasn't arrived yet. give it a moment, then tap restore.")
+        } catch {
+            return .failed(Self.readable(error))
+        }
+    }
+
+    /// Apple's and RevenueCat's errors, translated into something a person can act on.
+    /// The raw `localizedDescription` is usually either empty or a sentence about
+    /// StoreKit that means nothing to the person holding the phone.
+    nonisolated private static func readable(_ error: Error) -> String {
+        guard let code = (error as? RevenueCat.ErrorCode) else {
+            return "the purchase didn't go through. nothing was charged."
+        }
+        switch code {
+        case .productNotAvailableForPurchaseError:
+            return "this plan isn't available on your store yet. it can take a few hours after setup."
+        case .purchaseNotAllowedError:
+            return "purchases are turned off on this device. check Screen Time restrictions in Settings."
+        case .paymentPendingError:
+            return "the purchase is waiting on approval. supporter status appears once it clears."
+        case .storeProblemError, .networkError, .offlineConnectionError:
+            return "couldn't reach the App Store. nothing was charged. try again in a moment."
+        case .ineligibleError:
+            return "this offer isn't available on your account."
+        default:
+            return "the purchase didn't go through. nothing was charged."
+        }
+    }
+
+    /// What a restore attempt came to. `restore()` was Void with a `try?`, so the
+    /// App-Store-mandated recovery path was a dead tap: no spinner, no "nothing to
+    /// restore", no error — the same defect as the original purchase button, on the
+    /// button a lapsed supporter reaches for when they are already unhappy.
+    enum RestoreOutcome { case restored, nothingToRestore, failed }
+
+    func restore() async -> RestoreOutcome {
+        guard let info = try? await Purchases.shared.restorePurchases() else { return .failed }
         apply(info)
+        return isPlus ? .restored : .nothingToRestore
     }
 
     // MARK: The stipend (RevenueCat Virtual Currency)
@@ -178,23 +234,40 @@ final class SubscriptionStore {
     /// That split is the design, not a workaround: RevenueCat records the Yolks that came
     /// from money, Supabase records the ones that came from living, and neither can be
     /// mistaken for the other.
-    @discardableResult
-    func claimStipend() async -> Int {
+    /// The lifetime Yolks RevenueCat has granted this customer, or nil if it could not
+    /// be read. Append-only. The caller compares it against the per-account high-water
+    /// mark it persists on the Player, credits the delta, and stores the two together.
+    ///
+    /// This deliberately no longer owns the "already seen" mark. It used to live in
+    /// device-local UserDefaults, which reset on reinstall while the coins it guarded
+    /// came back from the cloud backup, re-crediting the entire lifetime stipend. The
+    /// mark now rides on the Player (see `Player.stipendSeen`) so it can never drift from
+    /// the coins again.
+    func lifetimeStipendBalance() async -> Int? {
         Purchases.shared.invalidateVirtualCurrenciesCache()
         guard let currencies = try? await Purchases.shared.virtualCurrencies(),
               let balance = currencies[RevenueCatConfig.yolksCurrency]?.balance
-        else { return 0 }
-
+        else { return nil }
         stipendGranted = balance
-        let key = Self.seenKey
-        let seen = UserDefaults.standard.integer(forKey: key)
-        guard balance > seen else { return 0 }
-
-        UserDefaults.standard.set(balance, forKey: key)
-        return balance - seen
+        return balance
     }
 
-    private static let seenKey = "yolk.stipendSeen"
+    /// The legacy device-local mark, read ONCE to migrate existing installs so they do
+    /// not re-credit on the upgrade that moves the mark onto the Player.
+
+    /// Which RevenueCat customer the ledger currently belongs to.
+    ///
+    /// The stipend anchor is meaningless without this. `logIn` switches customers and
+    /// `logOut` mints a brand new anonymous one, and each customer carries its own
+    /// lifetime balance, so an anchor taken against one is not a statement about any
+    /// other. Storing it alongside the mark is what lets the ledger notice the switch.
+    var currentCustomerID: String { Purchases.shared.appUserID }
+
+    /// Forget this device's RevenueCat identity. Called on account deletion so the next
+    /// person to sign in on this phone is not treated as the deleted customer.
+    func signOutOfPurchases() async {
+        _ = try? await Purchases.shared.logOut()
+    }
 
     // MARK: Identity
 
@@ -204,9 +277,17 @@ final class SubscriptionStore {
     /// RevenueCat mint its own anonymous id at launch rather than passing `InstallID`,
     /// because `logIn` then handles the "bought before signing in" transfer for us —
     /// a path that is easy to get wrong by hand.
-    func identify(_ appUserID: String) async {
-        guard let result = try? await Purchases.shared.logIn(appUserID) else { return }
+    /// Returns whether RevenueCat is now definitely this customer.
+    ///
+    /// The Bool matters: reading the virtual-currency ledger while still on the anonymous
+    /// user gives another customer's balance (or zero), and the stipend anchor treats
+    /// whatever it reads as "already paid". Anchoring against the wrong identity is how
+    /// a lifetime balance gets credited twice.
+    @discardableResult
+    func identify(_ appUserID: String) async -> Bool {
+        guard let result = try? await Purchases.shared.logIn(appUserID) else { return false }
         apply(result.customerInfo)
         await loadOfferings()
+        return true
     }
 }

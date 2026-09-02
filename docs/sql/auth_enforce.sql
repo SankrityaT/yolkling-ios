@@ -94,12 +94,22 @@ begin
   return jsonb_build_object('ok', true);
 end $$;
 
+-- Returns the {found, state, updated_at} ENVELOPE the client parses, not the raw state.
+-- This returned the bare jsonb, so SupabaseClient.pullPlayerState's `obj["found"] == true`
+-- guard never passed and the function returned nil UNCONDITIONALLY — cloud restore was
+-- dead app-wide, and any caller treating nil as "no backup" would happily overwrite a
+-- real one. Applied live 2026-09-01.
 create or replace function public.pull_player_state(p_user text)
 returns jsonb language plpgsql stable security definer
 set search_path = public as $$
-declare v_user text := public.me();
+declare v_user text := public.me(); v_state jsonb; v_at timestamptz;
 begin
-  return coalesce((select state from public.player_state where user_id = v_user), 'null'::jsonb);
+  select state, updated_at into v_state, v_at
+    from public.player_state where user_id = v_user;
+  if v_state is null then
+    return jsonb_build_object('found', false);
+  end if;
+  return jsonb_build_object('found', true, 'state', v_state, 'updated_at', v_at);
 end $$;
 
 notify pgrst, 'reload schema';
@@ -211,5 +221,166 @@ begin
   select referral_code into v_code from public.app_users where apple_user_id = p_user;
   return v_code;
 end $$;
+
+notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- Economy identity, applied live 2026-09-01.
+--
+-- These three executed for an UNAUTHENTICATED caller holding only the shipped
+-- anon key, because the sender/proposer was whatever the client said. Verified
+-- against production before and after: gift_yolks returned {"ok":false,
+-- "reason":"not_friends"} for a spoofed sender (i.e. it ran, and only failed a
+-- business check), and now returns "not authenticated".
+--
+-- gift_yolks was the live money hole: friend ids are handed out by get_friends,
+-- so anyone could drain 100 Yolks a day from each of their friends into their
+-- own balance. The p_from / p_to parameters are kept for wire compatibility and
+-- the sender is now always public.me().
+-- ---------------------------------------------------------------------------
+
+create or replace function public.gift_yolks(p_from text, p_to text, p_amount integer)
+returns jsonb language plpgsql security definer
+set search_path = public as $$
+declare v_from text := public.me();
+        v_today int; v_balance int; v_rel text; v_stranger_today int;
+begin
+  v_rel := can_reach(v_from, p_to);
+  if v_rel in ('self','blocked') then return jsonb_build_object('ok', false, 'reason', v_rel); end if;
+  if v_rel = 'no' then return jsonb_build_object('ok', false, 'reason', 'not_friends'); end if;
+  if v_rel = 'drifted' then
+    if p_amount <> 10 then return jsonb_build_object('ok', false, 'reason', 'stranger_amount'); end if;
+    select count(*) into v_stranger_today from public.gifts g
+      where g.from_id = v_from and g.created_at >= date_trunc('day', now())
+        and not exists (select 1 from public.friendships f
+                         where f.user_id = v_from and f.friend_id = g.to_id);
+    if v_stranger_today >= 1 then return jsonb_build_object('ok', false, 'reason', 'stranger_gift_cap'); end if;
+  elsif p_amount not in (10,20,50) then
+    return jsonb_build_object('ok', false, 'reason', 'bad_amount');
+  end if;
+  select coalesce(sum(amount),0) into v_today from public.gifts
+    where from_id = v_from and created_at >= date_trunc('day', now());
+  if v_today + p_amount > 100 then return jsonb_build_object('ok', false, 'reason', 'daily_cap'); end if;
+  select coins into v_balance from public.app_users where apple_user_id = v_from for update;
+  if coalesce(v_balance,0) < p_amount then return jsonb_build_object('ok', false, 'reason', 'insufficient'); end if;
+  update public.app_users set coins = coins - p_amount where apple_user_id = v_from;
+  update public.app_users set coins = coins + p_amount where apple_user_id = p_to;
+  insert into public.gifts(from_id, to_id, amount) values (v_from, p_to, p_amount);
+  return jsonb_build_object(
+    'ok', true,
+    -- The client's ONLY local debit for a gift is gated on this field.
+    'coins', (select coins from public.app_users where apple_user_id = v_from)
+  );
+end $$;
+
+create or replace function public.send_wave(p_from text, p_to text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_from text := public.me(); v_rel text; v_today int;
+begin
+  v_rel := can_reach(v_from, p_to);
+  if v_rel in ('self','blocked') then return jsonb_build_object('ok', false, 'reason', v_rel); end if;
+  if v_rel = 'no' then return jsonb_build_object('ok', false, 'reason', 'not_friends'); end if;
+  if v_rel = 'drifted' then
+    select count(*) into v_today from public.waves w
+      where w.from_id = v_from and w.created_at >= date_trunc('day', now())
+        and not exists (select 1 from public.friendships f
+                         where f.user_id = v_from and f.friend_id = w.to_id);
+    if v_today >= 3 then return jsonb_build_object('ok', false, 'reason', 'wave_cap'); end if;
+  end if;
+  -- One unseen wave per sender, as social-living.sql has always done. Dropped when
+  -- this function was rewritten here; since this file is applied last, losing it
+  -- meant unseen waves piled up one row per tap.
+  delete from public.waves where from_id = v_from and to_id = p_to and seen_at is null;
+  insert into public.waves(from_id, to_id) values (v_from, p_to);
+  return jsonb_build_object('ok', true);
+end $$;
+
+-- propose_trade: the proposer is the signed-in user. See trading.sql for the body;
+-- the live definition differs only in taking the identity from me().
+
+notify pgrst, 'reload schema';
+
+
+-- ---------------------------------------------------------------------------
+-- publish_room (4-arg): returns a result, and enforces identity.
+--
+-- It returned void, so the client could not tell success from failure at all —
+-- and a client checking for {ok} reads every call as a failure, which makes
+-- "open my door" impossible and drift/wander permanently unreachable. It was
+-- also unguarded: p_user was taken on trust. Applied live 2026-09-01.
+-- ---------------------------------------------------------------------------
+drop function if exists public.publish_room(text, text, jsonb, boolean);
+create or replace function public.publish_room(p_user text, p_name text, p_snapshot jsonb, p_public boolean)
+returns jsonb language plpgsql security definer
+set search_path = public as $$
+declare v_user text := public.me();
+begin
+  insert into public.room_snapshots(user_id, name, snapshot, is_public, updated_at)
+    values (v_user, p_name, coalesce(p_snapshot, '{}'::jsonb), p_public, now())
+  on conflict (user_id) do update
+    set name = excluded.name, snapshot = excluded.snapshot,
+        is_public = excluded.is_public, updated_at = now();
+  return jsonb_build_object('ok', true);
+end $$;
+-- drop function above discarded the ACL, so this has to be re-granted explicitly
+-- rather than leaning on PostgreSQL's implicit grant to PUBLIC.
+grant execute on function public.publish_room(text, text, jsonb, boolean) to anon, authenticated;
+
+notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- ensure_app_user is an INTERNAL helper. It creates an app_users row (with the
+-- welcome grant) for whatever id it is handed, and the Swift client never calls
+-- it — only other SECURITY DEFINER functions do, sometimes legitimately with a
+-- friend's id. So it cannot take a caller-identity assertion without breaking
+-- those paths; the right control is to stop exposing it over PostgREST at all.
+--
+-- Left reachable, it let anyone with the shipped anon key mint unlimited
+-- accounts, each seeded with coins.
+-- ---------------------------------------------------------------------------
+-- PUBLIC first: PostgreSQL grants EXECUTE to PUBLIC by default, and revoking only
+-- from anon/authenticated leaves that default in place, so the function stays callable.
+revoke execute on function public.ensure_app_user(text) from public;
+revoke execute on function public.ensure_app_user(text) from anon, authenticated;
+
+notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- grant_founding hands out founding species, which are the exclusive tier. It is an
+-- INTERNAL helper -- the client never calls it, and founding_grant.sql calls it with a
+-- REFERRER's id, so it cannot take a caller assertion without breaking referrals.
+--
+-- Left exposed, anyone with the shipped anon key could grant themselves any founding
+-- species. Revoke from PUBLIC first; revoking only from anon leaves the default grant.
+-- ---------------------------------------------------------------------------
+revoke execute on function public.grant_founding(text, text, text) from public;
+revoke execute on function public.grant_founding(text, text, text) from anon, authenticated;
+
+notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- Two more internal helpers the client never calls.
+--
+-- can_reach(from, to) reports the relationship between any two players, so exposing it
+-- lets the anon key enumerate who is friends with, or blocked by, whom. It is called by
+-- gift_yolks and send_wave, which run as definer, so revoking does not affect them.
+--
+-- gen_yolk_code mints invite codes. Harmless in isolation, but there is no reason for it
+-- to be reachable from outside the functions that assign codes.
+-- ---------------------------------------------------------------------------
+revoke execute on function public.can_reach(text, text) from public;
+revoke execute on function public.can_reach(text, text) from anon, authenticated;
+revoke execute on function public.gen_yolk_code() from public;
+revoke execute on function public.gen_yolk_code() from anon, authenticated;
+
+notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- roll_nightly_drifts is the scheduled job. pg_cron runs it as the table owner, so it
+-- has no business being reachable from the client: exposed, anyone with the anon key
+-- could re-roll every eligible player's drift on demand, as often as they liked.
+-- ---------------------------------------------------------------------------
+revoke execute on function public.roll_nightly_drifts() from public;
+revoke execute on function public.roll_nightly_drifts() from anon, authenticated;
 
 notify pgrst, 'reload schema';

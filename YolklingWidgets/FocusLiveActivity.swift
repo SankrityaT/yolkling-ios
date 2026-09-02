@@ -1,6 +1,7 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import YolklingCore
 
 /// The focus Live Activity: lock screen banner + Dynamic Island. The timer auto
 /// counts down from `endDate`. Shows a static yolkling face (widgets can't run

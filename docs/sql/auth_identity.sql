@@ -71,6 +71,39 @@ begin
   end if;
 end $$;
 
+
+-- Assert the caller is who they claim to be, but only if they are signed in at all.
+--
+-- A signed-out player is a supported state, not an error: `backendUserID` falls back to a
+-- device-local InstallID (Player.swift:130), and the 24-hour look-around reaches the
+-- paywall without ever signing in. assert_caller raises for those people, so using it on
+-- a surface they legitimately reach takes the surface away from them.
+--
+-- This is deliberately weaker and only worth using where the actor is METADATA rather
+-- than an authorization subject. It stops a signed-in client from writing as somebody
+-- else; it does not stop an attacker, who can simply send no JWT. Anything that grants
+-- an item, moves currency, or returns another player's private data must use
+-- assert_caller instead and accept that signed-out callers cannot reach it.
+create or replace function public.assert_caller_if_known(p_user text)
+returns void
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  v_caller text;
+begin
+  v_caller := public.current_apple_user();
+  -- No session: nothing to verify against, and nothing worth denying.
+  if v_caller is null then return; end if;
+  if v_caller is distinct from p_user then
+    raise exception 'not your account';
+  end if;
+end $$;
+
+grant execute on function public.assert_caller_if_known(text) to anon, authenticated;
+
 grant execute on function public.current_apple_user() to anon, authenticated;
 grant execute on function public.assert_caller(text)  to anon, authenticated;
 

@@ -1,5 +1,6 @@
 import SwiftUI
 import AuthenticationServices
+import YolklingCore
 
 /// The sign-in gate.
 ///
@@ -19,6 +20,27 @@ import AuthenticationServices
 struct SignInGateView: View {
     /// Called with the stable Apple user id once sign-in succeeds.
     var onSignedIn: (String) -> Void
+
+    /// Called when someone takes the one day look around. Nil hides the option entirely,
+    /// which is what happens once the trial has been used: it is offered once, and
+    /// deleting the creature does not renew it.
+    var onSkip: (() -> Void)?
+
+    /// Why this screen is up. Sign-up used to come BEFORE onboarding, so there was only
+    /// ever one thing to say. Now it comes after, and the same words would be wrong: you
+    /// cannot tell somebody their yolkling might "get lost" when they are looking at one
+    /// they just named.
+    enum Context {
+        /// Straight out of onboarding, creature named and hatched. The common path.
+        case justHatched
+        /// The one day look-around was taken and has run out.
+        case trialExpired
+        /// They said they already have an account, from the first onboarding screen,
+        /// and have not built anything on this device yet.
+        case returning
+    }
+
+    var context: Context = .justHatched
 
     /// What went wrong, if anything. Typed rather than a string, because the two cases
     /// need different UI: one is fixable in Settings and the other is worth retrying.
@@ -48,7 +70,7 @@ struct SignInGateView: View {
                     .frame(height: 185)
 
                 VStack(spacing: YolkSpace.sm) {
-                    Text("first, so they can't get lost")
+                    Text(headline)
                         .font(YolkType.title)
                         .foregroundStyle(YolkColor.ink)
                         .multilineTextAlignment(.center)
@@ -60,7 +82,7 @@ struct SignInGateView: View {
                         .minimumScaleFactor(0.8)
                         .yolkEntrance(0)
 
-                    Text("your yolkling lives on your phone, and signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day. it is also how friends find you.")
+                    Text(explanation)
                         .font(YolkType.body)
                         .foregroundStyle(YolkColor.inkSoft)
                         .multilineTextAlignment(.center)
@@ -118,10 +140,52 @@ struct SignInGateView: View {
                     .signInWithAppleButtonStyle(.black)
                     .frame(height: 52)
                     .clipShape(Capsule())
+
+                    // Deliberately a quiet text link under the loud black button, not a
+                    // second button beside it. Signing in is still the path we want and
+                    // the one that keeps the creature; this is the door for somebody who
+                    // is not ready, or whose Apple sign-in cannot work on this device.
+                    if let onSkip {
+                        Button {
+                            Haptics.shared.tick()
+                            onSkip()
+                        } label: {
+                            Text(context == .returning ? "actually, make a new one" : "look around for a day first")
+                                .font(YolkType.bodySmall)
+                                .foregroundStyle(YolkColor.inkSoft)
+                                .underline()
+                                .padding(.vertical, 10)
+                                .frame(maxWidth: .infinity)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
                 .padding(.horizontal, YolkSpace.lg)
                 .padding(.bottom, YolkSpace.lg)
             }
+        }
+    }
+
+
+    // MARK: Copy
+
+    private var headline: String {
+        switch context {
+        case .justHatched:  "keep them safe"
+        case .trialExpired: "one more thing, to keep them"
+        case .returning:    "welcome back"
+        }
+    }
+
+    private var explanation: String {
+        switch context {
+        case .justHatched:
+            "your yolkling lives on your phone. signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day, and it is how friends find you."
+        case .trialExpired:
+            "your yolkling is still here. signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day, and it is how friends find you. nothing is lost either way."
+        case .returning:
+            "sign in with the same Apple Account and your yolkling comes back, with everything they were carrying."
         }
     }
 

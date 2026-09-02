@@ -18,6 +18,12 @@ returns jsonb language plpgsql security definer as $$
 declare
   v_existed boolean;
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_user);
+
   select exists(select 1 from public.app_users where apple_user_id = p_user) into v_existed;
 
   -- Disassociate feedback (no FK, so it would otherwise be orphaned WITH the user id).

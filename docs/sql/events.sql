@@ -40,6 +40,10 @@ create or replace function active_events(p_user text)
 returns jsonb language plpgsql security definer as $$
 declare v jsonb;
 begin
+  -- Identity guard: reads another player's event state, so an unguarded actor is impersonation.
+  -- Lenient on purpose: this is read-only season state a signed-out player still sees.
+  perform public.assert_caller_if_known(p_user);
+
   select coalesce(jsonb_agg(to_jsonb(x)), '[]'::jsonb) into v from (
     select e.id, e.kind, e.payload_id, e.title, e.blurb,
            e.starts_at, e.ends_at, e.requires_entitlement,
@@ -58,6 +62,11 @@ create or replace function join_event(p_user text, p_event text)
 returns jsonb language plpgsql security definer as $$
 declare v_grants text[]; v_ok boolean;
 begin
+  -- Identity guard. join_event writes rows into public.inventory, so a spoofed
+  -- p_user mints season cosmetics into somebody else's account. The only
+  -- definition lives here, so this file is the only place that can enforce it.
+  perform public.assert_caller(p_user);
+
   perform ensure_app_user(p_user);
 
   select true, grant_on_join into v_ok, v_grants

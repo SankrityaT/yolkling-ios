@@ -13,6 +13,12 @@ create index if not exists waves_to_unseen on public.waves(to_id, seen_at);
 create or replace function send_wave(p_from text, p_to text)
 returns jsonb language plpgsql security definer as $$
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_from);
+
   if not exists (select 1 from public.friendships where user_id = p_from and friend_id = p_to) then
     return jsonb_build_object('ok', false, 'reason', 'not_friends');
   end if;
@@ -25,6 +31,9 @@ create or replace function get_waves(p_user text)
 returns jsonb language plpgsql security definer as $$
 declare v jsonb;
 begin
+  -- Identity guard: reads another player's waves, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_user);
+
   select coalesce(jsonb_agg(jsonb_build_object('from_id', w.from_id, 'name', rs.name,
            'created_at', w.created_at) order by w.created_at desc), '[]'::jsonb)
     into v
@@ -47,6 +56,9 @@ create index if not exists visits_owner on public.visits(owner_id, created_at);
 create or replace function log_visit(p_visitor text, p_owner text)
 returns void language plpgsql security definer as $$
 begin
+  -- Identity guard: writes a visit attributed to p_visitor, so an unguarded actor is impersonation.
+  perform public.assert_caller(p_visitor);
+
   if exists (select 1 from public.visits where visitor_id = p_visitor and owner_id = p_owner
              and created_at >= date_trunc('day', now())) then
     return;
@@ -79,6 +91,12 @@ create or replace function gift_yolks(p_from text, p_to text, p_amount int)
 returns jsonb language plpgsql security definer as $$
 declare v_today int; v_balance int;
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_from);
+
   if p_amount not in (10,20,50) then return jsonb_build_object('ok', false, 'reason', 'bad_amount'); end if;
   if not exists (select 1 from public.friendships where user_id = p_from and friend_id = p_to) then
     return jsonb_build_object('ok', false, 'reason', 'not_friends');

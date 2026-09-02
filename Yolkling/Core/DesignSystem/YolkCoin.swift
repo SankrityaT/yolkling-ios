@@ -1,4 +1,5 @@
 import SwiftUI
+import YolklingCore
 
 /// The Yolks currency coin: an egg-white disc with a domed yolk and a shine,
 /// with a glint that sweeps across when `animated`. Reusable at any size — small
