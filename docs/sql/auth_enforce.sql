@@ -287,6 +287,10 @@ begin
                          where f.user_id = v_from and f.friend_id = w.to_id);
     if v_today >= 3 then return jsonb_build_object('ok', false, 'reason', 'wave_cap'); end if;
   end if;
+  -- One unseen wave per sender, as social-living.sql has always done. Dropped when
+  -- this function was rewritten here; since this file is applied last, losing it
+  -- meant unseen waves piled up one row per tap.
+  delete from public.waves where from_id = v_from and to_id = p_to and seen_at is null;
   insert into public.waves(from_id, to_id) values (v_from, p_to);
   return jsonb_build_object('ok', true);
 end $$;

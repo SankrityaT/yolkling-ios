@@ -108,6 +108,10 @@ declare
   v_reward   int := 0;
   v_today    int;
 begin
+  -- Identity guard. This pays a reward to p_from, so an unguarded p_from is a
+  -- self-credit for anyone holding the anon key, which ships in the binary.
+  perform public.assert_caller(p_from);
+
   select text into v_text from public.postcard_phrases where token = p_token;
   if v_text is null then
     return jsonb_build_object('ok', false, 'reason', 'invalid_token');
