@@ -72,6 +72,10 @@ struct FriendsView: View {
                 }
                 .padding(.top, YolkSpace.sm)
             }
+            // Marks this as the scroll that decides whether a downward drag is a scroll
+            // or a dismiss. Without it, swipeToDismiss closes the screen when somebody
+            // scrolls back up. See SwipeToDismiss.swift.
+            .dismissAwareScroll()
         }
         .background(YolkColor.shell)
         .swipeToDismiss()
