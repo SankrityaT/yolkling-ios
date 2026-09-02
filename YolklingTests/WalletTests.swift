@@ -155,4 +155,18 @@ struct WalletTests {
         let free = CosmeticCatalog.all.first { $0.cost == 0 }!
         #expect(wallet.owns(free))
     }
+
+    @Test("grant-only season items can never be bought, at any price")
+    func grantOnlyNeverPurchasable() {
+        var w = Wallet(coins: 9999, owned: [])
+        // The real catalog item, so this test tracks the shipping definition.
+        let exclusive = CosmeticCatalog.all.first { $0.grantOnly }!
+        #expect(w.buy(exclusive) == false, "a grant-only item was purchasable")
+        #expect(w.owns(exclusive) == false)
+        #expect(w.coins == 9999, "coins moved on a refused buy")
+        // But a legitimate grant still lands it.
+        w.grant([exclusive.id])
+        #expect(w.owns(exclusive) == true)
+    }
+
 }

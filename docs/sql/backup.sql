@@ -28,6 +28,12 @@ create table if not exists public.player_state (
 create or replace function push_player_state(p_user text, p_state jsonb, p_version text)
 returns jsonb language plpgsql security definer as $$
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_user);
+
   perform ensure_app_user(p_user);
   insert into public.player_state(user_id, state, app_version, updated_at)
     values (p_user, coalesce(p_state, '{}'::jsonb), p_version, now())
@@ -43,6 +49,12 @@ create or replace function pull_player_state(p_user text)
 returns jsonb language plpgsql security definer as $$
 declare v_state jsonb; v_at timestamptz;
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_user);
+
   select state, updated_at into v_state, v_at
     from public.player_state where user_id = p_user;
   if v_state is null then

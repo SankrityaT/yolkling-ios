@@ -116,6 +116,13 @@ final class Wallet {
     /// Buy if affordable and not already owned. Returns whether it happened.
     @discardableResult
     func buy(_ cosmetic: Cosmetic) -> Bool {
+        // Grant-only items are NEVER purchasable, at any price. They cost 0 because
+        // they are earned by being present for a season, and `owns` reports false for
+        // an unowned one — so without this guard the affordability check (coins >= 0,
+        // always true) handed every season exclusive to anyone for free, and they then
+        // laundered into other accounts through the trade allowlist. The shop aisle
+        // filters them too; this is the backstop the `grantOnly` contract promises.
+        guard !cosmetic.grantOnly else { return false }
         guard !owns(cosmetic), coins >= cosmetic.cost else { return false }
         coins -= cosmetic.cost
         owned.insert(cosmetic.id)

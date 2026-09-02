@@ -281,6 +281,23 @@ struct HomeView: View {
         // buffered before a Player existed and Router restored it at init, so no
         // change ever fires); `.onChange` covers a link arriving while running.
         .task {
+            // Identify RevenueCat on EVERY launch for a signed-in player, not only on the
+            // onChange that fires when they sign in mid-session. That onChange never runs
+            // for a returning user — appleUserID is already set by the time this view
+            // mounts — so RevenueCat stayed on whatever id it had and a paying
+            // subscriber's stipend could read zero forever after a reinstall. `logIn` is
+            // idempotent, so repeating it costs nothing.
+            // Started here but NOT awaited here: `identify` is logIn + loadOfferings,
+            // two RevenueCat round trips, and blocking on them would put the season
+            // refresh and the wander homecoming behind them on a slow network. The handle
+            // is awaited further down, immediately before the ledger is read — reading
+            // the virtual-currency balance while still on the anonymous user would anchor
+            // the stipend against the wrong customer, which is the double-credit bug all
+            // over again.
+            let identified: Task<Bool, Never>? = player?.appleUserID.map { uid in
+                Task { await SubscriptionStore.shared.identify(uid) }
+            }
+
             events.userID = backendUserID
             await events.refresh()
 
@@ -306,18 +323,70 @@ struct HomeView: View {
                 wandered = await social.wanderIfDue()
             }
 
-            // Credit any Yolks RevenueCat has granted since we last looked. Idempotent:
-            // the high-water mark only moves after a successful credit, so a crash
-            // between the two costs the player nothing.
-            let stipend = await SubscriptionStore.shared.claimStipend()
-            if stipend > 0 {
-                wallet.earn(stipend)
-                persist()
-                dialog = YolkDialog(
-                    icon: .coins, title: "thank you",
-                    message: "\(stipend) \(Currency.name) landed, for keeping this going.",
-                    primaryTitle: "lovely"
+            // Credit any Yolks RevenueCat has granted since we last looked. The
+            // high-water mark lives on the Player (persisted + backed up alongside the
+            // coins), so a reinstall no longer re-credits the lifetime stipend, and mark
+            // and coins are written in the SAME persist() so a crash between them cannot
+            // leave one ahead of the other.
+            //
+            // Gated on identity RESOLUTION, not on having an Apple ID.
+            //
+            // "No Apple ID" is a supported, paying state: the 24-hour look-around trial
+            // reaches Home with appleUserID nil, and nothing gates the paywall on signing
+            // in. For that player RevenueCat's current anonymous customer IS the right
+            // customer, so the ledger is safe to read and anchoring at their real balance
+            // is correct. Treating them as "not ready" skipped the anchor entirely, and
+            // when they later signed in, logIn aliased the anonymous customer across and
+            // the anchor finally fired at the post-purchase balance — swallowing the
+            // first 400 Yolks they had paid for, permanently and silently.
+            //
+            // Only an Apple ID whose logIn has NOT confirmed is unsafe, because then the
+            // ledger belongs to whoever RevenueCat currently thinks we are.
+            let identityReady: Bool = if let identified { await identified.value } else { true }
+            if identityReady, let player,
+               let balance = await SubscriptionStore.shared.lifetimeStipendBalance() {
+                // ANCHOR before crediting, and anchor to a NAMED customer. RevenueCat's
+                // balance is lifetime and survives account deletion, so on this creature's
+                // first look anything already in the ledger was earned by a previous life
+                // and has already been paid out. Paying it again is the reinstall /
+                // delete-and-re-onboard double credit.
+                //
+                // The customer id is what makes that hold across a logOut. Account deletion
+                // mints a fresh anonymous customer whose balance is 0; anchoring at 0 and
+                // then signing back in would read the old customer's whole lifetime total
+                // as newly earned. See StipendLedger for the three cases.
+                //
+                // This subsumes the old device-local migration, and is strictly safer: a
+                // fresh install of an existing subscriber anchors at their current
+                // balance rather than at a UserDefaults value that may not exist. A
+                // restored creature arrives already anchored via the snapshot, so it
+                // keeps crediting normally.
+                let reading = StipendLedger.credit(
+                    balance: balance,
+                    customer: SubscriptionStore.shared.currentCustomerID,
+                    seen: player.stipendSeen,
+                    anchor: player.stipendAnchorID,
+                    wasAnchored: player.stipendInitialized
                 )
+                let stipend = reading.owed
+                player.stipendSeen = reading.seen
+                player.stipendAnchorID = reading.anchor
+                player.stipendInitialized = true
+                if stipend > 0 {
+                    // The mark was already advanced by `credit`; earn and persist both in
+                    // the same transaction so neither can land without the other.
+                    wallet.earn(stipend)
+                    persist()
+                    dialog = YolkDialog(
+                        icon: .coins, title: "thank you",
+                        message: "\(stipend) \(Currency.name) landed, for keeping this going.",
+                        primaryTitle: "lovely"
+                    )
+                } else {
+                    // Nothing owed, but anchoring still changed state and must be saved
+                    // or the next launch re-anchors against a newer balance.
+                    persist()
+                }
             }
         }
         .task { if router.pending != nil { showFriends = true } }
@@ -612,11 +681,36 @@ struct HomeView: View {
     }
 
     /// Reset the weekly challenge when a new calendar week starts.
+    /// Roll the weekly challenge over when the calendar week actually changes.
+    ///
+    /// Two things make this safe, and it needed both. It compares week-of-year plus
+    /// yearForWeekOfYear rather than calendar day, and `weekStart` now holds the MOMENT
+    /// OF CARE rather than the week boundary.
+    ///
+    /// The boundary instant was the real problem: it sits exactly on midnight, so any
+    /// westward timezone move pushed it into the previous week no matter how the
+    /// comparison was written. That fired a spurious mid-week rollover which destroyed
+    /// four days of progress AND reset `weeklyClaimed`, re-opening the 100-Yolk reward.
+    /// A round trip was 200 Yolks, repeatable, and ordinary travel triggered it by
+    /// accident. A mid-week instant has half a week of slack in either direction.
+    ///
+    /// Nothing else reads `weekStart` as a boundary; it is only ever compared to itself.
     private func rolloverWeekIfNeeded() {
         let cal = Calendar.current
-        let thisWeek = cal.dateInterval(of: .weekOfYear, for: .now)?.start
-        if weekStart == nil || (thisWeek != nil && !cal.isDate(weekStart!, equalTo: thisWeek!, toGranularity: .day)) {
-            weekStart = thisWeek
+        let now = Date()
+        let isSameWeek: Bool = {
+            guard let stored = weekStart else { return false }
+            let a = cal.dateComponents([.weekOfYear, .yearForWeekOfYear], from: stored)
+            let b = cal.dateComponents([.weekOfYear, .yearForWeekOfYear], from: now)
+            return a.weekOfYear == b.weekOfYear && a.yearForWeekOfYear == b.yearForWeekOfYear
+        }()
+        if !isSameWeek {
+            // Store the MOMENT OF CARE, not the week boundary. `dateInterval.start` sits
+            // exactly on midnight of the boundary, so any westward timezone move pushes
+            // that instant into the previous week and fires a spurious rollover — which
+            // is what re-opened the 100-Yolk claim on ordinary travel. A mid-week instant
+            // has half a week of slack in both directions.
+            weekStart = now
             weekCareDays = 0
             weeklyClaimed = false
         }
@@ -821,6 +915,7 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("put your yolk on your home screen")
                     .font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
+                    .fixedSize(horizontal: false, vertical: true)
                 Button { showWidgetHowTo = true } label: {
                     Text("see how")
                         .font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.shell)
@@ -930,6 +1025,7 @@ struct HomeView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("grow by living").font(YolkType.body.weight(.semibold)).foregroundStyle(YolkColor.ink)
                         Text("let your steps + sleep feed your yolk").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer()
                     Text("connect").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.shell)
@@ -1137,6 +1233,7 @@ struct HomeView: View {
                     .font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.ink)
                 Text("want your yolk to notice your sleep too?")
                     .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
             Button { connectHealth() } label: {

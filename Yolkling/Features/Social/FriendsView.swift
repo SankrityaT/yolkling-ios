@@ -150,13 +150,19 @@ struct FriendsView: View {
 
     private var emptyState: some View {
         VStack(spacing: YolkSpace.sm) {
-            Text("no friends yet")
+            // A failed load is NOT an empty friends list. This screen used to show the
+            // brand-new-user copy ("no friends yet") to somebody with friends whenever a
+            // request dropped, which reads as data loss.
+            Text(store.loadFailed ? "couldn't reach your friends" : "no friends yet")
                 .font(YolkType.body.weight(.semibold))
                 .foregroundStyle(YolkColor.inkSoft)
-            Text("add someone with their code or share yours below.")
+            Text(store.loadFailed
+                 ? "your friends are still there. we just couldn't reach them. check your connection and reopen this tab."
+                 : "add someone with their code or share yours below.")
                 .font(YolkType.bodySmall)
                 .foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, YolkSpace.lg)

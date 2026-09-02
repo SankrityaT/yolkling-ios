@@ -33,6 +33,12 @@ declare
     'founding-aurora','founding-dusklight','founding-seafoam','founding-honeyfeather',
     'founding-haloglow','founding-starling no. 002','founding-the og'];
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_user);
+
   if exists (select 1 from public.redemptions where redeemed_by = p_user) then
     return jsonb_build_object('ok', false, 'reason', 'already_redeemed');
   end if;

@@ -27,7 +27,7 @@ struct PlusView: View {
     /// every place the app renders your own creature: here, Home, Profile and Focus.
     ///
     /// The other two lines are checked and true. The monthly Yolks are real via
-    /// `SubscriptionStore.claimStipend()`, wired into HomeView, reading the RevenueCat
+    /// `SubscriptionStore.lifetimeStipendBalance()`, wired into HomeView, reading RevenueCat
     /// virtual-currency balance. There is no ad SDK anywhere in the project.
     private let perks: [(String, String)] = [
         ("sparkles",   "a supporter glow on your yolk, so it's visibly yours"),
@@ -45,7 +45,7 @@ struct PlusView: View {
                     // TestFlight and in App Review, where a human will see it. An
                     // `assert` cannot do this job — it's compiled out in release.
                     if RevenueCatConfig.isTestStore {
-                        Text("TEST STORE — purchases here are simulated, not real")
+                        Text("TEST STORE. purchases here are simulated, not real")
                             .font(.caption2.weight(.bold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
@@ -156,7 +156,23 @@ struct PlusView: View {
                 }
             }
             HStack(spacing: YolkSpace.md) {
-                Button("restore") { Task { await store.restore() } }
+                Button("restore") {
+                    Task {
+                        switch await store.restore() {
+                        case .restored:
+                            Haptics.shared.reward()
+                            dialog = YolkDialog(icon: .creature(vibe, .affectionate), title: "welcome back",
+                                                message: "your supporter status is restored.", primaryTitle: "♥")
+                        case .nothingToRestore:
+                            dialog = YolkDialog(icon: .creature(vibe, .curious), title: "nothing to restore",
+                                                message: "no past purchase was found on this Apple ID.", primaryTitle: "okay")
+                        case .failed:
+                            Haptics.shared.warn()
+                            dialog = YolkDialog(icon: .creature(vibe, .curious), title: "couldn't check",
+                                                message: "couldn't reach the App Store. try again in a moment.", primaryTitle: "okay")
+                        }
+                    }
+                }
                 Link("terms", destination: URL(string: "https://yolkling.com/terms")!)
                 Link("privacy", destination: URL(string: "https://yolkling.com/privacy")!)
             }

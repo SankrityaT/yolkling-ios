@@ -87,6 +87,7 @@ struct WhileYouWereAwayStrip: View {
                                     .font(YolkType.bodySmall)
                                     .foregroundStyle(YolkColor.ink)
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
                         }
                         .buttonStyle(.plain)

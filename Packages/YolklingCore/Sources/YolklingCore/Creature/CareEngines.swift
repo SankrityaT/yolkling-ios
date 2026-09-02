@@ -12,7 +12,12 @@ public enum StreakEngine {
         guard let last = lastCare else { return Result(streak: max(streak, 1), restTokens: restTokens, restUsed: false) }
         if cal.isDateInToday(last) { return Result(streak: streak, restTokens: restTokens, restUsed: false) }
         let days = cal.dateComponents([.day], from: cal.startOfDay(for: last), to: cal.startOfDay(for: today)).day ?? 0
-        if days <= 1 {
+        // `days == 1`, not `days <= 1`. A negative delta means `lastCare` is in the
+        // FUTURE, which happens when the device clock moves backwards or on a westward
+        // timezone move. Treating that as consecutive let one roll-forward-then-back
+        // cycle repeatedly bank a streak day, +10 Yolks, a free species and eventually
+        // the milestone ladder. Honest users are unaffected: their delta is exactly 1.
+        if days == 1 {
             let s = streak + 1
             let earned = s % 7 == 0 ? 1 : 0                 // a rest token for a full week of care
             return Result(streak: s, restTokens: min(restTokens + earned, 3), restUsed: false)

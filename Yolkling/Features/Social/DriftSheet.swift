@@ -18,6 +18,7 @@ struct DriftSheet: View {
     @State private var loading = true
     @State private var visiting: DriftTarget?
     @State private var opening = false
+    @State private var openFailed = false
 
     var body: some View {
         VStack(spacing: YolkSpace.md) {
@@ -81,7 +82,7 @@ struct DriftSheet: View {
             YolklingView(vibe: vibe, expression: .curious, size: 130, frozenAt: YolklingView.posedT)
             Text("open your door?")
                 .font(YolkType.heading).foregroundStyle(YolkColor.ink)
-            Text("your yolkling can only wander into rooms that are open. open yours and it can go exploring — and someone else's might drop by.")
+            Text("your yolkling can only wander into rooms that are open. open yours and it can go exploring, and someone else's might drop by.")
                 .font(YolkType.body).foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, YolkSpace.lg)
@@ -98,6 +99,15 @@ struct DriftSheet: View {
             .buttonStyle(.plain)
             .disabled(opening)
             .padding(.horizontal, YolkSpace.lg)
+
+            if openFailed {
+                Text("couldn't reach the server. your door is still closed. try again in a moment.")
+                    .font(.caption2).foregroundStyle(YolkColor.muted)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, YolkSpace.lg)
+                    .transition(.opacity)
+            }
             Spacer()
         }
     }
@@ -142,11 +152,20 @@ struct DriftSheet: View {
     private func openUp() {
         opening = true
         Task {
-            await store.publish(name: myName, snapshot: mySnapshot, isPublic: true)
-            store.roomIsPublic = true
+            // Branch on the server's answer. This used to celebrate and PERSIST
+            // roomIsPublic = true regardless: reward haptic, prompt gone for good, and
+            // the door never actually opened — the only symptom was a forever-empty
+            // wander list. Now failure leaves the prompt in place so it can be retried.
+            let ok = await store.publish(name: myName, snapshot: mySnapshot, isPublic: true)
             opening = false
-            Haptics.shared.reward()
-            await refresh()
+            if ok {
+                store.roomIsPublic = true
+                Haptics.shared.reward()
+                await refresh()
+            } else {
+                Haptics.shared.warn()
+                openFailed = true
+            }
         }
     }
 }

@@ -26,10 +26,21 @@ struct SignInGateView: View {
     /// deleting the creature does not renew it.
     var onSkip: (() -> Void)?
 
-    /// The trial was taken and has run out, so this screen is now in front of a creature
-    /// that already exists. Changes the copy, because "first, so they can't get lost" is
-    /// wrong for somebody who already has a yolk and is being asked to keep it.
-    var trialExpired: Bool = false
+    /// Why this screen is up. Sign-up used to come BEFORE onboarding, so there was only
+    /// ever one thing to say. Now it comes after, and the same words would be wrong: you
+    /// cannot tell somebody their yolkling might "get lost" when they are looking at one
+    /// they just named.
+    enum Context {
+        /// Straight out of onboarding, creature named and hatched. The common path.
+        case justHatched
+        /// The one day look-around was taken and has run out.
+        case trialExpired
+        /// They said they already have an account, from the first onboarding screen,
+        /// and have not built anything on this device yet.
+        case returning
+    }
+
+    var context: Context = .justHatched
 
     /// What went wrong, if anything. Typed rather than a string, because the two cases
     /// need different UI: one is fixable in Settings and the other is worth retrying.
@@ -59,7 +70,7 @@ struct SignInGateView: View {
                     .frame(height: 185)
 
                 VStack(spacing: YolkSpace.sm) {
-                    Text(trialExpired ? "one more thing, to keep them" : "first, so they can't get lost")
+                    Text(headline)
                         .font(YolkType.title)
                         .foregroundStyle(YolkColor.ink)
                         .multilineTextAlignment(.center)
@@ -71,9 +82,7 @@ struct SignInGateView: View {
                         .minimumScaleFactor(0.8)
                         .yolkEntrance(0)
 
-                    Text(trialExpired
-                         ? "your yolkling is still here. signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day, and it is how friends find you. nothing is lost either way."
-                         : "your yolkling lives on your phone, and signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day. it is also how friends find you.")
+                    Text(explanation)
                         .font(YolkType.body)
                         .foregroundStyle(YolkColor.inkSoft)
                         .multilineTextAlignment(.center)
@@ -141,7 +150,7 @@ struct SignInGateView: View {
                             Haptics.shared.tick()
                             onSkip()
                         } label: {
-                            Text("look around for a day first")
+                            Text(context == .returning ? "actually, make a new one" : "look around for a day first")
                                 .font(YolkType.bodySmall)
                                 .foregroundStyle(YolkColor.inkSoft)
                                 .underline()
@@ -155,6 +164,28 @@ struct SignInGateView: View {
                 .padding(.horizontal, YolkSpace.lg)
                 .padding(.bottom, YolkSpace.lg)
             }
+        }
+    }
+
+
+    // MARK: Copy
+
+    private var headline: String {
+        switch context {
+        case .justHatched:  "keep them safe"
+        case .trialExpired: "one more thing, to keep them"
+        case .returning:    "welcome back"
+        }
+    }
+
+    private var explanation: String {
+        switch context {
+        case .justHatched:
+            "your yolkling lives on your phone. signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day, and it is how friends find you."
+        case .trialExpired:
+            "your yolkling is still here. signing in keeps a copy safe so they survive a new phone, a reinstall, or a bad day, and it is how friends find you. nothing is lost either way."
+        case .returning:
+            "sign in with the same Apple Account and your yolkling comes back, with everything they were carrying."
         }
     }
 

@@ -32,6 +32,7 @@ struct MoodCheckInView: View {
                 .font(YolkType.bodySmall)
                 .foregroundStyle(YolkColor.muted)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: YolkSpace.md), count: 3), spacing: YolkSpace.lg) {
                 ForEach(feelings, id: \.label) { feeling in

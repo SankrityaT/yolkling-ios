@@ -41,10 +41,13 @@ struct CollectionView: View {
                 header
                 if let events, let season = events.featured {
                     SeasonBanner(event: season, vibe: vibe) {
-                        Task {
-                            let granted = await events.join(season)
-                            if !granted.isEmpty { onGranted(granted) }
+                        // nil = failed (banner resets, retry possible), [] = joined with
+                        // nothing granted, ids = joined and granted. These were one [].
+                        guard let granted = await events.join(season) else {
+                            Haptics.shared.warn()
+                            return
                         }
+                        if !granted.isEmpty { onGranted(granted) }
                     }
                 }
                 ForEach(SpeciesSets.all) { setCard($0) }
@@ -108,6 +111,7 @@ struct CollectionView: View {
                         }
                     }
                     Text(set.blurb).font(.footnote).foregroundStyle(YolkColor.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {

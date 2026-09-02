@@ -23,6 +23,7 @@ struct ProfileView: View {
     @State private var showHowTo = false
     @State private var showPlus = false
     @State private var retrying = false
+    @State private var notifyDenied = false
     private var subs: SubscriptionStore { .shared }
     @State private var notifyOn = YolkNotifications.isEnabled
     @State private var notifyTime = Calendar.current.date(
@@ -317,6 +318,11 @@ struct ProfileView: View {
                     .font(YolkType.body).foregroundStyle(YolkColor.ink)
             }
             .tint(Color(hex: 0xF2B84B))
+            if notifyDenied {
+                Text("notifications are off for Yolkling in Settings. turn them on there, then flip this again.")
+                    .font(.caption2).foregroundStyle(YolkColor.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             if notifyOn {
                 HStack {
                     Text("at").font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
@@ -346,6 +352,18 @@ struct ProfileView: View {
             _ = await SupabaseClient.shared.deleteAccount(userID: uid)
 
             YolkNotifications.disable()
+            // Drop the RevenueCat identity and the legacy migration flag with the account.
+            // The stipend high-water mark lives on the Player and dies with it, so a
+            // re-onboard under the same Apple ID would otherwise see a lifetime balance
+            // against a zero mark and re-credit the lot, repeatably.
+            await SubscriptionStore.shared.signOutOfPurchases()
+            UserDefaults.standard.removeObject(forKey: "yolk.stipendSeen")
+            UserDefaults.standard.removeObject(forKey: "yolk.stipendSeen.migrated")
+            SupabaseAuth.shared.signOut()
+            // The App Group outlives the SwiftData wipe, so the widget would keep showing
+            // the deleted creature by name until something else published over it.
+            WidgetSnapshot.clear()
+            WidgetPublisher.reload()
             if let player { context.delete(player) }
             try? context.save()
             InstallID.reset()   // otherwise the "deleted" player returns as the same user
@@ -374,9 +392,16 @@ struct ProfileView: View {
             if on {
                 let c = Calendar.current.dateComponents([.hour, .minute], from: notifyTime)
                 let ok = await YolkNotifications.enable(hour: c.hour ?? 9, minute: c.minute ?? 0)
-                if !ok { notifyOn = false }
+                if !ok {
+                    // The toggle snapping back on its own with no words looked like a
+                    // glitch. iOS only prompts once, so from here the ONLY fix is
+                    // Settings — say so.
+                    notifyOn = false
+                    notifyDenied = true
+                }
             } else {
                 YolkNotifications.disable()
+                notifyDenied = false
             }
         }
     }
@@ -396,8 +421,19 @@ struct ProfileView: View {
                         // reads "not backed up yet" afterwards and the person has no way
                         // to tell whether it worked. Now the fix is visibly the fix.
                         if await SupabaseAuth.shared.signIn(appleIdentityToken: token) {
-                            if let player {
-                                await PlayerBackup.push(player, appleUserID: player.appleUserID, force: true)
+                            if let player, let uid = player.appleUserID {
+                                // Look BEFORE pushing. A forced push here used to race
+                                // HomeView's restore pull, and when the push won it
+                                // replaced the cloud creature with this device's one —
+                                // then the pull returned the thing it had just
+                                // overwritten, `isWorthRestoring` was false, and the
+                                // other device's creature was gone with no dialog.
+                                // If a real backup exists, leave it alone and let
+                                // offerRestore ask; otherwise back this creature up.
+                                let existing = await PlayerBackup.pull(appleUserID: uid)
+                                if existing?.isWorthRestoring != true {
+                                    await PlayerBackup.push(player, appleUserID: uid, force: true)
+                                }
                             }
                         } else {
                             signInError = "couldn't reach your account. check your connection and try again."
