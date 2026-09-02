@@ -46,6 +46,12 @@ struct RootView: View {
     /// something unrelated happened to redraw this view.
     @State private var trialActive = TrialAccess.isActive
 
+    /// Set by "I already have an account" on the first onboarding screen. Without it,
+    /// onboarding-first would force a returning player to build a creature they are
+    /// about to lose: adoptOrRestore would bring their real one back and discard the
+    /// throwaway, which is safe but a horrible thing to do to somebody.
+    @State private var wantsSignIn = false
+
     // Launch ARGUMENTS as well as env vars: SIMCTL_CHILD_* propagates unreliably through
     // `simctl launch`, while --args always arrives. The App Store screenshot pipeline
     // will want this too.
@@ -169,6 +175,24 @@ struct RootView: View {
                 // could do to a person.
                 HomeView(injected: creature(from: player), player: player)
                     .transition(.opacity)
+            } else if players.isEmpty && !wantsSignIn && restoreCheck == .idle {
+                // ONBOARDING FIRST, sign-up after. This used to be the other way round.
+                //
+                // Asking for an account before someone has seen anything asks them to
+                // pay a price for a thing they cannot yet value. Afterwards, they have
+                // chosen a vibe, hatched an egg and named a creature, and signing in
+                // reads as protecting something of theirs rather than a toll on the way
+                // in. It is also the friendlier reading of App Store 5.1.1(v): the app
+                // is fully usable before any account exists.
+                //
+                // Nothing else had to move. The trial path already ran onboarding before
+                // sign-in, so `save(creature)` on an account-less player, and
+                // `adoptOrRestore` attaching it afterwards, are both paths that already
+                // existed and are exercised.
+                OnboardingView(onSignInInstead: { wantsSignIn = true }) { creature in
+                    withAnimation(.easeInOut(duration: 0.5)) { save(creature) }
+                }
+                .transition(.opacity)
             } else if pendingAppleUserID == nil && !trialActive {
                 SignInGateView(
                     onSignedIn: { userID in
@@ -196,19 +220,30 @@ struct RootView: View {
                             Task { await restoreIfPossible(userID) }
                         }
                     },
-                    // Offered once. `hasStarted` never goes back to false, so deleting
-                    // the creature does not buy another day.
-                    onSkip: TrialAccess.hasStarted ? nil : {
-                        TrialAccess.begin()
-                        withAnimation(.easeInOut(duration: 0.4)) { trialActive = true }
-                    },
-                    trialExpired: players.first != nil
+                    // Two different doors behind one link. For somebody who came here
+                    // from "I already have an account" it is the way BACK to onboarding,
+                    // and must not silently spend their one trial. Otherwise it is the
+                    // look-around, offered once: `hasStarted` never goes back to false,
+                    // so deleting the creature does not buy another day.
+                    onSkip: players.isEmpty
+                        ? { withAnimation(.easeInOut(duration: 0.3)) { wantsSignIn = false } }
+                        : (TrialAccess.hasStarted ? nil : {
+                            TrialAccess.begin()
+                            withAnimation(.easeInOut(duration: 0.4)) { trialActive = true }
+                        }),
+                    // players.isEmpty here means they came from "I already have an
+                    // account" on the first onboarding screen, so there is nothing on
+                    // this device yet to lose.
+                    context: players.isEmpty ? .returning
+                           : (TrialAccess.hasStarted ? .trialExpired : .justHatched)
                 )
                 .transition(.opacity)
             } else if restoreCheck == .checking {
                 RestoringView()
                     .transition(.opacity)
             } else {
+                // Reached when a creature exists but is mid-adoption, or when the trial
+                // is running. Onboarding is the first branch now, not this one.
                 OnboardingView { creature in
                     withAnimation(.easeInOut(duration: 0.5)) { save(creature) }
                 }
