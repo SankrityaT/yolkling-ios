@@ -87,6 +87,7 @@ struct ShopHomeView: View {
             }
         }
         .background(YolkColor.shell)
+        .swipeToDismiss()
         .safeAreaInset(edge: .bottom, spacing: 0) { confirmBar }
         .yolkDialog($dialog)
         .onAppear {

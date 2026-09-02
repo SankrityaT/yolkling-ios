@@ -25,10 +25,12 @@ struct FocusView: View {
             content
                 .padding(.horizontal, YolkSpace.lg)
         }
-        // This is a fullScreenCover, so there is no swipe-to-dismiss and no nav bar. The
-        // setup screen had no exit at all — tapping "focus" trapped you until you either
-        // started a session or force-quit the app. Every other phase has its own way out
-        // ("end session" / "close"), so the escape hatch is only needed here.
+        // This is a fullScreenCover, which has no swipe-to-dismiss on its own, so it's
+        // added back below. The setup screen had no exit at all — tapping "focus" trapped
+        // you until you either started a session or force-quit the app. Every other phase
+        // has its own way out ("end session" / "close"), so the escape hatch is only
+        // needed here; swiping is disabled mid-session for the same reason.
+        .swipeToDismiss(enabled: store.phase != .running)
         .overlay(alignment: .topTrailing) {
             if store.phase == .idle {
                 Button { dismiss() } label: {
