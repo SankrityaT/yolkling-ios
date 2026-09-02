@@ -59,6 +59,8 @@ create or replace function add_friend(p_user text, p_code text)
 returns jsonb language plpgsql security definer as $$
 declare v_friend text; v_name text;
 begin
+  perform public.assert_caller(p_user);
+
   perform ensure_app_user(p_user);
   select apple_user_id into v_friend from public.app_users
     where referral_code = upper(trim(p_code));
@@ -98,6 +100,12 @@ $$;
 create or replace function publish_room(p_user text, p_name text, p_snapshot jsonb)
 returns void language plpgsql security definer as $$
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_user);
+
   perform ensure_app_user(p_user);
   insert into public.room_snapshots(user_id, name, snapshot, updated_at)
     values (p_user, p_name, coalesce(p_snapshot, '{}'::jsonb), now())

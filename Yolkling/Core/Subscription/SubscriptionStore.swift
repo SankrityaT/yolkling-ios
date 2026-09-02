@@ -255,6 +255,14 @@ final class SubscriptionStore {
     /// The legacy device-local mark, read ONCE to migrate existing installs so they do
     /// not re-credit on the upgrade that moves the mark onto the Player.
 
+    /// Which RevenueCat customer the ledger currently belongs to.
+    ///
+    /// The stipend anchor is meaningless without this. `logIn` switches customers and
+    /// `logOut` mints a brand new anonymous one, and each customer carries its own
+    /// lifetime balance, so an anchor taken against one is not a statement about any
+    /// other. Storing it alongside the mark is what lets the ledger notice the switch.
+    var currentCustomerID: String { Purchases.shared.appUserID }
+
     /// Forget this device's RevenueCat identity. Called on account deletion so the next
     /// person to sign in on this phone is not treated as the deleted customer.
     func signOutOfPurchases() async {

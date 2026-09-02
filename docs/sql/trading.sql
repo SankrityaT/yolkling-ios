@@ -46,6 +46,13 @@ create or replace function propose_trade(p_from text, p_to text, p_offer text, p
 returns jsonb language plpgsql security definer as $$
 declare v_pending int;
 begin
+  -- Identity guard. This is the ONLY definition of these functions anywhere, so
+  -- without it a routine re-run of this file leaves trading open to a spoofed
+  -- actor: proposing offers as someone else, or accepting a trade on a victim's
+  -- behalf to take a season exclusive. Enforcement that lives only in the live
+  -- database and in no file is enforcement that a deploy silently removes.
+  perform public.assert_caller(p_from);
+
   if p_from = p_to then return jsonb_build_object('ok', false, 'reason', 'thats_you'); end if;
   if p_offer = p_want then return jsonb_build_object('ok', false, 'reason', 'same_item'); end if;
 
@@ -100,6 +107,13 @@ create or replace function respond_trade(p_user text, p_trade bigint, p_accept b
 returns jsonb language plpgsql security definer as $$
 declare t record;
 begin
+  -- Identity guard. This is the ONLY definition of these functions anywhere, so
+  -- without it a routine re-run of this file leaves trading open to a spoofed
+  -- actor: proposing offers as someone else, or accepting a trade on a victim's
+  -- behalf to take a season exclusive. Enforcement that lives only in the live
+  -- database and in no file is enforcement that a deploy silently removes.
+  perform public.assert_caller(p_user);
+
   select * into t from public.trade_offers where id = p_trade for update;
   if t is null then return jsonb_build_object('ok', false, 'reason', 'gone'); end if;
   if t.to_id <> p_user then return jsonb_build_object('ok', false, 'reason', 'not_yours'); end if;
@@ -171,7 +185,10 @@ begin
   return v;
 end $$;
 
-grant execute on function is_tradeable(text)                          to anon, authenticated;
+-- is_tradeable is DEFINED (and granted, at its definition site) in tradeable_items.sql,
+-- which README applies AFTER this file. Granting it here aborts a fresh deploy of
+-- trading.sql, so the grant stays with the definition.
+-- grant execute on function is_tradeable(text)                       to anon, authenticated;
 grant execute on function propose_trade(text, text, text, text)       to anon, authenticated;
 grant execute on function respond_trade(text, bigint, boolean)        to anon, authenticated;
 grant execute on function my_trades(text)                             to anon, authenticated;

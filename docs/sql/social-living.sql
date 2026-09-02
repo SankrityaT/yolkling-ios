@@ -13,6 +13,12 @@ create index if not exists waves_to_unseen on public.waves(to_id, seen_at);
 create or replace function send_wave(p_from text, p_to text)
 returns jsonb language plpgsql security definer as $$
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_from);
+
   if not exists (select 1 from public.friendships where user_id = p_from and friend_id = p_to) then
     return jsonb_build_object('ok', false, 'reason', 'not_friends');
   end if;
@@ -79,6 +85,12 @@ create or replace function gift_yolks(p_from text, p_to text, p_amount int)
 returns jsonb language plpgsql security definer as $$
 declare v_today int; v_balance int;
 begin
+  -- Identity guard. Without it this definition is an unguarded twin of the
+  -- enforced one in auth_enforce.sql, and re-running this file silently
+  -- reopens the hole it closed. Injected so every file is safe to re-run and
+  -- safe to apply in any order on a fresh database.
+  perform public.assert_caller(p_from);
+
   if p_amount not in (10,20,50) then return jsonb_build_object('ok', false, 'reason', 'bad_amount'); end if;
   if not exists (select 1 from public.friendships where user_id = p_from and friend_id = p_to) then
     return jsonb_build_object('ok', false, 'reason', 'not_friends');

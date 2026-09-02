@@ -45,6 +45,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
     var coins: Int = 0
     var stipendSeen: Int = 0
     var stipendInitialized: Bool = false
+    var stipendAnchorID: String? = nil
     var ownedItemIDs: [String] = []
     var equippedItemIDs: [String] = []
 
@@ -94,6 +95,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         coins             = get(.coins, d.coins)
         stipendSeen       = get(.stipendSeen, d.stipendSeen)
         stipendInitialized = get(.stipendInitialized, d.stipendInitialized)
+        stipendAnchorID   = try? c.decodeIfPresent(String.self, forKey: .stipendAnchorID)
         ownedItemIDs      = get(.ownedItemIDs, d.ownedItemIDs)
         equippedItemIDs   = get(.equippedItemIDs, d.equippedItemIDs)
         trust             = get(.trust, d.trust)
@@ -122,6 +124,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         coins = p.coins
         stipendSeen = p.stipendSeen
         stipendInitialized = p.stipendInitialized
+        stipendAnchorID = p.stipendAnchorID
         ownedItemIDs = p.ownedItemIDs
         equippedItemIDs = p.equippedItemIDs
         trust = p.trust
@@ -157,6 +160,10 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         p.stipendSeen = max(p.stipendSeen, stipendSeen)
         // Sticky: once either side has anchored, the restored creature is anchored.
         p.stipendInitialized = p.stipendInitialized || stipendInitialized
+        // Only adopt a restored anchor when there is no local one. A local anchor
+        // describes the customer this device is actually signed in as; a snapshot's
+        // may name a customer we are no longer using, which would look like a switch.
+        p.stipendAnchorID = p.stipendAnchorID ?? stipendAnchorID
         p.ownedItemIDs = Array(Set(p.ownedItemIDs).union(ownedItemIDs))
         p.equippedItemIDs = equippedItemIDs
         p.trust = trust

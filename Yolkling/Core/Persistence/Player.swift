@@ -109,6 +109,16 @@ final class Player {
     /// out again. Defaulted, so migration-safe.
     var stipendInitialized: Bool = false
 
+    /// Which RevenueCat customer `stipendSeen` was anchored against.
+    ///
+    /// `stipendInitialized` alone cannot tell a real earning from a customer switch:
+    /// deleting the account calls logOut, which mints a fresh anonymous customer whose
+    /// balance is 0, and signing back in switches to one whose lifetime balance is not.
+    /// Without this, that jump reads as newly earned and pays the whole lifetime balance
+    /// out a second time. nil means "anchored before this field existed" (see
+    /// StipendLedger) or never anchored at all.
+    var stipendAnchorID: String? = nil
+
     /// The Sign in with Apple stable user id, once they sign in. nil = local-only.
     var appleUserID: String?
 

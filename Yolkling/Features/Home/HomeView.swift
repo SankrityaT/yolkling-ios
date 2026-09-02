@@ -345,21 +345,33 @@ struct HomeView: View {
             let identityReady: Bool = if let identified { await identified.value } else { true }
             if identityReady, let player,
                let balance = await SubscriptionStore.shared.lifetimeStipendBalance() {
-                // ANCHOR before crediting. RevenueCat's balance is lifetime and survives
-                // account deletion, so on this creature's first look anything already in
-                // the ledger was earned by a previous life and has already been paid out.
-                // Paying it again is the reinstall/delete-and-re-onboard double credit.
+                // ANCHOR before crediting, and anchor to a NAMED customer. RevenueCat's
+                // balance is lifetime and survives account deletion, so on this creature's
+                // first look anything already in the ledger was earned by a previous life
+                // and has already been paid out. Paying it again is the reinstall /
+                // delete-and-re-onboard double credit.
+                //
+                // The customer id is what makes that hold across a logOut. Account deletion
+                // mints a fresh anonymous customer whose balance is 0; anchoring at 0 and
+                // then signing back in would read the old customer's whole lifetime total
+                // as newly earned. See StipendLedger for the three cases.
                 //
                 // This subsumes the old device-local migration, and is strictly safer: a
                 // fresh install of an existing subscriber anchors at their current
                 // balance rather than at a UserDefaults value that may not exist. A
                 // restored creature arrives already anchored via the snapshot, so it
                 // keeps crediting normally.
-                var seen = player.stipendSeen
-                var anchored = player.stipendInitialized
-                let stipend = StipendLedger.credit(balance: balance, seen: &seen, anchored: &anchored)
-                player.stipendSeen = seen
-                player.stipendInitialized = anchored
+                let reading = StipendLedger.credit(
+                    balance: balance,
+                    customer: SubscriptionStore.shared.currentCustomerID,
+                    seen: player.stipendSeen,
+                    anchor: player.stipendAnchorID,
+                    wasAnchored: player.stipendInitialized
+                )
+                let stipend = reading.owed
+                player.stipendSeen = reading.seen
+                player.stipendAnchorID = reading.anchor
+                player.stipendInitialized = true
                 if stipend > 0 {
                     // The mark was already advanced by `credit`; earn and persist both in
                     // the same transaction so neither can land without the other.

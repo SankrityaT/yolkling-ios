@@ -266,7 +266,11 @@ begin
   update public.app_users set coins = coins - p_amount where apple_user_id = v_from;
   update public.app_users set coins = coins + p_amount where apple_user_id = p_to;
   insert into public.gifts(from_id, to_id, amount) values (v_from, p_to, p_amount);
-  return jsonb_build_object('ok', true);
+  return jsonb_build_object(
+    'ok', true,
+    -- The client's ONLY local debit for a gift is gated on this field.
+    'coins', (select coins from public.app_users where apple_user_id = v_from)
+  );
 end $$;
 
 create or replace function public.send_wave(p_from text, p_to text)
@@ -314,5 +318,25 @@ begin
         is_public = excluded.is_public, updated_at = now();
   return jsonb_build_object('ok', true);
 end $$;
+-- drop function above discarded the ACL, so this has to be re-granted explicitly
+-- rather than leaning on PostgreSQL's implicit grant to PUBLIC.
+grant execute on function public.publish_room(text, text, jsonb, boolean) to anon, authenticated;
+
+notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------------
+-- ensure_app_user is an INTERNAL helper. It creates an app_users row (with the
+-- welcome grant) for whatever id it is handed, and the Swift client never calls
+-- it — only other SECURITY DEFINER functions do, sometimes legitimately with a
+-- friend's id. So it cannot take a caller-identity assertion without breaking
+-- those paths; the right control is to stop exposing it over PostgREST at all.
+--
+-- Left reachable, it let anyone with the shipped anon key mint unlimited
+-- accounts, each seeded with coins.
+-- ---------------------------------------------------------------------------
+-- PUBLIC first: PostgreSQL grants EXECUTE to PUBLIC by default, and revoking only
+-- from anon/authenticated leaves that default in place, so the function stays callable.
+revoke execute on function public.ensure_app_user(text) from public;
+revoke execute on function public.ensure_app_user(text) from anon, authenticated;
 
 notify pgrst, 'reload schema';

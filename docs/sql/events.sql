@@ -58,6 +58,11 @@ create or replace function join_event(p_user text, p_event text)
 returns jsonb language plpgsql security definer as $$
 declare v_grants text[]; v_ok boolean;
 begin
+  -- Identity guard. join_event writes rows into public.inventory, so a spoofed
+  -- p_user mints season cosmetics into somebody else's account. The only
+  -- definition lives here, so this file is the only place that can enforce it.
+  perform public.assert_caller(p_user);
+
   perform ensure_app_user(p_user);
 
   select true, grant_on_join into v_ok, v_grants

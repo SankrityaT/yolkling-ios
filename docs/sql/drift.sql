@@ -223,7 +223,13 @@ begin
 end $$;
 */
 
-grant execute on function publish_room(text, text, jsonb, boolean) to anon, authenticated;
+-- The 4-arg publish_room is commented out above, and on a fresh database it does not
+-- exist at this point in the documented apply order -- auth_enforce.sql creates it, and
+-- that file is applied LAST. Granting a function that does not exist is a hard error,
+-- which would abort this whole file and take can_reach (defined below, and defined
+-- nowhere else) with it, leaving gift_yolks and send_wave broken at runtime.
+-- The grant lives with the definition, in auth_enforce.sql.
+-- grant execute on function publish_room(text, text, jsonb, boolean) to anon, authenticated;
 
 notify pgrst, 'reload schema';
 

@@ -1,70 +1,106 @@
 import Testing
-import Foundation
 @testable import Yolkling
 
-/// The stipend credit rule, tested against the REAL implementation rather than a copy of
-/// it. Source of truth: `StipendLedger.credit`, called by `HomeView`'s `.task`.
+/// Tests for the stipend credit rule.
 ///
-/// The previous version of this suite re-implemented the arithmetic inline, so it passed
-/// happily through two regressions that shipped: an anchor latching onto the anonymous
-/// RevenueCat customer, and a gate that skipped the anchor for trial players. A test that
-/// cannot fail when the app breaks is worse than no test, because it reads as coverage.
-@Suite("Stipend")
+/// These call `StipendLedger` directly. An earlier version re-implemented the arithmetic
+/// in the test file and asserted against itself, which is how two regressions shipped
+/// green. Every assertion here fails if the corresponding line in the ledger is broken.
 struct StipendTests {
 
-    @Test("a brand-new creature anchors and is paid nothing for a previous life's balance")
-    func anchorsOnFirstLook() {
-        var seen = 0; var anchored = false
-        // A deleted account on this Apple ID already earned 600 lifetime.
-        let owed = StipendLedger.credit(balance: 600, seen: &seen, anchored: &anchored)
-        #expect(owed == 0, "re-onboarding re-credited a previous life's stipend")
-        #expect(seen == 600)
-        #expect(anchored)
+    private let alice = "rc_alice"
+    private let bob = "rc_bob"
+
+    // MARK: First look
+
+    @Test func firstLookAnchorsWithoutPaying() {
+        // An existing subscriber installing fresh. The lifetime balance was earned by a
+        // previous life and has already been handed out; paying it again is the bug.
+        let r = StipendLedger.credit(
+            balance: 1200, customer: alice, seen: 0, anchor: nil, wasAnchored: false)
+        #expect(r.owed == 0)
+        #expect(r.seen == 1200)
+        #expect(r.anchor == alice)
     }
 
-    @Test("a first-time subscriber is paid their first grant in full")
-    func firstGrantPaid() {
-        var seen = 0; var anchored = false
-        _ = StipendLedger.credit(balance: 0, seen: &seen, anchored: &anchored)   // anchors at 0
-        #expect(StipendLedger.credit(balance: 400, seen: &seen, anchored: &anchored) == 400)
+    @Test func earningsAfterTheAnchorArePaid() {
+        let r = StipendLedger.credit(
+            balance: 1600, customer: alice, seen: 1200, anchor: alice, wasAnchored: true)
+        #expect(r.owed == 400)
+        #expect(r.seen == 1600)
     }
 
-    @Test("each grant pays exactly once")
-    func paysOncePerGrant() {
-        var seen = 0; var anchored = false
-        _ = StipendLedger.credit(balance: 0, seen: &seen, anchored: &anchored)
-        #expect(StipendLedger.credit(balance: 400, seen: &seen, anchored: &anchored) == 400)
-        #expect(StipendLedger.credit(balance: 400, seen: &seen, anchored: &anchored) == 0,
-                "one grant was paid twice")
-        #expect(StipendLedger.credit(balance: 800, seen: &seen, anchored: &anchored) == 400)
+    @Test func nothingOwedTwice() {
+        let first = StipendLedger.credit(
+            balance: 400, customer: alice, seen: 0, anchor: alice, wasAnchored: true)
+        #expect(first.owed == 400)
+        // Same balance on the next launch. The mark moved, so there is nothing left.
+        let second = StipendLedger.credit(
+            balance: 400, customer: alice, seen: first.seen, anchor: first.anchor, wasAnchored: true)
+        #expect(second.owed == 0)
+        #expect(second.seen == 400)
     }
 
-    @Test("a creature restored from a backup keeps crediting and is never re-anchored")
-    func restoredKeepsCrediting() {
-        var seen = 400; var anchored = true      // arrived from the cloud snapshot
-        #expect(StipendLedger.credit(balance: 800, seen: &seen, anchored: &anchored) == 400,
-                "a restored creature lost a legitimate grant")
+    // MARK: The trial subscriber
+
+    @Test func trialSubscriberIsNotSwallowed() {
+        // Buys during the 24-hour look-around, with no Apple ID: RevenueCat's anonymous
+        // customer is the right customer, and the 400 they paid for must land.
+        let anchored = StipendLedger.credit(
+            balance: 0, customer: alice, seen: 0, anchor: nil, wasAnchored: false)
+        #expect(anchored.owed == 0)
+
+        let purchased = StipendLedger.credit(
+            balance: 400, customer: alice, seen: anchored.seen,
+            anchor: anchored.anchor, wasAnchored: true)
+        #expect(purchased.owed == 400)
     }
 
-    @Test("a trial subscriber who later signs in keeps the grant they paid for")
-    func trialSubscriberNotSwallowed() {
-        // Trial player, no Apple ID: RevenueCat's anonymous customer is the right one, so
-        // the ledger IS read and anchors at 0 before any purchase.
-        var seen = 0; var anchored = false
-        _ = StipendLedger.credit(balance: 0, seen: &seen, anchored: &anchored)
-        // They subscribe. The anonymous customer is granted 400.
-        #expect(StipendLedger.credit(balance: 400, seen: &seen, anchored: &anchored) == 400,
-                "the trial subscriber's first grant was swallowed")
-        // They sign in; logIn aliases the anonymous customer onto the Apple ID, balance
-        // carries across unchanged. Nothing further is owed.
-        #expect(StipendLedger.credit(balance: 400, seen: &seen, anchored: &anchored) == 0)
+    // MARK: Customer switches — the delete/reinstall double credit
+
+    @Test func switchingCustomerNeverPays() {
+        // Delete account calls logOut, minting a fresh anonymous customer at 0. Signing
+        // back in switches to one whose lifetime balance is 600. Read as a delta that is
+        // 600 free Yolks, repeatable once per reinstall.
+        let r = StipendLedger.credit(
+            balance: 600, customer: bob, seen: 0, anchor: alice, wasAnchored: true)
+        #expect(r.owed == 0)
+        #expect(r.seen == 600)
+        #expect(r.anchor == bob)
     }
 
-    @Test("the mark never moves backwards")
-    func monotonic() {
-        var seen = 800; var anchored = true
-        // A stale or partial ledger read must not re-open the credit window.
-        #expect(StipendLedger.credit(balance: 400, seen: &seen, anchored: &anchored) == 0)
-        #expect(seen == 800, "the high-water mark moved backwards")
+    @Test func reAnchorAdoptsTheNewBalanceEvenWhenLower() {
+        // Switching to a customer with LESS in the ledger must drop the mark, or the new
+        // customer's first 600 Yolks are silently swallowed.
+        let switched = StipendLedger.credit(
+            balance: 0, customer: bob, seen: 600, anchor: alice, wasAnchored: true)
+        #expect(switched.seen == 0)
+
+        let earned = StipendLedger.credit(
+            balance: 600, customer: bob, seen: switched.seen,
+            anchor: switched.anchor, wasAnchored: true)
+        #expect(earned.owed == 600)
+    }
+
+    // MARK: Upgrading an install that anchored before anchors had ids
+
+    @Test func legacyAnchorKeepsItsMark() {
+        // stipendAnchorID is nil but the mark is known good. Re-anchoring here would
+        // swallow the 400 earned since the last launch.
+        let r = StipendLedger.credit(
+            balance: 1600, customer: alice, seen: 1200, anchor: nil, wasAnchored: true)
+        #expect(r.owed == 400)
+        #expect(r.seen == 1600)
+        #expect(r.anchor == alice)
+    }
+
+    @Test func legacyAnchorAdoptsCustomerAndStopsBeingLegacy() {
+        let first = StipendLedger.credit(
+            balance: 1200, customer: alice, seen: 1200, anchor: nil, wasAnchored: true)
+        #expect(first.anchor == alice)
+        // Now a real switch is detectable, where before it was indistinguishable.
+        let switched = StipendLedger.credit(
+            balance: 5000, customer: bob, seen: first.seen, anchor: first.anchor, wasAnchored: true)
+        #expect(switched.owed == 0)
     }
 }
