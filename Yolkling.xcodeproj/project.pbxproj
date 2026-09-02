@@ -21,6 +21,7 @@
 		0E078F29634C6933BB02219C /* WalletTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4B5E5BA8C8DEB8E7E6510C /* WalletTests.swift */; };
 		0F3501B72F4F9211BBBA9886 /* TrialAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2872CD6D62D6CC390C0CB796 /* TrialAccessTests.swift */; };
 		0F43BA5020257840F2122EAC /* YolkGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */; };
+		7774F42E72C84B29BF5AE96D /* SwipeToDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1AE44014A14AD28A67D820 /* SwipeToDismiss.swift */; };
 		10085D4E418E087D48B2E2E8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 57E7F2809A70CE580B97F50B /* PrivacyInfo.xcprivacy */; };
 		115C413B6DCAC129F76CCDB3 /* WhileYouWereAwayStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */; };
 		1174E2755C3353C39FD9A5F5 /* VisitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10352955EC8A724ED2AEAC4 /* VisitView.swift */; };
@@ -104,6 +105,7 @@
 		B1EADEF941BA2EED96F4A3B8 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9E562134085B1FEF2F1E4F /* FriendsView.swift */; };
 		B230DDE4DA3A2793C38B4C11 /* YolkCardFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F368C2F7CFCEF100548E1 /* YolkCardFace.swift */; };
 		B2F7A5E40D9C63BADB899598 /* YolkGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */; };
+		825001B88EE24C1E9277CD5B /* SwipeToDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1AE44014A14AD28A67D820 /* SwipeToDismiss.swift */; };
 		B3140FD6A3D1EB7B1A6E617C /* RoomDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */; };
 		B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC859F6086205595CCA3548F /* YolkDialog.swift */; };
 		B5B2EFAF71B525CF370EC632 /* YolklingWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E011F05F71F616426CCE0C22 /* YolklingWatchApp.swift */; };
@@ -342,6 +344,7 @@
 		EFC6AD7229641595F1324223 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F554785860AE53390D69233E /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
 		F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkGlyph.swift; sourceTree = "<group>"; };
+		AD1AE44014A14AD28A67D820 /* SwipeToDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeToDismiss.swift; sourceTree = "<group>"; };
 		F6E28EF370E18DD9AE7BD181 /* YolkCloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCloseButton.swift; sourceTree = "<group>"; };
 		F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCollectionView.swift; sourceTree = "<group>"; };
 		F84182C7549CD2B980C79766 /* AppReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReview.swift; sourceTree = "<group>"; };
@@ -887,6 +890,7 @@
 		F133806DEFF3EED5217B0482 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
+				AD1AE44014A14AD28A67D820 /* SwipeToDismiss.swift */,
 				689CB056088DED814BB7D8E5 /* TypewriterText.swift */,
 				47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */,
 				BC859F6086205595CCA3548F /* YolkDialog.swift */,
@@ -1135,6 +1139,7 @@
 				774E938C4B98B2F1E3959A7E /* YolkCoin.swift in Sources */,
 				4BEACA0FC5E5B4E77845EF9C /* YolkDialog.swift in Sources */,
 				0F43BA5020257840F2122EAC /* YolkGlyph.swift in Sources */,
+				7774F42E72C84B29BF5AE96D /* SwipeToDismiss.swift in Sources */,
 				363FF6492F6CCD6F82CF23A3 /* YolkMenu.swift in Sources */,
 				8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */,
 				441D18B460CB0DBC2B7D832C /* YolklingWidgetBundle.swift in Sources */,
@@ -1244,6 +1249,7 @@
 				D50F0CDABF1E313A8062F15C /* YolkCoin.swift in Sources */,
 				B378611273BF8B1D3F1396EC /* YolkDialog.swift in Sources */,
 				B2F7A5E40D9C63BADB899598 /* YolkGlyph.swift in Sources */,
+				825001B88EE24C1E9277CD5B /* SwipeToDismiss.swift in Sources */,
 				FAB6F8C59864F026AAC940A1 /* YolkMenu.swift in Sources */,
 				FBFF303FA92AE2EEBC97B37A /* YolkNotifications.swift in Sources */,
 				3395E08E88EBF6AF2686CB1A /* YolkSegmented.swift in Sources */,

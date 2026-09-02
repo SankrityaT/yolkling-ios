@@ -102,6 +102,7 @@ struct DecorateView: View {
             }
         }
         .background(YolkColor.shell.ignoresSafeArea())
+        .swipeToDismiss()
         .yolkDialog($dialog)
         .animation(.easeInOut(duration: 0.25), value: activeZone)
         .animation(.easeInOut(duration: 0.2), value: tryOn?.id)

@@ -212,6 +212,7 @@ struct ProfileView: View {
         }
         .frame(maxWidth: .infinity)
         .background(YolkColor.shell)
+        .swipeToDismiss()
         .sheet(isPresented: $showFeedback) {
             FeedbackView(vibe: vibe, userID: player?.backendUserID ?? InstallID.current)
                 .presentationDetents([.large])

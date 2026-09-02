@@ -74,6 +74,7 @@ struct FriendsView: View {
             }
         }
         .background(YolkColor.shell)
+        .swipeToDismiss()
         .yolkDialog($dialog)
         .sheet(item: $visiting) { f in
             VisitView(subject: .friend(f), store: store, vibe: vibe, wallet: wallet,

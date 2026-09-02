@@ -99,6 +99,7 @@ struct ShopHomeView: View {
             }
         }
         .background(YolkColor.shell)
+        .swipeToDismiss()
         .safeAreaInset(edge: .bottom, spacing: 0) { confirmBar }
         // The sort button toggled showSort but the menu was never attached, so tapping
         // it did nothing and the four sort orders were unreachable. Wired like HomeView's.
