@@ -205,6 +205,12 @@ notify pgrst, 'reload schema';
 -- keeps working, and it preserves whatever is_public already is (COALESCE on the
 -- existing row) instead of silently un-publishing a room on every sync.
 -- ---------------------------------------------------------------------------
+-- SUPERSEDED by auth_enforce.sql, which returns jsonb and enforces identity via me().
+-- Left here as a marker rather than a definition: re-running this file with the old
+-- `returns void` signature fails with "cannot change return type of existing function"
+-- and aborts every section below it, including the gift_yolks / send_wave hardening.
+-- Same reasoning as the is_tradeable note in README.md.
+/*
 create or replace function publish_room(p_user text, p_name text, p_snapshot jsonb, p_public boolean)
 returns void language plpgsql security definer as $$
 begin
@@ -215,6 +221,7 @@ begin
     set name = excluded.name, snapshot = excluded.snapshot,
         is_public = coalesce(p_public, public.room_snapshots.is_public), updated_at = now();
 end $$;
+*/
 
 grant execute on function publish_room(text, text, jsonb, boolean) to anon, authenticated;
 
@@ -248,6 +255,12 @@ begin
   return 'no';
 end $$;
 
+-- SUPERSEDED by auth_enforce.sql, which takes the actor from me() instead of trusting
+-- p_from. Commented out rather than left live: re-running this file replays the
+-- unguarded definition straight over the hardened one and reopens the money hole. That
+-- is not hypothetical — it happened once, during verification, by following README.md's
+-- own "every file is idempotent, re-running is safe" instruction.
+/*
 create or replace function send_wave(p_from text, p_to text)
 returns jsonb language plpgsql security definer as $$
 declare v_rel text; v_today int;
@@ -269,7 +282,14 @@ begin
   insert into public.waves(from_id, to_id) values (p_from, p_to);
   return jsonb_build_object('ok', true);
 end $$;
+*/
 
+-- SUPERSEDED by auth_enforce.sql, which takes the actor from me() instead of trusting
+-- p_from. Commented out rather than left live: re-running this file replays the
+-- unguarded definition straight over the hardened one and reopens the money hole. That
+-- is not hypothetical — it happened once, during verification, by following README.md's
+-- own "every file is idempotent, re-running is safe" instruction.
+/*
 create or replace function gift_yolks(p_from text, p_to text, p_amount integer)
 returns jsonb language plpgsql security definer as $$
 declare v_today int; v_balance int; v_rel text; v_stranger_today int;
@@ -306,6 +326,7 @@ begin
   select coins into v_balance from public.app_users where apple_user_id = p_from;
   return jsonb_build_object('ok', true, 'coins', v_balance);
 end $$;
+*/
 
 grant execute on function can_reach(text, text)            to anon, authenticated;
 grant execute on function send_wave(text, text)            to anon, authenticated;
