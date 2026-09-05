@@ -29,8 +29,11 @@ struct WanderHomeView: View {
     @State private var arrived = false
     @State private var offering = false
     @State private var bob = false
+    /// The card has been scratched open. Holds the sheet still and shows the way out.
+    @State private var revealed = false
 
     private var caption: String {
+        if revealed { return "\(name) brought this home" }
         if offering { return "look what it found" }
         if arrived { return "\(name) is back" }
         return "something's coming up the path"
@@ -53,6 +56,23 @@ struct WanderHomeView: View {
                 stage
 
                 Spacer(minLength: 0)
+
+                if revealed {
+                    Button {
+                        Haptics.shared.tick()
+                        onDone()
+                        dismiss()
+                    } label: {
+                        Text("keep it")
+                            .font(YolkType.body.weight(.semibold))
+                            .foregroundStyle(YolkColor.shell)
+                            .frame(maxWidth: .infinity).padding(.vertical, 16)
+                            .background(YolkColor.ink, in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, YolkSpace.lg)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
             .padding(.bottom, YolkSpace.lg)
 
@@ -80,12 +100,13 @@ struct WanderHomeView: View {
         ZStack {
             if offering {
                 CardScratchView(face: face, width: 270) {
-                    // Let the scratch land before the sheet moves.
-                    Task {
-                        try? await Task.sleep(for: .seconds(1.2))
-                        onDone()
-                        dismiss()
-                    }
+                    // Do NOT dismiss here. This used to close the sheet 1.2s after the
+                    // reveal, which took the card away at the exact moment it became
+                    // worth looking at: you scratch it, it flips, and it is gone before
+                    // you have read it. The whole beat is the payoff for scratching.
+                    //
+                    // It ends when the person says so, like the pack reveal does.
+                    withAnimation(.snappy) { revealed = true }
                 }
                 .transition(.scale(scale: 0.4).combined(with: .opacity))
             }
@@ -96,6 +117,11 @@ struct WanderHomeView: View {
                 .offset(x: arrived ? (offering ? -128 : 0) : -230,
                         y: offering ? 108 : (bob ? -7 : 0))
                 .zIndex(1)
+                // Decoration, not a control. Drawn over the card's lower left corner, so
+                // while it was hit-testable it swallowed every scratch that started
+                // there: a dead patch of card that gave no mark and no texture, which
+                // reads as the scratch only working in certain spots.
+                .allowsHitTesting(false)
         }
         .frame(height: 420)
     }

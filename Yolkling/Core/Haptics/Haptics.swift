@@ -100,7 +100,14 @@ final class Haptics {
     func updateScratch(speed: Double) {
         guard let scratchPlayer else { return }
         let s = min(max(speed, 0), 1)
-        let intensity = Float(0.12 + 0.5 * s)
+        // Floor raised from 0.12. The old range meant the texture was only really
+        // perceptible during a fast sweep, so a slow deliberate scratch (which is what
+        // people actually do when they are looking at something) felt like nothing was
+        // there, and the surface seemed to respond only in patches.
+        //
+        // The floor is what you feel the moment the finger moves at all; the range above
+        // it is what makes speed legible. Both went up.
+        let intensity = Float(0.34 + 0.46 * s)
         let sharpness = Float(0.95 - 0.25 * s)
         try? scratchPlayer.sendParameters([
             CHHapticDynamicParameter(parameterID: .hapticIntensityControl,
@@ -119,7 +126,10 @@ final class Haptics {
     func scratchGrain(speed: Double) {
         let s = Float(min(max(speed, 0), 1))
         let jitter = Float.random(in: 0.7...1.0)
-        transient(intensity: (0.14 + 0.3 * s) * jitter, sharpness: 0.9)
+        // Same reasoning as the continuous bed: grains at 0.14 were inaudible under a
+        // slow scratch, so the catches that make it feel like a surface only arrived
+        // when you hurried.
+        transient(intensity: (0.32 + 0.34 * s) * jitter, sharpness: 0.9)
     }
 
     /// Lift. Safe to call when nothing is running.

@@ -209,12 +209,17 @@ struct CardScratchView: View {
             // Normalised against a brisk drag. Asymmetric smoothing for the same reason
             // `CardTilt` uses it: rise on the frame the movement happens, fall slowly so
             // the roughness decays rather than cutting out the moment the finger pauses.
-            let raw = min(1, Double(step / (26 * u)))
+            // Normalised against a MODERATE drag rather than a brisk one. Against 26pt
+            // a careful scratch sat near zero for its whole length, so the texture read
+            // as absent unless you swept.
+            let raw = min(1, Double(step / (16 * u)))
             speed += (raw - speed) * (raw > speed ? 0.5 : 0.08)
             Haptics.shared.updateScratch(speed: speed)
 
             sinceGrain += step
-            if sinceGrain > 9 * u {
+            // Closer together, so a slow scratch still produces catches rather than one
+            // isolated tick every time the finger crosses a third of the card.
+            if sinceGrain > 6 * u {
                 sinceGrain = 0
                 Haptics.shared.scratchGrain(speed: speed)
             }
