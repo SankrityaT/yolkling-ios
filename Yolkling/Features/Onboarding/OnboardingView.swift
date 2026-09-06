@@ -627,7 +627,25 @@ private struct HealthPrimingView: View {
                         }
                     }
                     .disabled(asking)
-                    SecondaryButton("maybe later") { onContinue(false) }
+                    // NO "maybe later" HERE.
+                    //
+                    // Guideline 5.1.1(iv): once a custom message has been shown ahead of a
+                    // permission request, the system prompt must always follow. A button
+                    // that closes the explanation and skips the request means we talked
+                    // someone out of a decision that is Apple's dialog to ask, and it is
+                    // what this screen was rejected for.
+                    //
+                    // Nobody is trapped. The prompt appears, "Don't Allow" is right there
+                    // in it, and onContinue(false) carries them on exactly as before. The
+                    // difference is that the choice is made in Apple's dialog rather than
+                    // in ours.
+                    Text("you can say no on the next screen, and change it any time in Settings")
+                        .font(YolkType.bodySmall)
+                        .foregroundStyle(YolkColor.muted)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, YolkSpace.sm)
+                        .padding(.top, 2)
                 }
             }
         }
@@ -699,7 +717,17 @@ private struct ScreenTimePrimingView: View {
                         }
                     }
                     .disabled(asking)
-                    SecondaryButton("maybe later") { onContinue(false) }
+                    // Same defect as the Health screen, same guideline. Apple only cited
+                    // HealthKit, but this is a custom message in front of a permission
+                    // request with a button that skips the request, which is the exact
+                    // shape they rejected. Fixed here too rather than waiting to be told.
+                    Text("you can say no on the next screen, and change it any time in Settings")
+                        .font(YolkType.bodySmall)
+                        .foregroundStyle(YolkColor.muted)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, YolkSpace.sm)
+                        .padding(.top, 2)
                 }
             }
         }
