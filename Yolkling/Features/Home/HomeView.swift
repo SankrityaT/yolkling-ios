@@ -51,7 +51,6 @@ struct HomeView: View {
     @State private var events = EventStore()
     /// Where the yolkling got to on its own, if anywhere.
     @State private var wandered: DriftTarget?
-    @AppStorage("yolk.healthPromptDismissed") private var healthPromptDismissed = false
     @State private var placedByZone: [String: String]? = nil
     @State private var health = HealthService()
     @State private var screenTime = ScreenTimeService()
@@ -898,9 +897,16 @@ struct HomeView: View {
             // the panel read as a dashboard. Now they're separated by kind and by weight.
             if health.available, health.authorized {
                 livingCard.padding(.horizontal, YolkSpace.lg).tutorialTarget(.living)   // real data, earns a card
-            } else if health.available, shouldOfferHealth {
-                healthPrompt.padding(.horizontal, YolkSpace.lg) // earned, and dismissible
             }
+            // The dismissible "want your yolk to notice your sleep too?" card used to sit
+            // here. Guideline 5.1.1(iv): a custom message shown ahead of a permission
+            // request must lead to that request, and this one had an X that closed it
+            // instead. Apple rejected it twice, the second time calling out the dismiss
+            // by name.
+            //
+            // Deleted rather than made permanent, because it was redundant: the "grow by
+            // living" card below is a standing, undismissable way to connect Health that
+            // goes straight to the system prompt, so nothing is lost except the nag.
             weeklyLine
             if showWidgetNudge { widgetNudgeCard }
         }
@@ -1217,40 +1223,7 @@ struct HomeView: View {
     /// The old version was a permanent banner — the heaviest element on the screen,
     /// louder than any actual action, sitting there forever until someone connected. A
     /// permission prompt is not content. Apple's own guidance is to prime at the moment
-    /// of relevance, so this waits until someone has actually shown up a few times, and
-    /// then it can be dismissed for good (it still lives in the You tab).
-    private var shouldOfferHealth: Bool {
-        !healthPromptDismissed && careStreak >= 2
-    }
 
-    private var healthPrompt: some View {
-        HStack(spacing: YolkSpace.sm) {
-            Image(systemName: "heart.text.square.fill")
-                .font(.system(size: 20)).foregroundStyle(YolkColor.pink)
-            VStack(alignment: .leading, spacing: 2) {
-                // References what they've already done, rather than pitching cold.
-                Text("you've shown up \(careStreak) days")
-                    .font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.ink)
-                Text("want your yolk to notice your sleep too?")
-                    .font(YolkType.bodySmall).foregroundStyle(YolkColor.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            Spacer(minLength: 0)
-            Button { connectHealth() } label: {
-                Text("sure").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.shell)
-                    .padding(.horizontal, 14).padding(.vertical, 8)
-                    .background(YolkColor.ink, in: Capsule())
-            }
-            .buttonStyle(.plain)
-            Button { healthPromptDismissed = true } label: {
-                Image(systemName: "xmark").font(.caption2.weight(.semibold))
-                    .foregroundStyle(YolkColor.muted).padding(6)
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.vertical, 10).padding(.horizontal, YolkSpace.md)
-        .background(YolkColor.shell2.opacity(0.6), in: RoundedRectangle(cornerRadius: 16))
-    }
 
     // MARK: This week
 

@@ -615,7 +615,7 @@ private struct HealthPrimingView: View {
                     // The screen asked for Health and then simply moved on without ever
                     // requesting it; the real prompt did not appear until the player
                     // found the card on the home screen days later.
-                    HatchButton(asking ? "asking…" : "connect health") {
+                    HatchButton(asking ? "asking…" : "continue") {
                         guard !asking else { return }
                         asking = true
                         Task {
@@ -704,7 +704,7 @@ private struct ScreenTimePrimingView: View {
         .safeAreaInset(edge: .bottom) {
             BottomBar {
                 VStack(spacing: YolkSpace.xs) {
-                    HatchButton(asking ? "asking…" : "turn it on") {
+                    HatchButton(asking ? "asking…" : "continue") {
                         guard !asking else { return }
                         asking = true
                         Task {
