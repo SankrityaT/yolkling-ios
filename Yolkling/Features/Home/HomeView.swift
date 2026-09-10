@@ -1034,7 +1034,11 @@ struct HomeView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer()
-                    Text("connect").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.shell)
+                    // "continue", not "connect". Guideline 5.1.1(iv): Apple asked for
+                    // Continue or Next on the button that precedes the HealthKit request,
+                    // and this card is such a button -- it describes the feature and then
+                    // opens the system prompt.
+                    Text("continue").font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.shell)
                         .padding(.horizontal, 14).padding(.vertical, 8).background(YolkColor.ink, in: Capsule())
                 }
                 .padding(YolkSpace.md)

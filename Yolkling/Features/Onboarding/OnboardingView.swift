@@ -603,7 +603,7 @@ private struct HealthPrimingView: View {
                 .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
                 .frame(height: 185)
             TypewriterText(text: "your real life earns their trust", font: YolkType.heading, color: YolkColor.ink)
-            TypewriterText(text: "your steps and sleep are how your yolkling learns to trust you. connect Health so it can feel your day and grow with you. your steps and sleep stay on your device. we never send them anywhere.",
+            TypewriterText(text: "your steps and sleep are how your yolkling learns to trust you. with Apple Health, it can feel your day and grow with you. your steps and sleep stay on your device. we never send them anywhere.",
                            color: YolkColor.muted, startDelay: 0.8)
             Spacer()
         }
@@ -671,10 +671,13 @@ private struct FocusPrimingView: View {
         .padding(.horizontal, YolkSpace.lg)
         .safeAreaInset(edge: .bottom) {
             BottomBar {
-                VStack(spacing: YolkSpace.xs) {
-                    HatchButton("sounds good", action: onContinue)
-                    SecondaryButton("maybe later", action: onContinue)
-                }
+                // ONE button. There were two, "sounds good" and "maybe later", calling the
+                // SAME closure, so the second one changed nothing except the words on
+                // screen. Focus needs no permission, but this screen sits between the
+                // HealthKit and Screen Time priming screens, and "maybe later" is the
+                // exact phrase Apple has now cited three times as letting someone defer a
+                // permission request. It was never worth the ambiguity.
+                HatchButton("continue", action: onContinue)
             }
         }
     }
