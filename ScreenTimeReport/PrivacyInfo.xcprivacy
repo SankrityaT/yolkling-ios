@@ -6,6 +6,10 @@
 	<false/>
 	<key>NSPrivacyTrackingDomains</key>
 	<array/>
+	<!-- This extension collects nothing. It reads the device's own screen time totals,
+	     derives a single number of hours off the phone, and writes that to the shared
+	     App Group for the app to read. Nothing leaves the device and nothing identifies
+	     anyone, so there is no collected data type to declare. -->
 	<key>NSPrivacyCollectedDataTypes</key>
 	<array/>
 	<key>NSPrivacyAccessedAPITypes</key>
@@ -15,7 +19,7 @@
 			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
 			<key>NSPrivacyAccessedAPITypeReasons</key>
 			<array>
-				<string>CA92.1</string>
+				<!-- 1C8F.1: an App Group suite shared with the app and the widget. -->
 				<string>1C8F.1</string>
 			</array>
 		</dict>

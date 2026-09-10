@@ -110,28 +110,5 @@ final class HealthService {
         if sleepHours == 0 { sleepHours = 5.2 }
     }
 
-    /// Dev only: write a sample day so the grow-by-living card can be verified in the
-    /// simulator (which has no real steps/sleep).
-    func seedSampleDay() async {
-        guard available else { return }
-        let share: Set<HKSampleType> = [HKQuantityType(.stepCount), HKCategoryType(.sleepAnalysis)]
-        try? await store.requestAuthorization(toShare: share, read: readTypes)
-        authorized = true
-        let cal = Calendar.current
-        let now = Date()
-        let dayStart = cal.startOfDay(for: now)
-        let stepSample = HKQuantitySample(
-            type: HKQuantityType(.stepCount),
-            quantity: HKQuantity(unit: .count(), doubleValue: 7200),
-            start: dayStart.addingTimeInterval(8 * 3600), end: now)
-        let sleepEnd = dayStart.addingTimeInterval(7 * 3600)
-        let sleepStart = sleepEnd.addingTimeInterval(-7.5 * 3600)
-        let sleepSample = HKCategorySample(
-            type: HKCategoryType(.sleepAnalysis),
-            value: HKCategoryValueSleepAnalysis.asleepCore.rawValue,
-            start: sleepStart, end: sleepEnd)
-        try? await store.save([stepSample, sleepSample])
-        await refresh()
-    }
     #endif
 }

@@ -699,7 +699,7 @@ private struct ScreenTimePrimingView: View {
                 .matchedGeometryEffect(id: OnboardingHero.id, in: hero)
                 .frame(height: 185)
             TypewriterText(text: "time away is time well spent", font: YolkType.heading, color: YolkColor.ink)
-            TypewriterText(text: "let your yolkling feel the hours you spend off your phone, and it grows a little livelier. it only ever sees how long, never what you were doing. turn it on now or later, from home.",
+            TypewriterText(text: "let your yolkling feel the hours you spend off your phone, and it grows a little livelier. it only ever sees how long, never what you were doing.",
                            color: YolkColor.muted, startDelay: 0.85)
             Spacer()
         }

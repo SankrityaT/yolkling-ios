@@ -67,7 +67,14 @@ struct NameFilterTests {
 
     @Test("Leetspeak does not evade")
     func decodesLeet() {
-        #expect(NameFilter.check("sh1t") == .ok)      // 1 is deliberately not decoded
+        // "1" IS now decoded, by checking the name as typed AND as "i" AND as "l".
+        // It used to be left alone to protect names like M1lo and L1ly, but leaving it
+        // made it a separator that destroyed the letters around it, so "n1gger" passed as
+        // a creature name other players could see. Both readings are checked instead, and
+        // the legitimate names below still pass because none of THEIR readings is blocked.
+        #expect(NameFilter.check("sh1t") == .blocked)
+        #expect(NameFilter.check("n1gger") == .blocked)
+        #expect(NameFilter.check("d1ck") == .blocked)
         #expect(NameFilter.check("$hit") == .blocked)
         #expect(NameFilter.check("f@ggot") == .blocked)
         #expect(NameFilter.check("b!tch") == .blocked)
@@ -77,6 +84,26 @@ struct NameFilterTests {
     func joinsSeparatedLetters() {
         #expect(NameFilter.check("f u c k") == .blocked)
         #expect(NameFilter.check("s h i t") == .blocked)
+        // ONE separator used to be enough. The joined-form check required three or more
+        // single-character tokens, so "f u c k" was caught and "fu ck" was not, along with
+        // every other profanity with a character poked into it. Measured before the fix:
+        // twelve of thirteen evasions passed.
+        #expect(NameFilter.check("fu ck") == .blocked)
+        #expect(NameFilter.check("fu-ck") == .blocked)
+        #expect(NameFilter.check("fu.ck") == .blocked)
+        #expect(NameFilter.check("fuc k") == .blocked)
+        #expect(NameFilter.check("c.unt") == .blocked)
+    }
+
+    /// The names the loosened matching could plausibly have caught, and does not.
+    @Test("Joining tokens does not create false positives")
+    func joiningIsSafe() {
+        #expect(NameFilter.check("Bass Ackwards") == .ok)
+        #expect(NameFilter.check("M1lo") == .ok)
+        #expect(NameFilter.check("L1ly") == .ok)
+        #expect(NameFilter.check("Cloud 9") == .ok)
+        #expect(NameFilter.check("Cockburn") == .ok)
+        #expect(NameFilter.check("Scunthorpe") == .ok)
     }
 
     @Test("Accents do not evade")

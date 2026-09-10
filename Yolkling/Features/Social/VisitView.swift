@@ -134,9 +134,15 @@ struct VisitView: View {
         HStack {
             Text(subject.heading).font(YolkType.heading).foregroundStyle(YolkColor.ink)
             Spacer()
-            // Guideline 1.2: once a stranger can reach you, blocking has to be reachable
-            // from the place you meet them, not buried in settings.
-            if subject.isStranger {
+            // Guideline 1.2(c): blocking has to be reachable from the place you meet
+            // someone, not buried in settings.
+            //
+            // NOT gated on `isStranger` any more. It was, which meant a FRIEND could only
+            // be blocked from the postcard inbox -- so anyone added by code or QR who
+            // waved, gifted, traded and visited but never sent a postcard could not be
+            // blocked by any sequence of taps. The menu below is already subject-agnostic;
+            // only this condition stood in the way.
+            do {
                 Button {
                     Haptics.shared.tick()
                     withAnimation(.snappy(duration: 0.22)) { showBlock = true }

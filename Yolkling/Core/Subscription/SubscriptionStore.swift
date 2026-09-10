@@ -65,6 +65,18 @@ final class SubscriptionStore {
         /// Percent saved against twelve months of the monthly. nil unless BOTH plans
         /// loaded, so a saving can never be printed that the store did not produce.
         let savingPercent: Int?
+
+        /// "year" / "month", for "$34.99 per year" in the renewal disclosure. Derived
+        /// from `title` so it can never disagree with the period shown on the plan card.
+        var periodNoun: String {
+            switch title {
+            case "yearly":  "year"
+            case "monthly": "month"
+            case "weekly":  "week"
+            case "daily":   "day"
+            default:        title
+            }
+        }
     }
 
     /// Every plan on offer, annual first so the cheaper-per-month option leads.
@@ -81,15 +93,35 @@ final class SubscriptionStore {
     var defaultPlan: Plan? { plans.first { $0.isAnnual } ?? plans.first }
 
     private func plan(from package: Package) -> Plan {
-        let isAnnual = package.packageType == .annual
+        // Derived from the StoreKit product's own subscription period, NOT from
+        // `packageType`. packageType comes from the package IDENTIFIER: anything that is
+        // not exactly `$rc_annual` resolves to `.custom`, which read as `isAnnual =
+        // false`. A yearly package with a custom id would therefore have rendered as
+        // "yearly plan, $34.99 / month" -- a false price and period on a payment screen,
+        // and a 3.1.2 rejection. The product's period is the fact; the identifier is a
+        // naming convention.
+        let period = package.storeProduct.subscriptionPeriod
+        let isAnnual = period?.unit == .year
         return Plan(
             id: package.identifier,
-            title: isAnnual ? "yearly" : "monthly",
+            title: Self.periodTitle(period),
             price: package.storeProduct.localizedPriceString,
             perMonth: isAnnual ? monthlyEquivalent(of: package) : nil,
             isAnnual: isAnnual,
             savingPercent: isAnnual ? annualSavingPercent : nil
         )
+    }
+
+    /// "yearly" / "monthly" / "weekly", from the product's real period.
+    nonisolated private static func periodTitle(_ period: SubscriptionPeriod?) -> String {
+        guard let period else { return "subscription" }
+        switch period.unit {
+        case .year:  return period.value == 1 ? "yearly" : "every \(period.value) years"
+        case .month: return period.value == 1 ? "monthly" : "every \(period.value) months"
+        case .week:  return period.value == 1 ? "weekly" : "every \(period.value) weeks"
+        case .day:   return period.value == 1 ? "daily" : "every \(period.value) days"
+        @unknown default: return "subscription"
+        }
     }
 
     /// The annual price divided by twelve, formatted in the store's own currency, so the

@@ -47,7 +47,29 @@ enum NameFilter {
     /// Longest name that still fits a friend row on the smallest supported screen.
     nonisolated static let maxLength = 20
 
+    /// The digit 1 is deliberately NOT decoded in `normalize`, because it is a real
+    /// character in real names (M1lo, L1ly, Cloud 9) and folding it produced false
+    /// positives. But leaving it alone made it a separator, which destroyed the letter
+    /// around it: "n1gger" normalised to "n" + "gger" and matched nothing. Measured, that
+    /// one digit let a racial slur through as a creature name.
+    ///
+    /// So both readings are checked rather than neither. A name is blocked if it is
+    /// blocked as typed, or as an "i", or as an "l". "M1lo" stays fine because "milo" and
+    /// "mlo" are both fine; "n1gger" does not, because one of its readings is not.
     nonisolated static func check(_ raw: String) -> Verdict {
+        let readings = [raw, raw.replacingOccurrences(of: "1", with: "i"),
+                             raw.replacingOccurrences(of: "1", with: "l")]
+        var first: Verdict = .ok
+        for (i, reading) in readings.enumerated() {
+            let verdict = checkOne(reading)
+            if i == 0 { first = verdict }
+            if case .blocked = verdict { return .blocked }
+        }
+        // Length and emptiness are properties of what they actually typed.
+        return first
+    }
+
+    nonisolated private static func checkOne(_ raw: String) -> Verdict {
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return .empty }
         guard trimmed.count <= maxLength else { return .tooLong }
@@ -76,12 +98,16 @@ enum NameFilter {
             return .blocked
         }
 
-        // Separator evasion: "f u c k" arrives as four one-letter tokens, which the
-        // token pass cannot see and the substring pass only catches for severe terms.
-        // Three or more single-character tokens is not how anyone names a pet, so treat
-        // the joined form as a word and run the token list over it too.
-        if tokens.filter({ $0.count == 1 }).count >= 3,
-           blockedWords.contains(collapsed) || blockedWords.contains(squash(collapsed)) {
+        // Separator evasion. Any separator splits a word into tokens the token pass
+        // cannot see: "fu ck", "fu-ck", "fu.ck", "fuc k" all sailed through, and so did
+        // every other profanity with one character poked into it. This used to require
+        // THREE OR MORE single-character tokens, which caught "f u c k" and nothing else.
+        //
+        // The gate is gone. It is safe to drop because `blockedWords` is matched by exact
+        // set membership rather than by substring, so joining a name up cannot create a
+        // hit out of innocent parts: "Bass Ackwards" collapses to "bassackwards", which is
+        // not a member. Verified against the whole legitimate-name corpus in the tests.
+        if blockedWords.contains(collapsed) || blockedWords.contains(squash(collapsed)) {
             return .blocked
         }
 

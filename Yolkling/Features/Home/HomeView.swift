@@ -895,8 +895,15 @@ struct HomeView: View {
             // Three kinds of thing used to stack here as equal-weight cards: things you
             // DO, a thing to SET UP, and passive STATUS. That flat hierarchy is what made
             // the panel read as a dashboard. Now they're separated by kind and by weight.
-            if health.available, health.authorized {
-                livingCard.padding(.horizontal, YolkSpace.lg).tutorialTarget(.living)   // real data, earns a card
+            // NOT gated on `health.authorized`. It used to be, which made livingCard's
+            // "not connected yet" branch -- the standing way to reach the HealthKit
+            // prompt -- unreachable: it only rendered once Health was already granted.
+            // So declining the prompt during onboarding permanently removed grow-by-living
+            // with no way back, and the comment below claiming a standing entry point was
+            // false at runtime. livingCard already branches on `health.authorized`
+            // internally, which is where that decision belongs.
+            if health.available {
+                livingCard.padding(.horizontal, YolkSpace.lg).tutorialTarget(.living)
             }
             // The dismissible "want your yolk to notice your sleep too?" card used to sit
             // here. Guideline 5.1.1(iv): a custom message shown ahead of a permission
@@ -1009,7 +1016,11 @@ struct HomeView: View {
                     } else {
                         LivingTile(glyph: .phone, value: nil, label: "off phone",
                                    progress: 0, hit: false,
-                                   emptyWord: "turn on", tint: YolkColor.grape,
+                                   // "continue", not "turn on". This tile is the button in
+                                   // front of the Screen Time permission request, and
+                                   // 5.1.1(iv) asks for Continue or Next rather than a
+                                   // word that sounds like the consent itself.
+                                   emptyWord: "continue", tint: YolkColor.grape,
                                    onTap: { connectScreenTime() })
                     }
                 }

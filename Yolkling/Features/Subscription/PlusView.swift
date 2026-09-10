@@ -155,8 +155,20 @@ struct PlusView: View {
                     .disabled(store.purchasing || chosen == nil)
                 }
             }
+            // Guideline 3.1.2 requires the auto-renewal terms in the purchase flow
+            // itself. "cancel anytime" under the button is not that: it says how to
+            // stop, never that it renews on its own until you do. The full clause is on
+            // yolkling.com/terms, but behind a link does not count.
+            if let terms = renewalTerms {
+                Text(terms)
+                    .font(.caption2)
+                    .foregroundStyle(YolkColor.muted)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, YolkSpace.xs)
+            }
             HStack(spacing: YolkSpace.md) {
-                Button("restore") {
+                Button("Restore Purchases") {
                     Task {
                         switch await store.restore() {
                         case .restored:
@@ -173,13 +185,28 @@ struct PlusView: View {
                         }
                     }
                 }
-                Link("terms", destination: URL(string: "https://yolkling.com/terms")!)
-                Link("privacy", destination: URL(string: "https://yolkling.com/privacy")!)
+                // Named the way the guideline names them. "terms" and "privacy" in
+                // muted 11pt is what gets written up as "unable to locate a functional
+                // link to the Terms of Use". YolklingURLs rather than literals, because
+                // that type exists precisely so these cannot drift from App Store
+                // Connect, and this screen was the one place ignoring it.
+                Link("Terms of Use (EULA)", destination: YolklingURLs.terms)
+                Link("Privacy Policy", destination: YolklingURLs.privacy)
             }
-            .font(.caption2).foregroundStyle(YolkColor.muted)
+            .font(YolkType.bodySmall).foregroundStyle(YolkColor.inkSoft)
         }
         .padding(.horizontal, YolkSpace.lg).padding(.vertical, YolkSpace.md)
         .background(YolkColor.shell)
+    }
+
+    /// The auto-renewal disclosure, naming the product exactly as App Store Connect
+    /// does. nil once they are already a supporter, when there is nothing to disclose.
+    private var renewalTerms: String? {
+        guard !store.isPlus, let p = chosen else { return nil }
+        return "Yolkling Plus is an auto-renewing subscription. \(p.price) per \(p.periodNoun), "
+             + "charged to your Apple Account at confirmation of purchase. It renews "
+             + "automatically at the same price unless you cancel at least 24 hours before "
+             + "the end of the current period. Manage or cancel any time in Settings."
     }
 
     /// The plan the person is buying. Falls back to the store's default (annual when
@@ -192,7 +219,7 @@ struct PlusView: View {
     /// loaded there is nothing to promise, so it says nothing.
     private var ctaSubtitle: String {
         guard let p = chosen else { return "loading…" }
-        return "\(p.price) / \(p.isAnnual ? "year" : "month") · cancel anytime"
+        return "\(p.price) / \(p.periodNoun) · cancel anytime"
     }
 
     /// Both plans, side by side.
@@ -201,7 +228,10 @@ struct PlusView: View {
     /// exactly one option (`offering?.monthly`), so an annual plan configured in the
     /// dashboard would have been invisible and unbuyable with no error anywhere.
     @ViewBuilder private var planPicker: some View {
-        if store.plans.count > 1 {
+        // `> 1` hid the whole picker when only one package loaded, leaving the price
+        // visible only in 11pt under the button. RevenueCat returning one package is a
+        // routine misconfiguration, and it must not take the price card with it.
+        if !store.plans.isEmpty {
             HStack(spacing: YolkSpace.sm) {
                 ForEach(store.plans) { plan in
                     planCard(plan)

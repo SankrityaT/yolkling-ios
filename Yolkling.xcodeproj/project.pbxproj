@@ -75,6 +75,7 @@
 		774E938C4B98B2F1E3959A7E /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
 		7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */; };
 		7D316A3F6CA5988E2356DA7C /* PackRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C490033D514C40A0067B7 /* PackRevealView.swift */; };
+		832446F1F0BED514D5197669 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A2FC6311562EABC9A7AA6E05 /* PrivacyInfo.xcprivacy */; };
 		84E321BD0A5CB442877C103B /* FoundingRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F3C7ABE35E8A6A13DB7AA3 /* FoundingRevealView.swift */; };
 		8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E45824D017316F04EAB9F /* YolkRoomWidget.swift */; };
 		8597B528569F7A794735B5C6 /* TrialAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E7EAB2F6FC0083027A9866 /* TrialAccess.swift */; };
@@ -296,6 +297,7 @@
 		9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMMono-Medium.ttf"; sourceTree = "<group>"; };
 		9F16803B4B290C5582A6C301 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A2A5A57163EFCA5D3FA63808 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A2FC6311562EABC9A7AA6E05 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A388843295E23F423C6D05DE /* PostcardVocabulary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostcardVocabulary.swift; sourceTree = "<group>"; };
 		A525DCFA93FB2E386604E390 /* NameFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameFilterTests.swift; sourceTree = "<group>"; };
 		A7558E421CB8F49D94D63FD7 /* RoomZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomZone.swift; sourceTree = "<group>"; };
@@ -423,6 +425,7 @@
 			isa = PBXGroup;
 			children = (
 				A2A5A57163EFCA5D3FA63808 /* Info.plist */,
+				A2FC6311562EABC9A7AA6E05 /* PrivacyInfo.xcprivacy */,
 				AA14B0BD0FCF8A0D740D3B22 /* ScreenTimeReport.entitlements */,
 				B882A1710147434DD16C02B3 /* ScreenTimeReport.swift */,
 			);
@@ -953,6 +956,7 @@
 			buildConfigurationList = 9EDA1E10D3E990DE46703F26 /* Build configuration list for PBXNativeTarget "YolklingScreenTimeReport" */;
 			buildPhases = (
 				CB202349CDB66C9075D7C687 /* Sources */,
+				DEC45CB7B1C08647988A2CB1 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -1116,6 +1120,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				74E69B32075E025157064E3D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DEC45CB7B1C08647988A2CB1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				832446F1F0BED514D5197669 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1392,7 +1404,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1540,9 +1552,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Yolkling;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Scan a friend's code to add them.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Yolkling uses the camera to scan a friend's QR code so you can add them as a friend. Nothing is recorded, saved, or sent anywhere.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Yolkling can add a little sample activity while you try out grow-by-living.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1590,9 +1601,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Yolkling;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Scan a friend's code to add them.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Yolkling uses the camera to scan a friend's QR code so you can add them as a friend. Nothing is recorded, saved, or sent anywhere.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Yolkling can add a little sample activity while you try out grow-by-living.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1643,7 +1653,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_NS_ASSERTIONS = NO;
