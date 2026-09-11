@@ -72,6 +72,7 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Yolkling/Yolkling.entitlements
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_NSHealthShareUsageDescription: "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life."
+        INFOPLIST_KEY_NSHealthUpdateUsageDescription: "Yolkling does not write to Health. This permission is requested only because HealthKit requires it to be declared."
         INFOPLIST_KEY_CFBundleDisplayName: Yolkling
         # Declares the export-compliance answer in the binary so App Store Connect stops
         # holding every upload at "Missing Compliance" for a human to answer the same

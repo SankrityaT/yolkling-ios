@@ -1554,6 +1554,7 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Yolkling uses the camera to scan a friend's QR code so you can add them as a friend. Nothing is recorded, saved, or sent anywhere.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Yolkling does not write to Health. This permission is requested only because HealthKit requires it to be declared.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1603,6 +1604,7 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Yolkling uses the camera to scan a friend's QR code so you can add them as a friend. Nothing is recorded, saved, or sent anywhere.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Yolkling reads your steps and sleep so your yolk grows when you take care of yourself in real life.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Yolkling does not write to Health. This permission is requested only because HealthKit requires it to be declared.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
