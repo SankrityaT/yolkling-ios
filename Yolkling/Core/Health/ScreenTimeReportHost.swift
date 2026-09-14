@@ -21,9 +21,18 @@ struct ScreenTimeReportHost: View {
     }
 
     var body: some View {
+        // Nearly invisible rather than invisible. DeviceActivityReport is rendered by the
+        // system out of process, and a zero-opacity view is a strong hint to skip that
+        // work entirely -- in which case makeConfiguration never runs, nothing is ever
+        // written to the App Group, and the tile reads "counting" forever no matter how
+        // often the app re-reads.
+        //
+        // 0.01 opacity over 2pt is indistinguishable on screen and keeps the view a real
+        // participant in the hierarchy. Still untappable and still hidden from
+        // VoiceOver, because it has nothing to show or say.
         DeviceActivityReport(.totalActivity, filter: filter)
-            .frame(width: 1, height: 1)
-            .opacity(0)
+            .frame(width: 2, height: 2)
+            .opacity(0.01)
             .allowsHitTesting(false)
             .accessibilityHidden(true)
     }

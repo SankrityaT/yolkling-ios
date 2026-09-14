@@ -264,7 +264,14 @@ struct HomeView: View {
         // The proposer learns nothing when the other side accepts — `respond_trade` tells
         // only the responder. Without a foreground pull, A keeps and re-uploads an item
         // they gave away, forever. This is the half of the fix the trade sheet can't do.
-        .onChange(of: scenePhase) { _, phase in if phase == .active { reconcileWallet() } }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            reconcileWallet()
+            // Screen Time too. The report extension writes to the App Group on its own
+            // schedule, often while we are backgrounded, and nothing else re-read it:
+            // the tile said "counting" until the next cold launch.
+            restoreScreenTime()
+        }
         .onChange(of: wallet.coins) { _, _ in persist() }
         .onChange(of: wallet.owned) { _, _ in persist() }
         .onChange(of: wardrobe.equipped) { _, _ in persist() }
@@ -1135,7 +1142,7 @@ struct HomeView: View {
             if ok {
                 player?.screenTimeConnected = true
                 persist()
-                screenTime.refresh()
+                await awaitFirstScreenTimeReading()
             } else {
                 // Says which of the two things actually happened. The old copy claimed
                 // "and a real device" unconditionally, which reads as nonsense to
@@ -1565,6 +1572,27 @@ struct HomeView: View {
     /// Re-enable Health reads for a player who connected on a previous launch.
     private func restoreHealth() {
         if player?.healthConnected == true { Task { await health.resume() } }
+    }
+
+    /// Wait for the report extension's first write, then show it.
+    ///
+    /// `connect()` returning true only means the person tapped Allow. The figure comes
+    /// from a DeviceActivityReport extension, which does not start until
+    /// `ScreenTimeReportHost` mounts -- and that only happens once `status` flips to
+    /// approved, which is this same instant. So the old code read the App Group
+    /// immediately, found nothing, and left the tile on "counting" with nothing in the
+    /// app ever reading again.
+    ///
+    /// There is no completion callback to wait on, so this polls. Roughly twenty seconds
+    /// is long enough for the extension to compute a day and short enough that giving up
+    /// costs nothing: the foreground re-read will catch it later regardless.
+    private func awaitFirstScreenTimeReading() async {
+        for _ in 0..<10 {
+            screenTime.refresh()
+            if screenTime.usedHours != nil { return }
+            try? await Task.sleep(for: .seconds(2))
+        }
+        screenTime.refresh()
     }
 
     /// Re-read Screen Time status + the latest off-phone figure without prompting.
