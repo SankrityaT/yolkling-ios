@@ -109,14 +109,15 @@ struct SpeciesTests {
 
     // MARK: DiscoveryEngine invariant (randomised — test the contract, not a value)
 
-    /// The union of every id reachable through any SpeciesSet.
-    private static var allSetSpeciesIDs: Set<String> {
-        Set(SpeciesSets.all.flatMap(\.speciesIDs))
-    }
+    /// Every id reachable through play: the Dex, which is the whole catalog minus the
+    /// founding grants. This used to be the union of the six SpeciesSets, 32 of 203,
+    /// which is what the engine could hand out at the time. Widening the engine without
+    /// widening this would have left the suite asserting the old ceiling.
+    private static var dexIDs: Set<String> { Set(SpeciesSets.dex) }
 
     @Test("pickNext never returns an already-discovered id", .timeLimit(.minutes(1)))
     func pickNextNeverReturnsDiscovered() {
-        let pool = Array(Self.allSetSpeciesIDs)
+        let pool = Array(Self.dexIDs)
         // Try many random "discovered" subsets and many draws each.
         for _ in 0..<200 {
             let cut = Int.random(in: 0..<pool.count)
@@ -124,8 +125,21 @@ struct SpeciesTests {
             for _ in 0..<10 {
                 if let picked = DiscoveryEngine.pickNext(discovered: discovered) {
                     #expect(!discovered.contains(picked), "pickNext returned discovered id \(picked)")
-                    #expect(Self.allSetSpeciesIDs.contains(picked), "pickNext returned unknown id \(picked)")
+                    #expect(Self.dexIDs.contains(picked), "pickNext returned unknown id \(picked)")
                 }
+            }
+        }
+    }
+
+    /// Guards the regression directly: discovery must not run dry at 32.
+    @Test("the dex is the whole catalog, not just the curated sets")
+    func dexCoversTheCatalog() {
+        #expect(SpeciesSets.dexTotal == SpeciesCatalog.standard.count)
+        #expect(SpeciesSets.dexTotal > 200, "dex is \(SpeciesSets.dexTotal), expected the full catalog")
+        // Every curated set is still a subset of the dex, so set progress stays meaningful.
+        for set in SpeciesSets.all {
+            for id in set.speciesIDs {
+                #expect(Self.dexIDs.contains(id), "set \(set.id) references \(id), which is outside the dex")
             }
         }
     }
@@ -133,9 +147,9 @@ struct SpeciesTests {
     @Test("pickNext returns nil only when everything is already discovered")
     func pickNextNilOnlyWhenExhausted() {
         // Everything discovered -> nil.
-        #expect(DiscoveryEngine.pickNext(discovered: Self.allSetSpeciesIDs) == nil)
+        #expect(DiscoveryEngine.pickNext(discovered: Self.dexIDs) == nil)
         // One short of everything -> must return the single remaining id.
-        let all = Self.allSetSpeciesIDs
+        let all = Self.dexIDs
         let remaining = all.first!
         let discovered = all.subtracting([remaining])
         for _ in 0..<20 {

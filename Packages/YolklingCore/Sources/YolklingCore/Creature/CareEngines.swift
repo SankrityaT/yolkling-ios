@@ -42,7 +42,11 @@ public enum DiscoveryEngine {
         if !seasonalPool.isEmpty, Int.random(in: 0..<100) < 65 {
             return seasonalPool.randomElement()
         }
-        let allPool = Array(Set(SpeciesSets.all.flatMap { $0.speciesIDs })).filter { !discovered.contains($0) }
+        // The whole Dex, not just the six curated sets. Drawing from the sets meant only
+        // 32 species could ever be found and discovery went permanently dry after that,
+        // with 171 drawn species unreachable. The seasonal bias above still applies, so a
+        // running season is still where most finds come from.
+        let allPool = SpeciesSets.dex.filter { !discovered.contains($0) }
         return allPool.randomElement() ?? seasonalPool.randomElement()
     }
 }

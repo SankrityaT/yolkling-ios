@@ -29,9 +29,11 @@ struct CollectionView: View {
     var guestID: String? = nil
     var onSetGuest: ((String?) -> Void)? = nil
 
-    private var allSetIDs: [String] { Array(Set(SpeciesSets.all.flatMap { $0.speciesIDs })) }
-    private var totalCount: Int { allSetIDs.count }
-    private var discoveredCount: Int { allSetIDs.filter { discovered.contains($0) }.count }
+    /// Counted against the whole Dex, which is the whole catalog. This used to count the
+    /// union of the six sets, so the header read "of 32" while 203 species existed.
+    /// The per-set progress below is unchanged and still counts its own members.
+    private var totalCount: Int { SpeciesSets.dexTotal }
+    private var discoveredCount: Int { SpeciesSets.dex.filter { discovered.contains($0) }.count }
 
     @Environment(\.dismiss) private var dismiss
 

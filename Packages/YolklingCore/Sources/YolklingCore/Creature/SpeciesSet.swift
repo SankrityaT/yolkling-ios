@@ -100,14 +100,22 @@ private extension SpeciesSet {
 extension SpeciesSets {
     /// Every species reachable through play, in a stable order.
     ///
-    /// The Dex universe is the UNION OF THE SETS, not the whole catalog. `SpeciesCatalog`
-    /// names 203 species but only these appear in a completable set, and only these are
-    /// what `DiscoveryEngine.pickNext` can hand you — so a card numbered against the
-    /// catalog would print a denominator the player can never reach.
+    /// The Dex universe is the WHOLE CATALOG, minus the founding species, which are
+    /// grants rather than finds and correctly print no serial.
+    ///
+    /// It used to be the union of the six sets, which was 32 of the 203 drawn species.
+    /// The reasoning was sound at the time -- a card must not print a denominator the
+    /// player cannot reach -- but the conclusion was backwards: the fix is to make the
+    /// rest reachable, not to hide them. 171 species had names, art, rarities and
+    /// descriptions, and nothing in the app could ever hand one to you. After 32
+    /// check-ins discovery returned nil forever.
+    ///
+    /// The sets remain, as curated collections with their own progress. They are a view
+    /// onto the Dex now rather than the definition of it.
     ///
     /// Sorted, so a species' number is a property of the species rather than of the order
-    /// the sets happen to be declared in. Move a set and every card keeps its number.
-    public static let dex: [String] = Array(Set(all.flatMap { $0.speciesIDs })).sorted()
+    /// the catalog happens to be declared in.
+    public static let dex: [String] = SpeciesCatalog.standard.map(\.id).sorted()
 
     public static var dexTotal: Int { dex.count }
 
