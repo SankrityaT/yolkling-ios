@@ -1,4 +1,4 @@
-# Product Hunt: Tuesday Sep 22
+# Product Hunt: Wednesday Sep 23
 
 Replaces the Sep 15 plan. Review delays ate that date, and the old plan's own rule was
 "do not slip past Sep 17". What changed, and why the new dates, is below.
@@ -9,21 +9,36 @@ Replaces the Sep 15 plan. Review delays ate that date, and the old plan's own ru
 |---|---|
 | **now** | Put up a Product Hunt "coming soon" page. Collect followers until launch |
 | **now** | Line up support privately, one person at a time (see below) |
-| **Mon Sep 21, morning** | Press **Release** on 1.0 in App Store Connect. Start Apple Ads |
-| **Mon Sep 21** | Submit 1.0.1 (Dex at 203, Screen Time fix) |
-| **Mon Sep 21** | Confirm the App Store link opens and downloads, on a real phone |
-| **Tue Sep 22, 12:01 AM Pacific** | Launch. Social push that morning |
-| **Sep 21-28** | The new-app ranking boost window. Everything above lands inside it |
+| **Tue Sep 22, MORNING** | Press **Release** on 1.0 in App Store Connect. Start Apple Ads |
+| **Tue Sep 22** | Submit 1.0.1 (Dex at 203, Screen Time fix) |
+| **Tue Sep 22, before bed** | Run the live check below. Do not launch if it fails |
+| **Wed Sep 23, 12:01 AM Pacific** | Launch. Social push that morning |
+| **Sep 22-29** | The new-app ranking boost window. Everything above lands inside it |
 | **Sep 30** | Shipaton closes |
 
-Backup: Wed Sep 23. Don't go later; the boost window and Shipaton both run out.
+Moved one day from the original Mon/Tue to Tue/Wed, which was this plan's documented
+backup. Still releases before launching, and the boost window still closes before Sep 30.
+Don't slip further.
+
+**Press Release in the morning, not the evening.** It can take several hours, sometimes most
+of a day, to appear in the App Store, and it has to be downloadable by midnight.
+
+### Is it live yet?
+
+```bash
+curl -s "https://itunes.apple.com/lookup?id=6804105200&country=us" | grep -o '"trackViewUrl":"[^"]*"'
+```
+
+Prints the App Store URL once it's live. **Prints nothing while it isn't.** That is Apple's own
+public lookup, so if it's empty, a Product Hunt visitor would find nothing either. Then open
+the printed URL on a real phone and confirm it actually downloads.
 
 ## Why these dates
 
 **Release the day before, not earlier.** New apps get roughly a seven-day ranking boost
 driven by download velocity, and apps have been documented falling from the top 10 to
 #40-50 when it ends. Releasing on the 17th would have spent four of those seven days with
-no marketing behind them. Releasing on the 21st puts the ads, the launch and the social
+no marketing behind them. Releasing on the 22nd puts the ads, the launch and the social
 push all inside the window, and the window closes before Sep 30.
 
 **Release BEFORE launching, never the same instant.** Product Hunt's own guide: "The
@@ -85,10 +100,27 @@ comments all day. That is the part that cannot be prepared the night before.
 | Name | 40 chars | `Yolkling` |
 | Tagline | 60 chars | see below |
 | Description | 500 chars | see below |
-| Thumbnail | 240x240 | the creature on cream, no text. It has to read at 40px |
-| Gallery | 1270x760, **at least 2**, aim for 5-8 | App Store captures, recomposed landscape |
+| Thumbnail | 240x240 | **done**: `marketing/product-hunt/thumbnail-240.png` (and a 480 for retina). Checked at 40px |
+| Gallery | 1270x760, **at least 2**, aim for 5-8 | **done**: six slides in `marketing/product-hunt/`, rendered at 2x |
 | Video | optional, YouTube only, public | 53% of Product of the Day winners since 2021 had one. Urso won without |
 | Topics | 3 | Health & Fitness, iOS, Self-improvement |
+
+**The gallery is built.** `node AppStore/screenshots/compose-ph.mjs` regenerates it from
+`template/landscape.html`, in the same type, colours and device treatment as the App Store
+screenshots. Upload in this order:
+
+1. `1-meet` a pet that grows when you look after yourself
+2. `2-health` your real life feeds it
+3. `3-focus` happiest when you put the phone down
+4. `4-checkin` one small check-in a day
+5. `5-closet` earn Yolks by showing up
+6. `6-friends` visit your friends' yolks
+
+Two App Store screenshots were deliberately left out. `03-health` still shows "connect health"
+and "maybe later", both removed after App Review rejected them, so the gallery uses a fresh
+capture instead. `05-dex` is captioned "collect 203 cozy creatures" over a screen reading "9 of
+32 discovered", which is only reconciled by 1.0.1. **Both are also in the live App Store
+listing.** Replace them when 1.0.1 ships.
 
 **Gallery order matters more than count.** Open with the creature, not the UI: that is
 what Urso did, and Yolkling is a character-led product in the same way. Second slide is the
@@ -160,8 +192,35 @@ that exact absolute was just removed from the App Store description for being un
 - Message people individually, one at a time, and ask them to **look** on the day. Never
   post "upvote me" anywhere. Product Hunt penalises it and people can tell.
 - Point them at the coming soon page now, so they're following before launch day.
-- Ask real testers to install and rate on Mon Sep 21, so the listing isn't empty on launch
+- Ask real testers to install and rate on Tue Sep 22, so the listing isn't empty on launch
   day. Genuine ratings only: Apple removes fake reviews and can pull the app.
+
+## Social drafts
+
+Written in the app's voice: lowercase, no exclamation marks. Rewrite them in yours; they're a
+starting point, not a script.
+
+**X, launch morning**
+
+> made a small pet that grows when you look after yourself.
+>
+> your steps and sleep feed it, and it's happiest when you put your phone down. no ads, no
+> loot boxes, and you can't buy the currency on its own.
+>
+> it's on product hunt today: [link]
+
+**X, reply to your own post** (the second post is where the detail goes)
+
+> the part i'd defend to anyone: a year of showing up earns you several times what a year
+> of the subscription does. the subscription supports the thing. it doesn't skip it.
+
+**Reddit.** Read each subreddit's self-promotion rules first; most ban launch posts outright
+and will remove them, and some ban the account. Where it's allowed, lead with the problem
+rather than the product, disclose that you made it in the first line, and link Product Hunt
+only if asked. A post that reads as an ad in r/selfcare or r/getdisciplined does more harm
+than silence.
+
+**Discord.** Only servers you're already part of. Post once, in the channel meant for it.
 
 ## Launch day
 
@@ -174,7 +233,7 @@ that exact absolute was just removed from the App Store description for being un
 
 ## What to measure
 
-Not upvotes. **Installs and trials on Sep 22-23**, from App Store Connect and RevenueCat.
+Not upvotes. **Installs and trials on Sep 23-24**, from App Store Connect and RevenueCat.
 Product Hunt is a spike; what matters is whether it converted and whether any of it stuck a
 week later. That retention number, plus revenue by Sep 30, is worth more in the Shipaton
 write-up than the ranking.

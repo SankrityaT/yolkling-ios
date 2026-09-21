@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Product Hunt gallery frame, 1270x760. Same type, colours and device treatment as
+     frame.html (the App Store portrait frame), laid out landscape: caption left, phone
+     right. Font points at THIS repo's copy rather than another checkout. -->
+<style>
+  @font-face {
+    font-family: "Onest";
+    src: url("file:///Users/sankiii/iOSLocal/yolkling/Yolkling/Resources/Fonts/Onest-VF.ttf") format("truetype");
+    font-weight: 100 900;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1270px; height: 760px; overflow: hidden;
+    background: #FBF6EC;
+    font-family: "Onest", -apple-system, sans-serif;
+    display: flex; align-items: center;
+  }
+  .copy { flex: 0 0 600px; padding-left: 84px; padding-right: 24px; }
+  .copy h1 {
+    font-size: 64px; font-weight: 800; line-height: 1.04;
+    letter-spacing: -1.8px; color: #2A241B;
+  }
+  .copy p {
+    margin-top: 26px; font-size: 25px; font-weight: 450; line-height: 1.38;
+    color: #7A6E5C; max-width: 470px;
+  }
+  .accent {
+    display: block; width: 84px; height: 10px; border-radius: 6px;
+    margin-top: 34px; background: var(--accent, #FFC23B);
+  }
+  .stage { flex: 1 1 auto; height: 760px; display: flex; align-items: center; justify-content: center; }
+  .device {
+    height: 680px; border-radius: 42px; overflow: hidden; background: #000;
+    box-shadow: 0 34px 80px rgba(42,36,27,0.18);
+    outline: 2px solid rgba(42,36,27,0.06);
+  }
+  .device img { display: block; height: 100%; width: auto; }
+</style>
+</head>
+<body>
+  <div class="copy"><h1 id="cap"></h1><span class="accent" id="acc"></span><p id="sub"></p></div>
+  <div class="stage"><div class="device"><img id="shot"></div></div>
+  <script>
+    const p = new URLSearchParams(location.search);
+    document.getElementById("cap").textContent = p.get("caption") || "";
+    document.getElementById("sub").textContent = p.get("sub") || "";
+    document.getElementById("acc").style.setProperty("--accent", p.get("accent") || "#FFC23B");
+    const img = document.getElementById("shot");
+    img.src = p.get("img") || "";
+    window.__ready = (async () => {
+      try { await document.fonts.ready; } catch (e) {}
+      if (!img.complete) await new Promise(r => { img.onload = r; img.onerror = r; });
+    })();
+  </script>
+</body>
+</html>
