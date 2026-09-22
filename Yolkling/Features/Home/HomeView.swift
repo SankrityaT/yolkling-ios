@@ -45,6 +45,9 @@ struct HomeView: View {
     @State private var showRoom = false
     @Environment(Router.self) private var router
     @State private var showFriends = false
+    /// Swap offers waiting on this player, shown as a badge on the Friends tab. Without it
+    /// nothing told you an offer existed, so you had no reason to open Friends at all.
+    @State private var waitingSwaps = 0
     @State private var showDrift = false
     /// Owned here rather than per-screen so one refresh populates SeasonWindows for
     /// everything that reads it — including SpeciesSet, which the widget also compiles.
@@ -215,7 +218,7 @@ struct HomeView: View {
                          wallet: wallet, placed: $placedByZone, themeID: $roomThemeID,
                          onChange: { player?.placedDecorByZone = placedByZone; persist() })
         }
-        .fullScreenCover(isPresented: $showFriends) {
+        .fullScreenCover(isPresented: $showFriends, onDismiss: { Task { await refreshWaitingSwaps() } }) {
             FriendsView(store: SocialStore(userID: backendUserID, myCode: player?.referralCode ?? ""),
                         vibe: vibe, player: player, myName: heading, mySnapshot: mySnapshot(),
                         wallet: wallet,
@@ -267,6 +270,7 @@ struct HomeView: View {
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
             reconcileWallet()
+            Task { await refreshWaitingSwaps() }
             // Screen Time too. The report extension writes to the App Group on its own
             // schedule, often while we are backgrounded, and nothing else re-read it:
             // the tile said "counting" until the next cold launch.
@@ -396,6 +400,7 @@ struct HomeView: View {
             }
         }
         .task { if router.pending != nil { showFriends = true } }
+        .task { await refreshWaitingSwaps() }
         .onChange(of: router.pending) { _, link in if link != nil { showFriends = true } }
         // Anchors resolved here, at the root, so the tutorial gets real on-screen
         // frames rather than guessing at proportions of the screen height.
@@ -1326,7 +1331,7 @@ struct HomeView: View {
             navItem(.home, label: "Home", active: true) { showRoom = true }
             navItem(.shop, label: "Shop", active: false) { showWardrobe = true }
             navItem(.grid, label: "Dex", active: false) { showCollection = true }
-            navItem(.friends, label: "Friends", active: false) { showFriends = true }
+            navItem(.friends, label: "Friends", active: false, badge: waitingSwaps) { showFriends = true }
             navItem(.person, label: "You", active: false) { showProfile = true }
         }
         .padding(.top, YolkSpace.sm)
@@ -1336,13 +1341,27 @@ struct HomeView: View {
         }
     }
 
-    private func navItem(_ icon: YolkGlyph.Kind, label: String, active: Bool, action: @escaping () -> Void) -> some View {
+    private func navItem(_ icon: YolkGlyph.Kind, label: String, active: Bool, badge: Int = 0,
+                         action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(spacing: 3) {
                 // Slightly heavier stroke when active. A tab bar cannot use fill-vs-outline
                 // to show selection the way SF Symbols do, so weight and colour carry it.
                 YolkGlyph(kind: icon, size: 22, weight: active ? 0.105 : 0.085)
                     .foregroundStyle(active ? YolkColor.ink : YolkColor.muted)
+                    // Same pink dot-with-count the postcard envelope already uses, so a
+                    // waiting thing looks the same wherever it appears.
+                    .overlay(alignment: .topTrailing) {
+                        if badge > 0 {
+                            Text("\(badge)")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 4).frame(minWidth: 16, minHeight: 16)
+                                .background(YolkColor.pink, in: Capsule())
+                                .offset(x: 9, y: -6)
+                                .accessibilityLabel("\(badge) waiting")
+                        }
+                    }
                     .frame(width: 22, height: 22)
                 Text(label)
                     .font(.system(size: 10, weight: active ? .semibold : .regular))
@@ -1593,6 +1612,18 @@ struct HomeView: View {
             try? await Task.sleep(for: .seconds(2))
         }
         screenTime.refresh()
+    }
+
+    /// Count swap offers waiting on this player, for the Friends tab badge.
+    ///
+    /// Only for signed-in players. Trades need friends, friends need an account, and the
+    /// server refuses my_trades without a session, so a trial player would only ever get
+    /// an error back.
+    private func refreshWaitingSwaps() async {
+        guard player?.appleUserID != nil else { waitingSwaps = 0; return }
+        let social = SocialStore(userID: backendUserID, myCode: player?.referralCode ?? "")
+        await social.loadTrades()
+        waitingSwaps = social.incomingTrades.count
     }
 
     /// Re-read Screen Time status + the latest off-phone figure without prompting.

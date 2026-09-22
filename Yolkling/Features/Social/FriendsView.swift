@@ -18,6 +18,10 @@ struct FriendsView: View {
     @State private var visiting: Friend?
     @State private var showInbox = false
     @State private var showInvite = false
+    /// The swap inbox. TradeSheet has always supported being opened with no friend
+    /// ("just the inbox"), but nothing ever opened it that way, so an offer sent to you was
+    /// only visible if you happened to start a swap of your own within three days.
+    @State private var showSwaps = false
 
     // Living-tab state
     @State private var waves: [Wave] = []
@@ -43,6 +47,9 @@ struct FriendsView: View {
             header
             ScrollView {
                 VStack(spacing: YolkSpace.md) {
+                    // Swaps waiting on you, first, because they expire.
+                    if !store.incomingTrades.isEmpty { swapsWaiting }
+
                     // "While you were away" strip (hidden when nothing to show)
                     WhileYouWereAwayStrip(
                         waves: waves,
@@ -92,6 +99,11 @@ struct FriendsView: View {
             PostcardInbox(store: store).presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
+        .sheet(isPresented: $showSwaps, onDismiss: { Task { await store.loadTrades() } }) {
+            TradeSheet(store: store, vibe: vibe, wallet: wallet, myOutfit: mySnapshot.outfit)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
         .sheet(isPresented: $showInvite) {
             ReferralView(vibe: vibe, player: player) { onReward($0) }
                 .presentationDetents([.large])
@@ -103,10 +115,55 @@ struct FriendsView: View {
             await store.load()
             async let w = store.loadWaves()
             async let v = store.loadRecentVisits()
-            let (loadedWaves, loadedVisits) = await (w, v)
+            async let t: Void = store.loadTrades()
+            let (loadedWaves, loadedVisits, _) = await (w, v, t)
             waves = loadedWaves
             visits = loadedVisits
         }
+    }
+
+    // MARK: - Swaps waiting
+
+    /// Offers other people have sent you.
+    ///
+    /// Until 1.0.1 there was no way to see these. Offers were loaded only inside the swap
+    /// screen, and that screen was only reachable by starting a swap of your own from a
+    /// friend's room. So the person on the receiving end was never told, and an offer
+    /// expired unseen after three days. Trading worked mechanically and almost never
+    /// happened socially.
+    private var swapsWaiting: some View {
+        let offers = store.incomingTrades
+        let title = offers.count == 1
+            ? "\(offers[0].otherName) wants to swap"
+            : "\(offers.count) swaps waiting on you"
+        return Button {
+            Haptics.shared.tick()
+            showSwaps = true
+        } label: {
+            HStack(spacing: YolkSpace.sm) {
+                YolkGlyph(kind: .swap, size: 20, weight: 0.1)
+                    .foregroundStyle(YolkColor.ink)
+                    .frame(width: 40, height: 40)
+                    .background(YolkColor.yolk.opacity(0.35), in: Circle())
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(YolkType.body.weight(.semibold))
+                        .foregroundStyle(YolkColor.ink)
+                    Text("offers expire after three days")
+                        .font(YolkType.bodySmall)
+                        .foregroundStyle(YolkColor.muted)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(YolkColor.inkSoft)
+            }
+            .padding(YolkSpace.md)
+            .background(YolkColor.shell2.opacity(0.7), in: RoundedRectangle(cornerRadius: 20))
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, YolkSpace.lg)
+        .accessibilityHint("opens the offers other people have sent you")
     }
 
     // MARK: - Header
