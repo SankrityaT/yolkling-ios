@@ -28,9 +28,11 @@ launch and the terms contradict each other.
 
 ## Don't claim these
 
-**Trading yolklings.** Only cosmetics can be traded (hats, glasses, scarves, decor). Species
-cannot: they're a "discovered" flag, not an owned item, and founding species are explicitly
-blocked. "Trade rare cards" is false, since the cards are species cards.
+**Trading yolklings.** Only wearable cosmetics can be traded: the 83 things your yolkling
+wears, like hats, ears, glasses and bows. Not species (they're a "discovered" flag, not an
+owned item), not founding species (explicitly blocked), and not decor, room themes or colours
+either. "Trade rare cards" is false, since the cards are species cards. See "How trading
+works" below.
 
 **"203 species to discover."** The catalog has 203, but 1.0 can only hand out 32. 203 becomes
 true when 1.0.1 ships. Until then: "32 to find, from a taxonomy of over 200", or no number.
@@ -58,6 +60,34 @@ false and must change.
 - One optional subscription, Yolkling Plus: a supporter glow and 400 Yolks a month, at a
   founding price that early supporters keep.
 - Sign in with Apple, identifier only, no name or email.
-- Friends by share code or QR; visits, waves, postcards from a set list of phrases;
-  cosmetic trading; block and report on every profile.
+- Friends by share code or QR; visits, waves, postcards from a set list of phrases; swapping
+  a spare wearable with a friend, one for one; block and report on every profile.
 - Account deletion inside the app.
+
+## How trading works
+
+Checked against `TradeSheet.swift`, `VisitView.swift` and `propose_trade` in
+`docs/sql/trading.sql`.
+
+1. **Friends only.** You add each other by share code or QR first. Strangers you meet on a
+   wander can't be offered a swap, and nobody who has blocked you can be.
+2. **Start from their room.** Visit a friend, tap **swap**, then **offer a swap**. The menu
+   line under it says "they have to say yes".
+3. **Pick one for one.** Choose one of your wearables to give and one of theirs you'd like.
+   The picker only shows swaps that can actually go through: something you own that they
+   don't, against something they own that you don't. You see the result on your own yolkling
+   before sending.
+4. **They decide.** It appears under "waiting on you" on their side, previewed on *their*
+   yolkling, with "swap" or "no thanks". Nothing moves until they say yes.
+5. **Limits.** At most five open offers at a time, and each one expires after three days.
+
+It is deliberately small: no marketplace, no browsing, no prices or valuations, no history.
+The code calls it "a small favour between friends, not a marketplace". Describe it that way.
+
+**Known gap, so don't promise otherwise.** The person receiving an offer isn't told about it.
+There's no notification, badge or inbox: offers are only loaded inside the swap screen, so
+they only see it if they open a swap with some friend within three days, and otherwise it
+quietly expires. Don't write "get notified when a friend wants to swap" or anything implying
+offers find you. This is a bug worth fixing in 1.0.1, not a feature to describe.
+
+**Suggested line:** "swap a spare hat with a friend, one for one. they have to say yes."
