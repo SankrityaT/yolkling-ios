@@ -40,8 +40,17 @@ n=$(scan "you can say no on the next screen")
 if [ "$n" -eq 0 ]; then printf '  %-44s MISSING -- STALE BUILD\n' 'permission reassurance present?'; fail=1
 else printf '  %-44s ok\n' 'permission reassurance present?'; fi
 
+# Purpose strings Apple requires. Build 15 was rejected at upload (error 90683)
+# because NSHealthUpdateUsageDescription was removed: the HealthKit entitlement
+# needs it even though the app never writes. Catch that here, before uploading.
+for key in NSHealthShareUsageDescription NSHealthUpdateUsageDescription NSCameraUsageDescription; do
+  if /usr/libexec/PlistBuddy -c "Print :$key" "$APP/Info.plist" >/dev/null 2>&1; then
+    printf '  %-44s ok\n' "$key present?"
+  else printf '  %-44s MISSING -- UPLOAD WILL FAIL\n' "$key present?"; fail=1; fi
+done
+
 [ -n "$TMP" ] && rm -rf "$TMP"
 echo
-if [ $fail -eq 0 ]; then echo "PASS. This build has the permission fixes."
+if [ $fail -eq 0 ]; then echo "PASS. This build has the permission fixes and purpose strings."
 else echo "FAIL. This build does NOT have the fixes. Do not submit it."; fi
 exit $fail
