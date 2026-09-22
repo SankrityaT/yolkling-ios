@@ -41,6 +41,11 @@ struct HomeView: View {
     @State private var weeklyClaimed: Bool
     @State private var discovered: Set<String>
     @State private var discoveryReveal: Species?
+    /// The supporter nudge (see `maybeNudgePlus`). Device-local on purpose: it is a
+    /// politeness budget, not game state, and a reinstall resetting it is harmless.
+    @State private var showPlus = false
+    @AppStorage("plusNudge.lastShown") private var plusNudgeLastShown: Double = 0
+    @AppStorage("plusNudge.declines") private var plusNudgeDeclines: Int = 0
     @State private var colorVibe: Vibe?
     @State private var showRoom = false
     @Environment(Router.self) private var router
@@ -199,7 +204,7 @@ struct HomeView: View {
                                persist()
                            })
         }
-        .fullScreenCover(item: $discoveryReveal) { sp in
+        .fullScreenCover(item: $discoveryReveal, onDismiss: { maybeNudgePlus() }) { sp in
             // The creature walks it home rather than the card just materialising. Same
             // discovery, same scratch, but now something went and got it — which is the
             // one moment in this app where the creature acts without being asked, and it
@@ -212,6 +217,11 @@ struct HomeView: View {
                                number: SpeciesSets.dexNumber(of: sp.id),
                                outOf: SpeciesSets.dexTotal)
             )
+        }
+        .sheet(isPresented: $showPlus) {
+            PlusView(store: .shared, vibe: vibe)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .fullScreenCover(isPresented: $showRoom) {
             DecorateView(vibe: vibe, expression: shownExpression, outfit: wardrobe.outfit,
@@ -353,51 +363,14 @@ struct HomeView: View {
             // Only an Apple ID whose logIn has NOT confirmed is unsafe, because then the
             // ledger belongs to whoever RevenueCat currently thinks we are.
             let identityReady: Bool = if let identified { await identified.value } else { true }
-            if identityReady, let player,
-               let balance = await SubscriptionStore.shared.lifetimeStipendBalance() {
-                // ANCHOR before crediting, and anchor to a NAMED customer. RevenueCat's
-                // balance is lifetime and survives account deletion, so on this creature's
-                // first look anything already in the ledger was earned by a previous life
-                // and has already been paid out. Paying it again is the reinstall /
-                // delete-and-re-onboard double credit.
-                //
-                // The customer id is what makes that hold across a logOut. Account deletion
-                // mints a fresh anonymous customer whose balance is 0; anchoring at 0 and
-                // then signing back in would read the old customer's whole lifetime total
-                // as newly earned. See StipendLedger for the three cases.
-                //
-                // This subsumes the old device-local migration, and is strictly safer: a
-                // fresh install of an existing subscriber anchors at their current
-                // balance rather than at a UserDefaults value that may not exist. A
-                // restored creature arrives already anchored via the snapshot, so it
-                // keeps crediting normally.
-                let reading = StipendLedger.credit(
-                    balance: balance,
-                    customer: SubscriptionStore.shared.currentCustomerID,
-                    seen: player.stipendSeen,
-                    anchor: player.stipendAnchorID,
-                    wasAnchored: player.stipendInitialized
-                )
-                let stipend = reading.owed
-                player.stipendSeen = reading.seen
-                player.stipendAnchorID = reading.anchor
-                player.stipendInitialized = true
-                if stipend > 0 {
-                    // The mark was already advanced by `credit`; earn and persist both in
-                    // the same transaction so neither can land without the other.
-                    wallet.earn(stipend)
-                    persist()
-                    dialog = YolkDialog(
-                        icon: .coins, title: "thank you",
-                        message: "\(stipend) \(Currency.name) landed, for keeping this going.",
-                        primaryTitle: "lovely"
-                    )
-                } else {
-                    // Nothing owed, but anchoring still changed state and must be saved
-                    // or the next launch re-anchors against a newer balance.
-                    persist()
-                }
-            }
+            await creditStipend(identityReady: identityReady)
+        }
+        #if DEBUG
+        // Screenshot seam: show the supporter nudge on launch, skipping its gates.
+        .task { if CommandLine.arguments.contains("YOLK_NUDGE") { maybeNudgePlus(force: true) } }
+        #endif
+        .onChange(of: SubscriptionStore.shared.isPlus) { _, plus in
+            if plus { Task { await creditStipendAfterPurchase() } }
         }
         .task { if router.pending != nil { showFriends = true } }
         .task { await refreshWaitingSwaps() }
@@ -489,6 +462,101 @@ struct HomeView: View {
     }
 
     /// Write the live wallet + outfit back to the saved player.
+    // MARK: Supporter stipend
+
+    /// Credit any Yolks RevenueCat has granted since we last looked. Returns what was paid.
+    ///
+    /// Runs on launch (from the Home task) AND right after a purchase or restore. It used
+    /// to run only on launch, so a new supporter paid and saw nothing land until they next
+    /// opened the app, which reads as the purchase not working.
+    ///
+    /// Gated on identity RESOLUTION, not on having an Apple ID: "no Apple ID" is a
+    /// supported, paying state (the look-around trial), and for that player RevenueCat's
+    /// current anonymous customer IS the right customer. Only an Apple ID whose logIn has
+    /// not confirmed is unsafe, because then the ledger belongs to whoever RevenueCat
+    /// currently thinks we are.
+    @discardableResult
+    private func creditStipend(identityReady: Bool) async -> Int {
+        guard identityReady, let player,
+              let balance = await SubscriptionStore.shared.lifetimeStipendBalance() else { return 0 }
+        // ANCHOR before crediting, and anchor to a NAMED customer. RevenueCat's balance is
+        // lifetime and survives account deletion, so on this creature's first look
+        // anything already in the ledger was earned by a previous life and has already
+        // been paid out. See StipendLedger for the three cases.
+        let reading = StipendLedger.credit(
+            balance: balance,
+            customer: SubscriptionStore.shared.currentCustomerID,
+            seen: player.stipendSeen,
+            anchor: player.stipendAnchorID,
+            wasAnchored: player.stipendInitialized
+        )
+        let stipend = reading.owed
+        player.stipendSeen = reading.seen
+        player.stipendAnchorID = reading.anchor
+        player.stipendInitialized = true
+        // The mark was already advanced by `credit`; earn and persist in the same
+        // transaction so neither can land without the other. Anchoring alone still
+        // changed state and must be saved, or the next launch re-anchors.
+        if stipend > 0 { wallet.earn(stipend) }
+        persist()
+        if stipend > 0 {
+            dialog = YolkDialog(
+                icon: .coins, title: "thank you",
+                message: "\(stipend) \(Currency.name) landed, for keeping this going.",
+                primaryTitle: "lovely"
+            )
+        }
+        return stipend
+    }
+
+    /// Right after a purchase or restore. RevenueCat grants the currency on its server a
+    /// moment after the transaction, so the first read can still show the old balance.
+    /// Poll briefly and stop as soon as it lands.
+    private func creditStipendAfterPurchase() async {
+        let ready = if let uid = player?.appleUserID { await SubscriptionStore.shared.identify(uid) } else { true }
+        guard ready else { return }
+        for delay in [1.0, 3, 6, 12, 24] {
+            try? await Task.sleep(for: .seconds(delay))
+            if await creditStipend(identityReady: true) > 0 { return }
+        }
+    }
+
+    // MARK: Supporter nudge
+
+    /// Now and then, at a happy moment, let people know they can support the app.
+    ///
+    /// Most people never open the shop's footer or the You tab, so without this they
+    /// never learn yolkling+ exists. It is deliberately rare and easy to wave off:
+    /// never for supporters, never in someone's first days, at most once every five
+    /// days, only sometimes even then, and never again after three "not now"s.
+    /// It only ever fires right after something good (a card kept, a day collected),
+    /// never on launch and never over another dialog.
+    private func maybeNudgePlus(force: Bool = false) {
+        let subs = SubscriptionStore.shared
+        guard force || (!subs.isPlus && subs.offering != nil &&
+              (player?.totalCareDays ?? 0) >= 3 &&
+              plusNudgeDeclines < 3 &&
+              Date().timeIntervalSince1970 - plusNudgeLastShown > 5 * 86_400 &&
+              Double.random(in: 0..<1) < 0.4)
+        else { return }
+        Task {
+            // Let the dialog or cover that just closed finish leaving first; a dialog set
+            // while the previous one is dismissing gets cleared along with it.
+            try? await Task.sleep(for: .seconds(0.6))
+            guard dialog == nil, discoveryReveal == nil else { return }
+            plusNudgeLastShown = Date().timeIntervalSince1970
+            dialog = YolkDialog(
+                icon: .creature(vibe, .affectionate),
+                title: "keep yolkling going?",
+                message: "no ads, ever. yolkling runs on supporters. yolkling+ gives \(heading) a supporter glow and 400 \(Currency.name) every month. everything else stays free.",
+                primaryTitle: "see yolkling+",
+                primaryAction: { showPlus = true },
+                secondaryTitle: "not now",
+                secondaryAction: { plusNudgeDeclines += 1 }
+            )
+        }
+    }
+
     private func persist() {
         guard let player else { return }
         // FIRST, before anything reads the outfit. persist() fires on nearly every
@@ -1178,7 +1246,8 @@ struct HomeView: View {
         var msg = "your yolk grew from your day."
         if earned > 0 { msg = "\(health.steps) steps today, +\(earned) \(Currency.name)." }
         if gotRest { msg += earned > 0 ? " a good night's sleep also restored a rest token." : " a good night's sleep restored a rest token." }
-        dialog = YolkDialog(icon: .creature(vibe, .proud), title: "by living", message: msg, primaryTitle: "lovely")
+        dialog = YolkDialog(icon: .creature(vibe, .proud), title: "by living", message: msg, primaryTitle: "lovely",
+                            primaryAction: { maybeNudgePlus() })
     }
 
     /// Showing up for yourself eases trust UP toward devotion, diminishing as it rises

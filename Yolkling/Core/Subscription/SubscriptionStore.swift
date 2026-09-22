@@ -277,9 +277,14 @@ final class SubscriptionStore {
     /// the coins again.
     func lifetimeStipendBalance() async -> Int? {
         Purchases.shared.invalidateVirtualCurrenciesCache()
-        guard let currencies = try? await Purchases.shared.virtualCurrencies(),
-              let balance = currencies[RevenueCatConfig.yolksCurrency]?.balance
-        else { return nil }
+        // nil means "couldn't read the ledger" (network, SDK error), and callers skip the
+        // credit entirely. A successful read with NO YLK entry is a real answer: this
+        // customer has never been granted any, so the balance is 0. Treating that as nil
+        // meant a brand-new player never got anchored before their first purchase, and
+        // the first read after paying anchored at 400 as if it were history: the first
+        // month's Yolks were swallowed.
+        guard let currencies = try? await Purchases.shared.virtualCurrencies() else { return nil }
+        let balance = currencies[RevenueCatConfig.yolksCurrency]?.balance ?? 0
         stipendGranted = balance
         return balance
     }
