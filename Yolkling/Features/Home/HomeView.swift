@@ -1412,7 +1412,9 @@ struct HomeView: View {
 
     private func navItem(_ icon: YolkGlyph.Kind, label: String, active: Bool, badge: Int = 0,
                          action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        // A light tick on every tab tap, like the system tab bar. There was no feedback
+        // at all, so the bar felt dead next to everything else in the app that answers.
+        Button(action: { Haptics.shared.tick(); action() }) {
             VStack(spacing: 3) {
                 // Slightly heavier stroke when active. A tab bar cannot use fill-vs-outline
                 // to show selection the way SF Symbols do, so weight and colour carry it.
