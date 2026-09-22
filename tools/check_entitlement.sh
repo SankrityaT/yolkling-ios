@@ -28,7 +28,10 @@ else
 fi
 echo "BUILD $(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/Info.plist" 2>/dev/null)"
 fail=0
-for b in "$APP" "$APP/Extensions/"*.appex; do
+# DeviceActivityMonitor is a plain app-extension (PlugIns/), ScreenTimeReport is
+# ExtensionKit (Extensions/) -- scan both locations, not just one, or a monitor-
+# type extension silently never gets checked here.
+for b in "$APP" "$APP/Extensions/"*.appex "$APP/PlugIns/"*.appex; do
   [ -e "$b" ] || continue
   ent=MISSING
   codesign -d --entitlements - "$b" 2>/dev/null | grep -q family-controls && ent=OK
@@ -37,10 +40,14 @@ for b in "$APP" "$APP/Extensions/"*.appex; do
   if [ -e "$p" ]; then
     security cms -D -i "$p" 2>/dev/null | plutil -extract ProvisionedDevices raw - >/dev/null 2>&1 && kind=DEVELOPMENT
   fi
-  # Entitlement must always survive. Profile type only matters on the exported
-  # ipa: a development-signed archive is what automatic signing normally produces.
-  [ "$ent" = OK ] || fail=1
-  if [ -n "$TMP" ] && [ "$kind" != DISTRIBUTION ]; then fail=1; fi
+  # Not every bundle needs Family Controls (YolklingWidgets doesn't), so only
+  # count a missing entitlement against a bundle that's supposed to carry it.
+  case "$(basename "$b")" in
+    Yolkling.app|*ScreenTimeReport.appex|*DeviceActivityMonitor.appex)
+      [ "$ent" = OK ] || fail=1
+      if [ -n "$TMP" ] && [ "$kind" != DISTRIBUTION ]; then fail=1; fi
+      ;;
+  esac
   printf "  %-34s entitlement:%-8s profile:%s\n" "$(basename "$b")" "$ent" "$kind"
 done
 [ -n "$TMP" ] && rm -rf "$TMP"

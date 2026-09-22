@@ -73,6 +73,7 @@
 		74E69B32075E025157064E3D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F68C53AD5A98B7826A38B32 /* Assets.xcassets */; };
 		76C65D3DC1A534CEC3160250 /* SyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCD055E27868773534C0E1B /* SyncTests.swift */; };
 		774E938C4B98B2F1E3959A7E /* YolkCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A494D2CA89407A6B8FB8BF /* YolkCoin.swift */; };
+		78D236132F837A7E0C9487C0 /* YolklingDeviceActivityMonitor.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 3082012CCACF78A9222AF61B /* YolklingDeviceActivityMonitor.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */; };
 		7D316A3F6CA5988E2356DA7C /* PackRevealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C490033D514C40A0067B7 /* PackRevealView.swift */; };
 		832446F1F0BED514D5197669 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A2FC6311562EABC9A7AA6E05 /* PrivacyInfo.xcprivacy */; };
@@ -159,12 +160,20 @@
 		F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */; };
 		FA9F95A315F133166347EE00 /* SwipeToDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0329D5AA4AB9D68F817FBC2A /* SwipeToDismiss.swift */; };
 		FAB6F8C59864F026AAC940A1 /* YolkMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD66B197F22F7316ED9073EF /* YolkMenu.swift */; };
+		FBCB93D0FF84E17E6D547221 /* DeviceActivityMonitorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BA3E4F94F807478D408AE8 /* DeviceActivityMonitorExtension.swift */; };
 		FBD468390A672D74FF782DCA /* CardScratchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9DF2A1897F2D6B597F6A9B /* CardScratchView.swift */; };
 		FBEE7B6C3B94CF8C263C8033 /* RoomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 245BBB477DBDEAE4A4BC21D7 /* RoomTheme.swift */; };
 		FBFF303FA92AE2EEBC97B37A /* YolkNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E4A5383B84FED32116786EF /* YolkNotifications.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5B37B421A38C88286575942F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69E0AAA1430A6FD73A3A4C78 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C59D2F061C3D38CD73F3336C;
+			remoteInfo = YolklingDeviceActivityMonitor;
+		};
 		6D8C5801A27962C254385393 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 69E0AAA1430A6FD73A3A4C78 /* Project object */;
@@ -207,6 +216,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				4702ED8BB128D89E453FFCF6 /* YolklingWidgets.appex in Embed Foundation Extensions */,
+				78D236132F837A7E0C9487C0 /* YolklingDeviceActivityMonitor.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -220,6 +230,7 @@
 		062DF25F0B107A6A708BE8E2 /* Onest-VF.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Onest-VF.ttf"; sourceTree = "<group>"; };
 		0A2F368C2F7CFCEF100548E1 /* YolkCardFace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCardFace.swift; sourceTree = "<group>"; };
 		0A7C0703029E40E6699C7F53 /* Yolkling.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Yolkling.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C4D8C1A4FA949BF9BF22C1D /* DeviceActivityMonitor.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DeviceActivityMonitor.entitlements; sourceTree = "<group>"; };
 		0DEE2E3B0659BB1DD7BDE97F /* OnboardingEntrance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingEntrance.swift; sourceTree = "<group>"; };
 		0F68C53AD5A98B7826A38B32 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0FA2EE3D862627BDDB70A446 /* YolklingWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingWidgetBundle.swift; sourceTree = "<group>"; };
@@ -237,9 +248,11 @@
 		27D552FC0712259E2922DA94 /* StipendTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StipendTests.swift; sourceTree = "<group>"; };
 		2872CD6D62D6CC390C0CB796 /* TrialAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialAccessTests.swift; sourceTree = "<group>"; };
 		2878B46B9482D667951C103B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		3082012CCACF78A9222AF61B /* YolklingDeviceActivityMonitor.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = YolklingDeviceActivityMonitor.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		30CB0A1116928879DE203401 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		334D734661EDF43E80B4A217 /* SeasonBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonBanner.swift; sourceTree = "<group>"; };
 		36DC24772B748D797777AB22 /* WidgetPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPublisher.swift; sourceTree = "<group>"; };
+		396CF1725658E39CF7CFD234 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3A6E1C7F2E31B22D27023A1B /* RoomDecor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomDecor.swift; sourceTree = "<group>"; };
 		3C7A696ACFBC053E0809E12F /* DMMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMMono-Regular.ttf"; sourceTree = "<group>"; };
 		3C8CF8FD294F1454E5591F21 /* EggView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EggView.swift; sourceTree = "<group>"; };
@@ -265,6 +278,7 @@
 		5B184DBAA492B4A6A4DF7A62 /* HatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HatchModel.swift; sourceTree = "<group>"; };
 		5C049B150140A0C2342A398A /* GrowFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowFriendsView.swift; sourceTree = "<group>"; };
 		6140FCDBA2426893DDB84717 /* DriftSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriftSheet.swift; sourceTree = "<group>"; };
+		64BA3E4F94F807478D408AE8 /* DeviceActivityMonitorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceActivityMonitorExtension.swift; sourceTree = "<group>"; };
 		6650BC19D1D0DA03F736FF1A /* WhileYouWereAwayStrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhileYouWereAwayStrip.swift; sourceTree = "<group>"; };
 		689CB056088DED814BB7D8E5 /* TypewriterText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterText.swift; sourceTree = "<group>"; };
 		6B11B8AC851E841F937667EF /* EventStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventStore.swift; sourceTree = "<group>"; };
@@ -332,7 +346,8 @@
 		D3023148FA25E063CED922DF /* SyncClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncClient.swift; sourceTree = "<group>"; };
 		D442D1B6687019F1C76AEED5 /* CosmeticPreviewGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmeticPreviewGrid.swift; sourceTree = "<group>"; };
 		D4FC884495811BB1821AF2CB /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
-				DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTilt.swift; sourceTree = "<group>"; };
+		D934B6F2B67A9883D2A66D6D /* YolklingCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = YolklingCore; path = Packages/YolklingCore; sourceTree = SOURCE_ROOT; };
+		DAC8CE71D9E0A6DB09B74507 /* CardTilt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTilt.swift; sourceTree = "<group>"; };
 		DC9DF2A1897F2D6B597F6A9B /* CardScratchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardScratchView.swift; sourceTree = "<group>"; };
 		DE4A247C7625F453B1BBA6DF /* WardrobeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeStore.swift; sourceTree = "<group>"; };
 		E011F05F71F616426CCE0C22 /* YolklingWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolklingWatchApp.swift; sourceTree = "<group>"; };
@@ -742,6 +757,7 @@
 		AA07E7E05826E49AEF6E4D23 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				D934B6F2B67A9883D2A66D6D /* YolklingCore */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -848,6 +864,7 @@
 		E2A10A56A4F49FDAB00AB42E = {
 			isa = PBXGroup;
 			children = (
+				F306767253759BEA9821103B /* DeviceActivityMonitor */,
 				AA07E7E05826E49AEF6E4D23 /* Packages */,
 				0DFF0C49385D30FC1B237B73 /* ScreenTimeReport */,
 				71BD2BB879E5513CE7EE95EC /* Yolkling */,
@@ -862,6 +879,7 @@
 			isa = PBXGroup;
 			children = (
 				0A7C0703029E40E6699C7F53 /* Yolkling.app */,
+				3082012CCACF78A9222AF61B /* YolklingDeviceActivityMonitor.appex */,
 				EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */,
 				CC9F2A0791D44AD80081B7DE /* YolklingTests.xctest */,
 				F9D7499994CC77D4E8B2315C /* YolklingWatch.app */,
@@ -909,6 +927,16 @@
 				D3023148FA25E063CED922DF /* SyncClient.swift */,
 			);
 			path = Sync;
+			sourceTree = "<group>";
+		};
+		F306767253759BEA9821103B /* DeviceActivityMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				0C4D8C1A4FA949BF9BF22C1D /* DeviceActivityMonitor.entitlements */,
+				64BA3E4F94F807478D408AE8 /* DeviceActivityMonitorExtension.swift */,
+				396CF1725658E39CF7CFD234 /* Info.plist */,
+			);
+			path = DeviceActivityMonitor;
 			sourceTree = "<group>";
 		};
 		FC69B27DD46E2C14C2CBC993 /* Persistence */ = {
@@ -989,6 +1017,23 @@
 			productReference = CC9F2A0791D44AD80081B7DE /* YolklingTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		C59D2F061C3D38CD73F3336C /* YolklingDeviceActivityMonitor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AAEEA53CB2FCFDC789294BE0 /* Build configuration list for PBXNativeTarget "YolklingDeviceActivityMonitor" */;
+			buildPhases = (
+				8AA87F19BB80D0B5C8792C06 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = YolklingDeviceActivityMonitor;
+			packageProductDependencies = (
+			);
+			productName = YolklingDeviceActivityMonitor;
+			productReference = 3082012CCACF78A9222AF61B /* YolklingDeviceActivityMonitor.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		D11C675502367D0547EDF59C /* YolklingWidgets */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D0C1D97F44D2F7B28655C540 /* Build configuration list for PBXNativeTarget "YolklingWidgets" */;
@@ -1024,6 +1069,7 @@
 			dependencies = (
 				2C679BC68071E4BE4B526EB1 /* PBXTargetDependency */,
 				305A86CDBD810D744FCC67DF /* PBXTargetDependency */,
+				A24FC41B338C28EC5145317C /* PBXTargetDependency */,
 			);
 			name = Yolkling;
 			packageProductDependencies = (
@@ -1056,6 +1102,10 @@
 						DevelopmentTeam = 94277H98XP;
 						ProvisioningStyle = Automatic;
 					};
+					C59D2F061C3D38CD73F3336C = {
+						DevelopmentTeam = 94277H98XP;
+						ProvisioningStyle = Automatic;
+					};
 					D11C675502367D0547EDF59C = {
 						DevelopmentTeam = 94277H98XP;
 						ProvisioningStyle = Automatic;
@@ -1085,10 +1135,11 @@
 			projectRoot = "";
 			targets = (
 				DD2770B84A509DAFA8B6AA33 /* Yolkling */,
-				0F67D7AAA9597122D7BDE67C /* YolklingScreenTimeReport */,
-				7D4565EBBB1BDB1D01B0CDA5 /* YolklingTests */,
-				0380A3ADC7B50DF4DDD0B2A1 /* YolklingWatch */,
 				D11C675502367D0547EDF59C /* YolklingWidgets */,
+				0F67D7AAA9597122D7BDE67C /* YolklingScreenTimeReport */,
+				C59D2F061C3D38CD73F3336C /* YolklingDeviceActivityMonitor */,
+				0380A3ADC7B50DF4DDD0B2A1 /* YolklingWatch */,
+				7D4565EBBB1BDB1D01B0CDA5 /* YolklingTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1155,6 +1206,14 @@
 				363FF6492F6CCD6F82CF23A3 /* YolkMenu.swift in Sources */,
 				8523DF49C8440808ACFFE06D /* YolkRoomWidget.swift in Sources */,
 				441D18B460CB0DBC2B7D832C /* YolklingWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8AA87F19BB80D0B5C8792C06 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FBCB93D0FF84E17E6D547221 /* DeviceActivityMonitorExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1320,6 +1379,11 @@
 			target = 0F67D7AAA9597122D7BDE67C /* YolklingScreenTimeReport */;
 			targetProxy = A41C040C4B0FBB7D8F1E87FA /* PBXContainerItemProxy */;
 		};
+		A24FC41B338C28EC5145317C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C59D2F061C3D38CD73F3336C /* YolklingDeviceActivityMonitor */;
+			targetProxy = 5B37B421A38C88286575942F /* PBXContainerItemProxy */;
+		};
 		BBE57DD53FE4405CBAD052F6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DD2770B84A509DAFA8B6AA33 /* Yolkling */;
@@ -1343,6 +1407,27 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.Widgets;
 				PRODUCT_NAME = YolklingWidgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		0CC70565D2C6528530DE099E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = DeviceActivityMonitor/DeviceActivityMonitor.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DeviceActivityMonitor/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.DeviceActivityMonitor;
+				PRODUCT_NAME = YolklingDeviceActivityMonitor;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1591,6 +1676,27 @@
 			};
 			name = Release;
 		};
+		A28EAF2CAB90B872D15BFA14 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = DeviceActivityMonitor/DeviceActivityMonitor.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DeviceActivityMonitor/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yolkling.ios.DeviceActivityMonitor;
+				PRODUCT_NAME = YolklingDeviceActivityMonitor;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 		EAA45D37683B9CF1B066F621 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1726,6 +1832,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		AAEEA53CB2FCFDC789294BE0 /* Build configuration list for PBXNativeTarget "YolklingDeviceActivityMonitor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A28EAF2CAB90B872D15BFA14 /* Debug */,
+				0CC70565D2C6528530DE099E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		D0C1D97F44D2F7B28655C540 /* Build configuration list for PBXNativeTarget "YolklingWidgets" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1767,7 +1882,6 @@
 /* Begin XCSwiftPackageProductDependency section */
 		1EF266223E6CA667789B7B66 /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 		7105AA21C4F6E3A47890C83D /* RevenueCat */ = {
@@ -1777,7 +1891,6 @@
 		};
 		84AD81837A764554C261EAF5 /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 		9E64CF6D045ACC42F06467FE /* RevenueCatUI */ = {
@@ -1787,12 +1900,10 @@
 		};
 		B9BC56A5A6215E934A19E1E0 /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 		D7F6707E384114D485D267DE /* YolklingCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3958BAB1C9458F75F6D16722 /* XCLocalSwiftPackageReference "Packages/YolklingCore" */;
 			productName = YolklingCore;
 		};
 /* End XCSwiftPackageProductDependency section */

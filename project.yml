@@ -44,6 +44,7 @@ targets:
     dependencies:
       - target: YolklingWidgets
       - target: YolklingScreenTimeReport
+      - target: YolklingDeviceActivityMonitor
       # DISABLED FOR 1.0. Re-enable for 1.1 by uncommenting this line.
       #
       # The watch app is finished, tested and merged (see docs/WATCH_APP.md), but
@@ -144,6 +145,27 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: ScreenTimeReport/ScreenTimeReport.entitlements
+        SKIP_INSTALL: YES
+  YolklingDeviceActivityMonitor:
+    # A DeviceActivityMonitor extension is a plain NSExtension-based app-extension
+    # (NSExtensionPointIdentifier com.apple.deviceactivityui.monitor-extension), NOT
+    # ExtensionKit like ScreenTimeReport's DeviceActivityReport. It ships in PlugIns,
+    # same as YolklingWidgets. Built as extensionkit-extension it would embed under
+    # Extensions/ and the system would never call it.
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - DeviceActivityMonitor
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios.DeviceActivityMonitor
+        PRODUCT_NAME: YolklingDeviceActivityMonitor
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: DeviceActivityMonitor/Info.plist
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: DeviceActivityMonitor/DeviceActivityMonitor.entitlements
         SKIP_INSTALL: YES
   # The Apple Watch companion app: a single-target watchOS app (no separate
   # extension target — that split died with watchOS 9). Embedded in the iOS app
