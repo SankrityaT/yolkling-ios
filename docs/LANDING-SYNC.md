@@ -84,10 +84,8 @@ Checked against `TradeSheet.swift`, `VisitView.swift` and `propose_trade` in
 It is deliberately small: no marketplace, no browsing, no prices or valuations, no history.
 The code calls it "a small favour between friends, not a marketplace". Describe it that way.
 
-**Known gap, so don't promise otherwise.** The person receiving an offer isn't told about it.
-There's no notification, badge or inbox: offers are only loaded inside the swap screen, so
-they only see it if they open a swap with some friend within three days, and otherwise it
-quietly expires. Don't write "get notified when a friend wants to swap" or anything implying
-offers find you. This is a bug worth fixing in 1.0.1, not a feature to describe.
+**Inbox: fixed in 1.0.1.** In 1.0 the person receiving an offer wasn't told about it. 1.0.1
+adds a badge on the Friends tab and a "swaps waiting" card at the top of Friends. Still no push
+notification, so don't write "get notified when a friend wants to swap".
 
 **Suggested line:** "swap a spare hat with a friend, one for one. they have to say yes."
