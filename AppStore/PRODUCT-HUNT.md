@@ -172,9 +172,15 @@ it between Polar Habits' ~110 words and Urso's ~280.
 
 Do NOT list features. The gallery does that. Do not ask for upvotes.
 
+**Add Havishea as a maker.** When creating the post, add Havishea Vannemreddy under makers
+(he needs his own Product Hunt account). Both makers show on the page and both can reply to
+comments, which doubles how fast questions get answered on launch day. The first comment
+should say it's the two of you.
+
 A shape to write into:
 
-> Hi Product Hunt, I'm [name].
+> Hi Product Hunt, I'm Sankritya, and I built Yolkling with Havishea (@[his handle]).
+> It's just the two of us.
 >
 > [Why you built it. Two or three sentences, in your own words, about the actual thing
 > that made you want this to exist.]
