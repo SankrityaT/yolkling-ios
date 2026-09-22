@@ -40,7 +40,7 @@ const shots = [
   { file: "05-dex.png",    caption: "collect 203 cozy creatures",    accent: "#FF94C2" },
   { file: "06-closet.png", caption: "earn Yolks, then dress them up",accent: "#FFD25A" },
   { file: "07-visit.png",  caption: "visit your friends' creatures", accent: "#7B5CF0" },
-  { file: "08-card.png",   caption: "collect and trade rare cards",  accent: "#FF94C2" },
+  { file: "08-card.png",   caption: "collect and share rare cards",  accent: "#FF94C2" },
 ];
 
 const browser = await chromium.launch();

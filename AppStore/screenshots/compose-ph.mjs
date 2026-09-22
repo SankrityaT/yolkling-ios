@@ -11,9 +11,8 @@
 //   - a species count. 1.0 caps discovery at 32; "203" is only true from 1.0.1.
 //   - "Yolks can never be bought". Plus grants 400 a month; the true line is "not on
 //     their own".
-// The health shot is a fresh capture (raw/03-health-current.png). The original
-// raw/03-health.png still shows "connect health" and "maybe later", which were removed
-// after App Review rejected them and no longer exist in the app.
+// raw/03-health.png was recaptured for 1.0.1. The old one showed "connect health" and
+// "maybe later", which were removed after App Review rejected them.
 import { chromium } from "playwright";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -29,7 +28,7 @@ const shots = [
   { out: "1-meet.png", file: "02-hatch.png", accent: "#FFC23B",
     caption: "a pet that grows when you look after yourself",
     sub: "hatch one that's only yours. pick its colour and its look." },
-  { out: "2-health.png", file: "03-health-current.png", accent: "#73E0AE",
+  { out: "2-health.png", file: "03-health.png", accent: "#73E0AE",
     caption: "your real life feeds it",
     sub: "steps and sleep from Apple Health earn its trust. they never leave your phone." },
   { out: "3-focus.png", file: "04-focus.png", accent: "#8FD0FF",
