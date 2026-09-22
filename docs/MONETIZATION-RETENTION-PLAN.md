@@ -57,6 +57,67 @@ It must grant the SAME stipend cadence as Plus, or none, never a lump of Yolks.
 6. Glow variants/colors as the expression lever, rather than making the base glow louder.
    S-M. Making it flashy/rank-like betrays "support, not status".
 
+## Pricing policy (decided Sep 21)
+
+**Founding prices are kept.** $4.99/month and $34.99/year are founding prices. Anyone who
+subscribes at a founding price keeps it for as long as their subscription stays active.
+Price increases apply to new subscribers only.
+
+This is now a public promise: the Product Hunt copy says "subscribe while it is and you keep
+it". Two things keep it true.
+
+**1. Every price rise preserves existing subscribers.** In App Store Connect, raising a
+subscription price asks whether existing subscribers move to it. Always keep them on their
+current price. The other choice breaks the promise and is not reversible for the people it
+hits.
+
+**2. The terms say so.** They currently say the opposite. Replacement for the landing site
+(yolkling.com/terms, the "on price" section), in the site's own voice:
+
+> the price is always shown in the app before you buy anything. $4.99 a month and $34.99 a
+> year are founding prices, and we may raise the price for new subscribers later. if you
+> subscribe at a founding price, you keep that price for as long as your subscription stays
+> active, even after it goes up for everyone else. if your subscription ends and you start a
+> new one later, the price at that time applies, and switching to a different plan is priced
+> at that plan's current price. you will never be charged more without saying yes.
+
+It replaces these sentences, which must come out:
+- "prices can change."
+- "the founding price is not guaranteed to last forever."
+- "if we ever raise the price on a subscription you already have, apple will ask you to agree
+  first, and if you do not agree it simply will not renew at the new price."
+
+The two carve-outs are there because they're how Apple actually behaves: a preserved price
+belongs to an active subscription to one product. A lapsed subscriber, or one who switches
+from monthly to yearly, gets the current price, and a promise that ignores that would be one
+you can't keep.
+
+**Grandfathering is per product.** If you ever add a new plan, it has no founding price
+unless you decide it does.
+
+## Limited editions for real money (later)
+
+Planned: some store items sold for real money, as limited editions. This is monetization
+item 4 above and matches the original rule, sell the item, never the token. Before any ship:
+
+- **Deterministic.** The buyer gets exactly the item shown. No randomness anywhere near money:
+  no mystery boxes, no chance-based packs. The App Store description promises "no gacha, no
+  loot boxes", and that has to stay true.
+- **"Limited" has to be literally true.** Say what the limit is (a date, or a number) and
+  honour it. Never sell a "limited" item again later. False scarcity is a consumer-protection
+  problem and exactly the kind of claim App Review can call misleading.
+- **Never sell or grant Yolks.** Needs its own real-money path to `Wallet.grant`, separate from
+  `buy()`, which spends Yolks. Never touches `grantOnly` or the founding flair.
+- **Never a species, never a wellness feature.** Cosmetics only. Same do-not-cross line as Plus.
+- **Each item is a new IAP and needs App Review,** with its own review screenshot, submitted
+  together with an app version. The last three rejections were partly about exactly this.
+
+**When they ship, the App Store description must change.** It currently says "every species,
+every hat, every feature is reachable without it". Once some hats cost real money, that reads
+as false. Also revisit "there is one optional subscription" if other purchases exist by then.
+Nothing in the launch copy blocks this: it only ever says Yolks aren't sold on their own, which
+stays true.
+
 ## HAMM narrative, do-not-cross
 - Never raise the stipend. Lifetime grants the same cadence or none, not a Yolk lump.
 - Never gate free species behind Plus. Cosmetic seasons yes, species sets no.
