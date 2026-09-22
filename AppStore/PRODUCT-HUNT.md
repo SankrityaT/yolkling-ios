@@ -137,11 +137,18 @@ Describes what happens to you rather than the technology, which is what now sepa
 winning taglines: roughly a quarter of all taglines say "AI" and it has stopped
 distinguishing anything. Don't open with "Yolkling is a"; the name is already above it.
 
-### Description (456/500)
+### Description (485/500)
 
 ```
-Yolkling is a virtual pet that grows closer to you when you look after yourself in real life. Your steps, sleep and time away from your phone feed it, so the thing that makes it happiest is you putting it down. Hatch a one of a kind yolk, collect 203 species, dress yours up, and let friends' yolks visit yours. No ads, no tracking, no loot boxes. Yolks are earned by showing up and never sold on their own. One optional subscription adds a supporter glow.
+Yolkling is a virtual pet that grows closer to you when you look after yourself in real life. Your steps, sleep and time away from your phone feed it, so the thing that makes it happiest is you putting it down. Hatch a one of a kind yolk, collect 203 species, dress yours up, and let friends' yolks visit yours. No ads, no tracking, no loot boxes. Yolks are earned by showing up and never sold on their own. One optional subscription adds a supporter glow, at a founding price for now.
 ```
+
+**Say "founding price", never "locked in" or "forever".** The live terms say the founding
+price "is not guaranteed to last forever", and that a price rise on an existing subscription
+needs the subscriber's agreement through Apple. Promising early supporters they keep $4.99 would
+contradict that. It only becomes true if you decide to grandfather them, which is a real
+option (App Store Connect can preserve the current price for existing subscribers when you
+raise it) but it is binding, and the terms would need to say so first.
 
 **"203 species" is only true once 1.0.1 is live.** 1.0 caps discovery at 32. If 1.0.1
 hasn't been approved by launch morning, change it to "collect new species". The listing
@@ -174,7 +181,7 @@ A shape to write into:
 >
 > One thing I'd defend to anyone: you can't buy Yolks on their own. A year of showing up
 > earns you several times what a year of the subscription does. The subscription is there
-> to support the thing, not to skip it.
+> to support the thing, not to skip it, and it's at a founding price while the app is young.
 >
 > What's not here: no ads, no tracking, no loot boxes, no feed, and no guilt when you miss
 > a day. Your yolk just waits for you.
@@ -213,6 +220,8 @@ starting point, not a script.
 
 > the part i'd defend to anyone: a year of showing up earns you several times what a year
 > of the subscription does. the subscription supports the thing. it doesn't skip it.
+>
+> it's at a founding price while the app is young.
 
 **Reddit.** Read each subreddit's self-promotion rules first; most ban launch posts outright
 and will remove them, and some ban the account. Where it's allowed, lead with the problem
