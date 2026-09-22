@@ -132,6 +132,19 @@ struct PlusView: View {
                 } else {
                     planPicker
 
+                    // Decided Sep 21: prices go up later for new supporters only. Anyone
+                    // subscribed before then keeps what they paid. Saying so here is the
+                    // point, since it only helps if people know before they choose.
+                    HStack(spacing: 6) {
+                        YolkGlyph(kind: .markCrown, size: 13, weight: 0.1)
+                        Text("founding price. yours to keep, even when it goes up.")
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(YolkColor.inkSoft)
+                    .multilineTextAlignment(.center)
+                    .accessibilityElement(children: .combine)
+
                     Button { subscribe() } label: {
                     VStack(spacing: 2) {
                         if store.purchasing {
