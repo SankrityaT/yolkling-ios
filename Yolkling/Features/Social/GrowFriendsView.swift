@@ -11,7 +11,10 @@ struct GrowFriendsView: View {
 
     @Environment(Router.self) private var router
     @State private var addCode = ""
-    @State private var dialog: YolkDialog?
+    /// Owned by FriendsView so results show over the whole screen. This section sits at
+    /// the bottom of a scrolling list; a dialog attached here was confined to the section
+    /// and, once you had a few friends, landed below the fold where nobody saw it.
+    @Binding var dialog: YolkDialog?
     @State private var showQR = false
     @State private var showScanner = false
 
@@ -85,7 +88,6 @@ struct GrowFriendsView: View {
                 .padding(.top, YolkSpace.xs)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .yolkDialog($dialog)
         // 3a. QR sheet
         .sheet(isPresented: $showQR) {
             QRSheet(myCode: myCode)
@@ -103,6 +105,8 @@ struct GrowFriendsView: View {
             .presentationDragIndicator(.visible)
         }
         .task { await redeemPendingLink() }
+        // Friends may already be open when a second link arrives; `.task` only runs once.
+        .onChange(of: router.pending) { _, link in if link != nil { Task { await redeemPendingLink() } } }
     }
 
     // MARK: - Subviews

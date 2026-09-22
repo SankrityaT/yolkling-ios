@@ -372,9 +372,12 @@ struct HomeView: View {
         .onChange(of: SubscriptionStore.shared.isPlus) { _, plus in
             if plus { Task { await creditStipendAfterPurchase() } }
         }
-        .task { if router.pending != nil { showFriends = true } }
+        .task { if router.pending != nil { routeToFriends() } }
         .task { await refreshWaitingSwaps() }
-        .onChange(of: router.pending) { _, link in if link != nil { showFriends = true } }
+        .onChange(of: router.pending) { _, link in if link != nil { routeToFriends() } }
+        // A link that arrived during a focus session or a scratch waited; run it now.
+        .onChange(of: showFocus) { _, on in if !on, router.pending != nil { routeToFriends() } }
+        .onChange(of: discoveryReveal == nil) { _, closed in if closed, router.pending != nil { routeToFriends() } }
         // Anchors resolved here, at the root, so the tutorial gets real on-screen
         // frames rather than guessing at proportions of the screen height.
         .overlayPreferenceValue(TutorialAnchorKey.self) { anchors in
@@ -518,6 +521,32 @@ struct HomeView: View {
         for delay in [1.0, 3, 6, 12, 24] {
             try? await Task.sleep(for: .seconds(delay))
             if await creditStipend(identityReady: true) > 0 { return }
+        }
+    }
+
+    // MARK: Invite links
+
+    /// A friend's invite link opens Friends, from wherever you are.
+    ///
+    /// This used to just set `showFriends`, which only works on the bare Home screen:
+    /// SwiftUI will not present a cover while another one is up, so a link tapped while
+    /// the Shop, Dex or You was open silently did nothing (and the code sat in the router
+    /// until the next launch). Now whatever is covering Home is closed first.
+    ///
+    /// Two things are never interrupted: a running focus session (closing it would end
+    /// the session) and a card being scratched. The link waits in the router and runs
+    /// the moment either finishes. If Friends is already open, it redeems on its own.
+    private func routeToFriends() {
+        guard !showFocus, discoveryReveal == nil, !showFriends else { return }
+        let covered = showWardrobe || showProfile || showReferral || showCollection || showPlus
+            || showRoom || wandered != nil || showDrift || showWidgetHowTo || showCheckIn
+        showWardrobe = false; showProfile = false; showReferral = false; showCollection = false
+        showPlus = false; showRoom = false; wandered = nil; showDrift = false
+        showWidgetHowTo = false; showCheckIn = false
+        Task {
+            // Let the dismissal animation finish, or the new cover is refused too.
+            if covered { try? await Task.sleep(for: .seconds(0.6)) }
+            showFriends = true
         }
     }
 

@@ -72,7 +72,8 @@ struct FriendsView: View {
                         store: store,
                         myCode: store.myCode,
                         vibe: vibe,
-                        onAdded: { Task { await store.load() } }
+                        onAdded: { Task { await store.load() } },
+                        dialog: $dialog
                     )
                     .padding(.horizontal, YolkSpace.lg)
                     .padding(.bottom, YolkSpace.lg)
