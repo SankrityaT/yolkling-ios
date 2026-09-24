@@ -4,7 +4,15 @@ import Foundation
 /// App Group. Pure value type; carries the same RoomSnapshot friends use to render
 /// a room, plus the yolk's name.
 enum WidgetShare {
+    /// The App Group belongs to ONE team, so a Dev build (signed with a personal team, to
+    /// run on a device without being on the shipping team) cannot join the shipping group
+    /// and has its own. Kept in step with YOLK_APP_GROUP in project.yml, which is what the
+    /// entitlements use.
+#if YOLK_DEV
+    static let appGroup = "group.com.sankritya.yolkling.dev"
+#else
     static let appGroup = "group.com.yolkling.ios"
+#endif
     static let key = "yolk.widget.snapshot"
     static var defaults: UserDefaults? { UserDefaults(suiteName: appGroup) }
 }

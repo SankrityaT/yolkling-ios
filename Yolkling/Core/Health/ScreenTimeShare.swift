@@ -24,7 +24,15 @@ import Foundation
 // compile. The extension's callbacks are nonisolated, and the project defaults new
 // declarations to @MainActor, so without this the extension cannot call any of it.
 nonisolated enum ScreenTimeShare {
+    /// The App Group belongs to ONE team, so a Dev build (signed with a personal team, to
+    /// run on a device without being on the shipping team) cannot join the shipping group
+    /// and has its own. Kept in step with YOLK_APP_GROUP in project.yml, which is what the
+    /// entitlements use.
+#if YOLK_DEV
+    static let appGroup = "group.com.sankritya.yolkling.dev"
+#else
     static let appGroup = "group.com.yolkling.ios"
+#endif
 
     static var defaults: UserDefaults? { UserDefaults(suiteName: appGroup) }
 
