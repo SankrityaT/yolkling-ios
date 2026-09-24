@@ -168,7 +168,10 @@ struct HomeView: View {
         .background {
             // Hidden host: mounting it runs the DeviceActivityReport extension, which
             // writes today's off-phone figure to the App Group for us to read back.
-            if screenTime.status == .approved { ScreenTimeReportHost() }
+            // The hidden DeviceActivityReport host used to be mounted here to make the
+            // report extension run and publish today's figure. It cannot publish anything
+            // (read-only sandbox), so mounting it was an out-of-process render for nothing.
+            // Usage now comes from the monitor extension's thresholds.
         }
         // Full screen, not a half sheet.
         //
@@ -281,9 +284,10 @@ struct HomeView: View {
             guard phase == .active else { return }
             reconcileWallet()
             Task { await refreshWaitingSwaps() }
-            // Screen Time too. The report extension writes to the App Group on its own
-            // schedule, often while we are backgrounded, and nothing else re-read it:
-            // the tile said "counting" until the next cold launch.
+            // Screen Time too. The monitor extension writes thresholds while we are
+            // backgrounded, and `resume()` also re-registers the ladder: a monitored
+            // interval that ended mid-day (reboot, eviction) is not restarted by iOS until
+            // the next midnight, which would freeze the figure for the rest of the day.
             restoreScreenTime()
         }
         .onChange(of: wallet.coins) { _, _ in persist() }
@@ -1715,22 +1719,20 @@ struct HomeView: View {
         if player?.healthConnected == true { Task { await health.resume() } }
     }
 
-    /// Wait for the report extension's first write, then show it.
+    /// Look for a first reading shortly after connecting.
     ///
-    /// `connect()` returning true only means the person tapped Allow. The figure comes
-    /// from a DeviceActivityReport extension, which does not start until
-    /// `ScreenTimeReportHost` mounts -- and that only happens once `status` flips to
-    /// approved, which is this same instant. So the old code read the App Group
-    /// immediately, found nothing, and left the tile on "counting" with nothing in the
-    /// app ever reading again.
+    /// `connect()` returning true only means the person tapped Allow. Registering the
+    /// ladder with `includesPastActivity` makes every threshold already crossed today fire
+    /// in a burst, so a figure often lands within seconds of granting access — but if the
+    /// phone has had under fifteen minutes of use today there is genuinely nothing to
+    /// report yet, and the tile correctly says "counting" until there is.
     ///
-    /// There is no completion callback to wait on, so this polls. Roughly twenty seconds
-    /// is long enough for the extension to compute a day and short enough that giving up
-    /// costs nothing: the foreground re-read will catch it later regardless.
+    /// There is no completion callback to wait on, so this polls briefly and then gives up;
+    /// the foreground re-read catches it later regardless.
     private func awaitFirstScreenTimeReading() async {
         for _ in 0..<10 {
             screenTime.refresh()
-            if screenTime.usedHours != nil { return }
+            if screenTime.usedMinutes != nil { return }
             try? await Task.sleep(for: .seconds(2))
         }
         screenTime.refresh()

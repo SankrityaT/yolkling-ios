@@ -39,7 +39,18 @@ struct TotalActivityReport: DeviceActivityReportScene {
         // it. You cannot have been off your phone longer than the day has existed. The
         // app derives the off-phone figure from elapsed time instead, so the number can
         // never exceed the part of the day that has actually happened.
-        ScreenTimeShare.write(usedHours: totalSeconds / 3600)
+        // NOTHING IS PUBLISHED FROM HERE, and nothing can be.
+        //
+        // This used to write the figure to the App Group for the app to read, which is the
+        // obvious design and silently does nothing: a DeviceActivityReport extension runs
+        // in a read-only sandbox, and Apple drops its App Group writes, file writes and
+        // network calls on purpose, so usage cannot leave it. That is why the off-phone
+        // tile read "counting" forever on every device.
+        //
+        // The number the app actually uses now comes from the DeviceActivityMonitor
+        // extension's thresholds (see ScreenTimeShare). This report stays because it CAN
+        // render an exact total on screen, which is worth having later as an "Apple's own
+        // figure" panel, and it is the only way to show one.
         return totalSeconds / 3600
     }
 }

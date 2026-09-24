@@ -157,6 +157,9 @@ targets:
     deploymentTarget: "18.0"
     sources:
       - DeviceActivityMonitor
+      # The App Group contract, compiled into both sides. The extension writes it and
+      # the app reads it; they must agree on the keys and the ladder's event names.
+      - path: Yolkling/Core/Health/ScreenTimeShare.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.yolkling.ios.DeviceActivityMonitor

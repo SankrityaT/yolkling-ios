@@ -24,6 +24,10 @@ struct CollectionView: View {
 
     /// The species whose card is open full screen.
     @State private var opened: Species?
+    /// Families the player has opened up. A family is 40 to 60 creatures and most of them
+    /// are face down early on, so showing every one by default buried the sets above under
+    /// a wall of question marks. Found ones always show; the rest are a tap away.
+    @State private var expandedFamilies: Set<String> = []
     /// Who is currently round at yours, and how to change it. Defaulted so the seams and
     /// a friend's collection (where you have no room to invite anyone into) still build.
     var guestID: String? = nil
@@ -53,6 +57,21 @@ struct CollectionView: View {
                     }
                 }
                 ForEach(SpeciesSets.all) { setCard($0) }
+
+                // Everything, by family. The six sets above are curated highlights and
+                // only cover 32 of the 203 species; without this the other 171 had names,
+                // art and rarities and no place in the app that could ever show them.
+                VStack(spacing: 4) {
+                    Text("every yolkling")
+                        .font(.system(.title3, design: .rounded).weight(.bold)).foregroundStyle(YolkColor.ink)
+                    Text("four families, \(totalCount) creatures. the sets above are favourites from these.")
+                        .font(.footnote).foregroundStyle(YolkColor.muted)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.top, YolkSpace.md)
+
+                ForEach(Self.families) { familyCard($0) }
             }
             .padding(.horizontal, YolkSpace.md)
             .padding(.bottom, 40)
@@ -141,6 +160,88 @@ struct CollectionView: View {
         .padding(YolkSpace.md)
         .background(set.isSeasonal ? Color(hex: 0xFFF6E0) : YolkColor.shell2, in: RoundedRectangle(cornerRadius: 22))
         .overlay(RoundedRectangle(cornerRadius: 22).strokeBorder(set.isSeasonal ? Color(hex: 0xF0D98A) : .clear, lineWidth: 1))
+    }
+
+    /// The whole catalog, grouped the way the catalog itself is organised.
+    private struct Family: Identifiable {
+        let id: String
+        let blurb: String
+        let species: [Species]
+    }
+
+    private static let families: [Family] = {
+        let blurbs = [
+            "celestial": "night things: stars, moons and the quiet after sunset.",
+            "garden": "green things: sprouts, petals and whatever grew overnight.",
+            "ocean": "wet things: tide pools, deep water and the shore.",
+            "cozy": "warm things: blankets, baking and a snowed-in day.",
+        ]
+        let order = ["celestial", "garden", "ocean", "cozy"]
+        let grouped = Dictionary(grouping: SpeciesCatalog.standard, by: \.family)
+        return order.compactMap { name in
+            guard let members = grouped[name], !members.isEmpty else { return nil }
+            return Family(id: name, blurb: blurbs[name] ?? "", species: members)
+        }
+    }()
+
+    private func familyCard(_ family: Family) -> some View {
+        let ids = family.species.map(\.id)
+        let found = ids.filter { discovered.contains($0) }.count
+        let total = ids.count
+        let complete = found == total && total > 0
+        return VStack(alignment: .leading, spacing: YolkSpace.sm) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text(family.id).font(.system(.headline, design: .rounded)).foregroundStyle(YolkColor.ink)
+                        if complete {
+                            Image(systemName: "checkmark.seal.fill").font(.caption).foregroundStyle(Color(hex: 0xC9A24B))
+                        }
+                    }
+                    Text(family.blurb).font(.footnote).foregroundStyle(YolkColor.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer()
+                Text("\(found)/\(total)")
+                    .font(.system(.subheadline, design: .rounded).weight(.bold)).foregroundStyle(YolkColor.inkSoft)
+            }
+
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(YolkColor.shell).frame(height: 6)
+                    Capsule().fill(complete ? Color(hex: 0xC9A24B) : YolkColor.ink)
+                        .frame(width: geo.size.width * CGFloat(found) / CGFloat(max(total, 1)), height: 6)
+                }
+            }
+            .frame(height: 6)
+
+            let expanded = expandedFamilies.contains(family.id)
+            let found = family.species.filter { discovered.contains($0.id) }
+            let missing = family.species.filter { !discovered.contains($0.id) }
+            // Collapsed: everything found, plus a few face-down teasers so the family
+            // still reads as "there is more in here".
+            let shown = expanded ? family.species : found + missing.prefix(8)
+            let hidden = family.species.count - shown.count
+
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 82), spacing: 4)], spacing: 6) {
+                ForEach(shown) { cell($0) }
+            }
+
+            if hidden > 0 || expanded {
+                Button {
+                    Haptics.shared.tick()
+                    if expanded { expandedFamilies.remove(family.id) } else { expandedFamilies.insert(family.id) }
+                } label: {
+                    Text(expanded ? "show fewer" : "show all \(family.species.count)")
+                        .font(YolkType.bodySmall.weight(.semibold)).foregroundStyle(YolkColor.inkSoft)
+                        .frame(maxWidth: .infinity).padding(.vertical, 10)
+                        .background(YolkColor.shell, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(YolkSpace.md)
+        .background(YolkColor.shell2, in: RoundedRectangle(cornerRadius: 22))
     }
 
     @ViewBuilder private func cell(_ sp: Species) -> some View {
