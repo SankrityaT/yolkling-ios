@@ -95,6 +95,14 @@ final class Player {
     /// first reconcile a no-op — intended).
     var syncedItemIDs: [String] = []
 
+    /// Whose coin balance is newer, this device's or the server's.
+    ///
+    /// Bumped on every local wallet change and sent with each push; the server keeps the
+    /// highest version it has seen and takes that side's number. Before this, both sides
+    /// merged with `max(coins)`, so a purchase could never lower the balance anywhere and
+    /// every spend was refunded on the next launch.
+    var walletVersion: Int = 0
+
     /// Lifetime RevenueCat stipend Yolks ALREADY folded into `coins`. The credit
     /// high-water mark. It lives on the Player, not in UserDefaults, so it travels with
     /// the creature through the same cloud backup as the coins it guards. When it sat in

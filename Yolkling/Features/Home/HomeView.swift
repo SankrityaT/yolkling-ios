@@ -593,6 +593,12 @@ struct HomeView: View {
         // at — and it stops a traded-away item reaching `equippedItemIDs`, the widget, or
         // `mySnapshot().outfitIDs`, which is what friends see.
         wardrobe.prune(owns: wallet.owns)
+        // Any real change to the wallet claims a newer version, which is what lets a
+        // SPEND win over the server's older, higher balance. Without this the server's
+        // number always looked at least as new and every purchase came back refunded.
+        if player.coins != wallet.coins || Set(player.ownedItemIDs) != wallet.owned {
+            player.walletVersion += 1
+        }
         player.coins = wallet.coins
         player.ownedItemIDs = Array(wallet.owned)
         player.syncedItemIDs = Array(wallet.syncedIDs)
@@ -659,9 +665,19 @@ struct HomeView: View {
         guard let uid = player?.appleUserID else { return }
         let coins = wallet.coins
         let owned = Array(wallet.owned)
+        let version = player?.walletVersion ?? 0
         Task {
-            guard let s = await SupabaseClient.shared.pushWallet(userID: uid, coins: coins, owned: owned)
+            guard let s = await SupabaseClient.shared.pushWalletVersioned(
+                userID: uid, coins: coins, owned: owned, version: version)
             else { return }
+            // The server answers with whoever is newer. If that is the server (a gift
+            // landed while we were away), take its number and its version.
+            if WalletSync.adoptsServer(serverVersion: s.version, localVersion: version),
+               s.coins != wallet.coins {
+                wallet.adopt(coins: s.coins, owned: wallet.owned)
+                player?.walletVersion = s.version
+                player?.coins = s.coins
+            }
             // Only a CONFIRMED push may mark ids synced. A dropped request has to leave
             // them unsynced, or the next reconcile reads the server's silence about them
             // as a removal and deletes a purchase that never landed.
@@ -687,10 +703,16 @@ struct HomeView: View {
     private func reconcileWallet() {
         guard let uid = player?.appleUserID else { return }
         Task {
-            if let s = await SupabaseClient.shared.walletState(userID: uid) {
+            if let s = await SupabaseClient.shared.walletStateVersioned(userID: uid) {
                 wallet.reconcile(serverOwned: Set(s.owned))
-                if s.coins > wallet.coins {
-                    wallet.adopt(coins: s.coins, owned: wallet.owned)
+                // Newer wins, in either direction. This used to be `if s.coins > wallet.coins`,
+                // which could only ever raise the balance: spend 400 Yolks, relaunch, and
+                // the server's older 565 came straight back with the item still owned.
+                // A device that has never synced (version 0) has no claim, so it adopts.
+                let localVersion = player?.walletVersion ?? 0
+                if WalletSync.adoptsServer(serverVersion: s.version, localVersion: localVersion) {
+                    if s.coins != wallet.coins { wallet.adopt(coins: s.coins, owned: wallet.owned) }
+                    player?.walletVersion = max(s.version, localVersion)
                 }
             }
             persist()   // prunes the outfit, writes locally, pushes the settled state up

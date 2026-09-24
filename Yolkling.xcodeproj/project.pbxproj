@@ -157,7 +157,9 @@
 		F31A3E2F41BFF29944253D77 /* PostcardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593CF31848BF060E5D52D091 /* PostcardCard.swift */; };
 		F6E72741E88E322E12CFF18B /* FriendCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F805DBDE5A6F13D8C74EDEC1 /* FriendCollectionView.swift */; };
 		F881D46D850C51D7C10D8613 /* DMMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D15365D04B20A3F0E2A6598 /* DMMono-Medium.ttf */; };
+		F8AE47FF343CFFF833C9B48A /* WalletSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2106918BAFB2E26B3D3A093 /* WalletSync.swift */; };
 		F8EDA36F275CD41D1848BFE5 /* HomeTutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10EC7DE6F7CF79BD061CEDC9 /* HomeTutorial.swift */; };
+		F9D4E1955D1FCE62C9DF7418 /* WalletSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B937338D91F282BB741D3A91 /* WalletSyncTests.swift */; };
 		FA9F95A315F133166347EE00 /* SwipeToDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0329D5AA4AB9D68F817FBC2A /* SwipeToDismiss.swift */; };
 		FAB6F8C59864F026AAC940A1 /* YolkMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD66B197F22F7316ED9073EF /* YolkMenu.swift */; };
 		FBCB93D0FF84E17E6D547221 /* DeviceActivityMonitorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BA3E4F94F807478D408AE8 /* DeviceActivityMonitorExtension.swift */; };
@@ -331,6 +333,7 @@
 		B67DF3CE64F1960029BBAB1C /* WanderHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WanderHomeView.swift; sourceTree = "<group>"; };
 		B882A1710147434DD16C02B3 /* ScreenTimeReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeReport.swift; sourceTree = "<group>"; };
 		B92FB205D188E7646C9BC467 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
+		B937338D91F282BB741D3A91 /* WalletSyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSyncTests.swift; sourceTree = "<group>"; };
 		B946F4E30EF2C84EE207202E /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		BC1164E4A9B9125BB08DE78C /* FocusActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusActivityAttributes.swift; sourceTree = "<group>"; };
 		BC859F6086205595CCA3548F /* YolkDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkDialog.swift; sourceTree = "<group>"; };
@@ -360,6 +363,7 @@
 		EEED2350E8757F38C29F9CB9 /* FocusSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionStore.swift; sourceTree = "<group>"; };
 		EFBBB5EBD28E67B9E9F3CBD1 /* YolklingScreenTimeReport.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = YolklingScreenTimeReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFC6AD7229641595F1324223 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		F2106918BAFB2E26B3D3A093 /* WalletSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSync.swift; sourceTree = "<group>"; };
 		F554785860AE53390D69233E /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
 		F5C8E056F2348AD91667D6C4 /* YolkGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkGlyph.swift; sourceTree = "<group>"; };
 		F6E28EF370E18DD9AE7BD181 /* YolkCloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YolkCloseButton.swift; sourceTree = "<group>"; };
@@ -740,6 +744,7 @@
 				8DCD055E27868773534C0E1B /* SyncTests.swift */,
 				2872CD6D62D6CC390C0CB796 /* TrialAccessTests.swift */,
 				23B5B076C1A639A6479BBB95 /* TrustStageTests.swift */,
+				B937338D91F282BB741D3A91 /* WalletSyncTests.swift */,
 				AB4B5E5BA8C8DEB8E7E6510C /* WalletTests.swift */,
 			);
 			path = YolklingTests;
@@ -925,6 +930,7 @@
 			isa = PBXGroup;
 			children = (
 				D3023148FA25E063CED922DF /* SyncClient.swift */,
+				F2106918BAFB2E26B3D3A093 /* WalletSync.swift */,
 			);
 			path = Sync;
 			sourceTree = "<group>";
@@ -1135,11 +1141,11 @@
 			projectRoot = "";
 			targets = (
 				DD2770B84A509DAFA8B6AA33 /* Yolkling */,
-				D11C675502367D0547EDF59C /* YolklingWidgets */,
-				0F67D7AAA9597122D7BDE67C /* YolklingScreenTimeReport */,
 				C59D2F061C3D38CD73F3336C /* YolklingDeviceActivityMonitor */,
-				0380A3ADC7B50DF4DDD0B2A1 /* YolklingWatch */,
+				0F67D7AAA9597122D7BDE67C /* YolklingScreenTimeReport */,
 				7D4565EBBB1BDB1D01B0CDA5 /* YolklingTests */,
+				0380A3ADC7B50DF4DDD0B2A1 /* YolklingWatch */,
+				D11C675502367D0547EDF59C /* YolklingWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -1306,6 +1312,7 @@
 				D1F0716DBE1CD83F845635F5 /* VisitSubject.swift in Sources */,
 				1174E2755C3353C39FD9A5F5 /* VisitView.swift in Sources */,
 				CB5428C1CCDDEDEEA036D244 /* Wallet.swift in Sources */,
+				F8AE47FF343CFFF833C9B48A /* WalletSync.swift in Sources */,
 				AA2F9619CCFEA5395EB5D25F /* WanderArrival.swift in Sources */,
 				C4B9464AFB8CB75445896E50 /* WanderHomeView.swift in Sources */,
 				7B938C4624920E3DA81036E9 /* WardrobeStore.swift in Sources */,
@@ -1362,6 +1369,7 @@
 				76C65D3DC1A534CEC3160250 /* SyncTests.swift in Sources */,
 				0F3501B72F4F9211BBBA9886 /* TrialAccessTests.swift in Sources */,
 				20C60D20A52844E5B4EE79D8 /* TrustStageTests.swift in Sources */,
+				F9D4E1955D1FCE62C9DF7418 /* WalletSyncTests.swift in Sources */,
 				0E078F29634C6933BB02219C /* WalletTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1489,7 +1497,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 19;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1761,7 +1769,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 19;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 94277H98XP;
 				ENABLE_NS_ASSERTIONS = NO;

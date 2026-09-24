@@ -43,6 +43,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
     var placedDecorByZone: [String: String]?
 
     var coins: Int = 0
+    var walletVersion: Int = 0
     var stipendSeen: Int = 0
     var stipendInitialized: Bool = false
     var stipendAnchorID: String? = nil
@@ -93,6 +94,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         roomThemeID       = get(.roomThemeID, d.roomThemeID)
         placedDecorByZone = try? c.decodeIfPresent([String: String].self, forKey: .placedDecorByZone)
         coins             = get(.coins, d.coins)
+        walletVersion     = get(.walletVersion, d.walletVersion)
         stipendSeen       = get(.stipendSeen, d.stipendSeen)
         stipendInitialized = get(.stipendInitialized, d.stipendInitialized)
         stipendAnchorID   = try? c.decodeIfPresent(String.self, forKey: .stipendAnchorID)
@@ -122,6 +124,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         roomThemeID = p.roomThemeID
         placedDecorByZone = p.placedDecorByZone
         coins = p.coins
+        walletVersion = p.walletVersion
         stipendSeen = p.stipendSeen
         stipendInitialized = p.stipendInitialized
         stipendAnchorID = p.stipendAnchorID
@@ -153,7 +156,12 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         p.placedDecorByZone = placedDecorByZone
         // Coins take the HIGHER of the two, matching push_wallet's merge — a restore must
         // never be a way to lose Yolks you earned on this device before signing in.
+        // A RESTORE is the one place the old max() is still right: this device may have
+        // earned Yolks before signing in, and the backup may hold a balance it has never
+        // seen. Take the better of the two, then claim a version above both so the merged
+        // number is the one that wins from here on.
         p.coins = max(p.coins, coins)
+        p.walletVersion = max(p.walletVersion, walletVersion) + 1
         // Monotonic like coins: you have seen at least as much stipend as the higher of
         // the two ledgers. Restoring can never move the mark backwards and re-open the
         // double-credit window.

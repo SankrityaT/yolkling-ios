@@ -7,7 +7,7 @@ options:
 settings:
   base:
     MARKETING_VERSION: "1.0.1"
-    CURRENT_PROJECT_VERSION: "17"
+    CURRENT_PROJECT_VERSION: "19"
     SWIFT_VERSION: "6.0"
     SWIFT_APPROACHABLE_CONCURRENCY: YES
     SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
@@ -148,7 +148,7 @@ targets:
         SKIP_INSTALL: YES
   YolklingDeviceActivityMonitor:
     # A DeviceActivityMonitor extension is a plain NSExtension-based app-extension
-    # (NSExtensionPointIdentifier com.apple.deviceactivityui.monitor-extension), NOT
+    # (NSExtensionPointIdentifier com.apple.deviceactivity.monitor-extension), NOT
     # ExtensionKit like ScreenTimeReport's DeviceActivityReport. It ships in PlugIns,
     # same as YolklingWidgets. Built as extensionkit-extension it would embed under
     # Extensions/ and the system would never call it.

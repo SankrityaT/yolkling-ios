@@ -297,6 +297,21 @@ struct SupabaseClient {
     // MARK: Wallet (#11) — durable + cross-device, keyed to Apple id. See docs/sql/wallet.sql.
 
     /// The server's current view of the player's wallet.
+    /// The server's wallet, with the version that says whose coin number is newer.
+    ///
+    /// Falls back to the unversioned `wallet_state` when the versioned function is not
+    /// deployed yet (version 0 then means "the server has no opinion", and the local
+    /// side wins), so the app keeps working either side of the migration.
+    func walletStateVersioned(userID: String) async -> (coins: Int, owned: [String], version: Int)? {
+        if let data = await postJSON("wallet_state_v2", ["p_user": userID]),
+           let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let owned = obj["owned"] as? [String] {
+            return (obj["coins"] as? Int ?? 0, owned, obj["version"] as? Int ?? 0)
+        }
+        guard let legacy = await walletState(userID: userID) else { return nil }
+        return (legacy.coins, legacy.owned, 0)
+    }
+
     func walletState(userID: String) async -> (coins: Int, owned: [String])? {
         guard let data = await postJSON("wallet_state", ["p_user": userID]),
               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -314,6 +329,23 @@ struct SupabaseClient {
     }
 
     /// Push the local wallet up; returns the reconciled authoritative state to adopt.
+    /// Push the local wallet with its version. The server takes this side's coins only if
+    /// the version is strictly newer than the one it holds, so spending syncs down and a
+    /// gift credited server-side is not undone by a stale device.
+    @discardableResult
+    func pushWalletVersioned(userID: String, coins: Int, owned: [String], version: Int)
+        async -> (coins: Int, owned: [String], version: Int)? {
+        if let data = await postJSON("push_wallet_v2",
+                                     ["p_user": userID, "p_coins": coins,
+                                      "p_owned": owned, "p_version": version]),
+           let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let rCoins = obj["coins"] as? Int, let rOwned = obj["owned"] as? [String] {
+            return (rCoins, rOwned, obj["version"] as? Int ?? version)
+        }
+        guard let legacy = await pushWallet(userID: userID, coins: coins, owned: owned) else { return nil }
+        return (legacy.coins, legacy.owned, 0)
+    }
+
     @discardableResult
     func pushWallet(userID: String, coins: Int, owned: [String]) async -> (coins: Int, owned: [String])? {
         guard let data = await postJSON("push_wallet", ["p_user": userID, "p_coins": coins, "p_owned": owned]),
