@@ -1609,7 +1609,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sankritya.yolkling.dev.DeviceActivityMonitor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sankiii.yolkdev.DeviceActivityMonitor;
 				PRODUCT_NAME = YolklingDeviceActivityMonitor;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1640,7 +1640,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sankritya.yolkling.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sankiii.yolkdev;
 				PRODUCT_NAME = Yolkling;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1698,7 +1698,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sankritya.yolkling.dev.ScreenTimeReport;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sankiii.yolkdev.ScreenTimeReport;
 				PRODUCT_NAME = YolklingScreenTimeReport;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1852,7 +1852,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 19;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 594U49QLTF;
+				DEVELOPMENT_TEAM = J94T84BVCP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1886,7 +1886,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
-				YOLK_APP_GROUP = group.com.sankritya.yolkling.dev;
+				YOLK_APP_GROUP = group.com.sankiii.yolkdev;
 			};
 			name = Dev;
 		};
@@ -2000,7 +2000,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sankritya.yolkling.dev.Widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sankiii.yolkdev.Widgets;
 				PRODUCT_NAME = YolklingWidgets;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;

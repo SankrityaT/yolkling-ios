@@ -29,7 +29,7 @@ nonisolated enum ScreenTimeShare {
     /// and has its own. Kept in step with YOLK_APP_GROUP in project.yml, which is what the
     /// entitlements use.
 #if YOLK_DEV
-    static let appGroup = "group.com.sankritya.yolkling.dev"
+    static let appGroup = "group.com.sankiii.yolkdev"
 #else
     static let appGroup = "group.com.yolkling.ios"
 #endif

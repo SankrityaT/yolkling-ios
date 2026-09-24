@@ -39,8 +39,8 @@ settings:
       # Sankritya's own team. Family Controls is granted for DEVELOPMENT automatically to
       # any paid account, which is all a device test needs; the distribution entitlement
       # stays on the shipping team.
-      DEVELOPMENT_TEAM: 594U49QLTF
-      YOLK_APP_GROUP: group.com.sankritya.yolkling.dev
+      DEVELOPMENT_TEAM: J94T84BVCP
+      YOLK_APP_GROUP: group.com.sankiii.yolkdev
       # Read by ScreenTimeShare/WidgetSnapshot so the code picks the same group the
       # entitlements do. A generated Info.plist cannot carry an arbitrary key, so this is
       # a compile-time flag rather than a runtime lookup.
@@ -113,7 +113,7 @@ targets:
         CODE_SIGN_STYLE: Automatic
       configs:
         Dev:
-          PRODUCT_BUNDLE_IDENTIFIER: com.sankritya.yolkling.dev
+          PRODUCT_BUNDLE_IDENTIFIER: com.sankiii.yolkdev
           # Both can be installed at once, so they need different names on the home screen.
           INFOPLIST_KEY_CFBundleDisplayName: Yolk Dev
   YolklingWidgets:
@@ -147,7 +147,7 @@ targets:
         SKIP_INSTALL: YES
       configs:
         Dev:
-          PRODUCT_BUNDLE_IDENTIFIER: com.sankritya.yolkling.dev.Widgets
+          PRODUCT_BUNDLE_IDENTIFIER: com.sankiii.yolkdev.Widgets
   YolklingScreenTimeReport:
     # ExtensionKit, NOT a legacy app-extension. A DeviceActivityReport extension is an
     # ExtensionKit extension: it ships in $(EXTENSIONS_FOLDER_PATH) rather than PlugIns,
@@ -177,7 +177,7 @@ targets:
         SKIP_INSTALL: YES
       configs:
         Dev:
-          PRODUCT_BUNDLE_IDENTIFIER: com.sankritya.yolkling.dev.ScreenTimeReport
+          PRODUCT_BUNDLE_IDENTIFIER: com.sankiii.yolkdev.ScreenTimeReport
   YolklingDeviceActivityMonitor:
     # A DeviceActivityMonitor extension is a plain NSExtension-based app-extension
     # (NSExtensionPointIdentifier com.apple.deviceactivity.monitor-extension), NOT
@@ -204,7 +204,7 @@ targets:
         SKIP_INSTALL: YES
       configs:
         Dev:
-          PRODUCT_BUNDLE_IDENTIFIER: com.sankritya.yolkling.dev.DeviceActivityMonitor
+          PRODUCT_BUNDLE_IDENTIFIER: com.sankiii.yolkdev.DeviceActivityMonitor
   # The Apple Watch companion app: a single-target watchOS app (no separate
   # extension target — that split died with watchOS 9). Embedded in the iOS app
   # via the target dependency above, so installing Yolkling offers the watch app.
