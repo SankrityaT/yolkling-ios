@@ -63,14 +63,21 @@ struct ProfileView: View {
             .padding(.top, YolkSpace.sm)
             .padding(.bottom, YolkSpace.xs)
 
-            ScrollView {
-                VStack(spacing: YolkSpace.lg) {
-
+            // The creature and the name are a FIXED header, outside the scroll. Inside it,
+            // they were the first thing to move: scrolling dragged the yolkling up against
+            // the close button and sliced its head off flat, which reads as the creature
+            // sliding under the top bar. Nothing here can collide with the button now, and
+            // the rows below still scroll on a small screen.
             YolklingView(vibe: vibe, expression: .happy, size: 130, supporterGlow: subs.isPlus)
                 .frame(height: 160)
+                .padding(.top, YolkSpace.xs)
             Text(name)
                 .font(YolkType.heading)
                 .foregroundStyle(YolkColor.ink)
+                .padding(.bottom, YolkSpace.lg)
+
+            ScrollView {
+                VStack(spacing: YolkSpace.lg) {
 
             if isSignedIn {
                 VStack(spacing: 4) {
@@ -199,13 +206,28 @@ struct ProfileView: View {
             .disabled(deleting)
             .padding(.bottom, YolkSpace.lg)
                 }
-                .padding(.bottom, YolkSpace.xl)
+                // Enough to clear the home indicator, no more. Anything larger made the
+                // content taller than the screen on a phone where it otherwise fits, so
+                // the screen scrolled for no reason and the creature got dragged up under
+                // the close button.
+                .padding(.bottom, YolkSpace.lg)
             }
             // Marks this as the scroll that decides whether a downward drag is a scroll
             // or a dismiss. Without it, swipeToDismiss closes the screen when somebody
             // scrolls back up. See SwipeToDismiss.swift.
             .dismissAwareScroll()
             .scrollBounceBehavior(.basedOnSize)
+            // Fade the content out as it reaches the close button, rather than letting it
+            // be guillotined against the edge. The creature is the first thing in this
+            // scroll, so without this, scrolling slices its head off flat right next to
+            // the X and reads as the yolkling sliding under the top bar.
+            .mask(
+                VStack(spacing: 0) {
+                    LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
+                        .frame(height: 22)
+                    Rectangle().fill(.black)
+                }
+            )
         }
         .confirmationDialog("delete your account?", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("delete everything", role: .destructive) { deleteAccount() }
