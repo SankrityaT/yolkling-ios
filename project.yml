@@ -16,7 +16,7 @@ settings:
     # The App Group belongs to one team, so a Dev build signed with another needs its own.
     # Referenced by every entitlements file and carried in each Info.plist as YolkAppGroup.
     YOLK_APP_GROUP: group.com.yolkling.ios
-    MARKETING_VERSION: "1.0.1"
+    MARKETING_VERSION: "1.0.2"
     CURRENT_PROJECT_VERSION: "19"
     SWIFT_VERSION: "6.0"
     SWIFT_APPROACHABLE_CONCURRENCY: YES
