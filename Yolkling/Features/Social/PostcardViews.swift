@@ -83,7 +83,18 @@ struct PostcardCompose: View {
         Task {
             // By TOKEN. The server validates it against its own table and stores its own
             // copy of the text, so a client can't smuggle arbitrary content through.
-            let r = await store.sendPostcardToken(to: subject.userID, token: phrase.id)
+            var r = await store.sendPostcardToken(to: subject.userID, token: phrase.id)
+            // "not_drifted" means the server has no record of us visiting this stranger
+            // today, yet here we are on their note screen: the landing did not reach the
+            // server, or it was logged on the other side of UTC midnight. The person did
+            // nothing wrong and the screen they are on is proof of the visit, so land it
+            // and send again rather than telling them their yolkling "isn't there any
+            // more" over a bookkeeping gap.
+            if !r.ok, r.reason == "not_drifted", subject.isStranger {
+                if await store.drift(to: subject.userID) {
+                    r = await store.sendPostcardToken(to: subject.userID, token: phrase.id)
+                }
+            }
             sending = false
             if r.ok {
                 Haptics.shared.reward()
@@ -98,7 +109,9 @@ struct PostcardCompose: View {
                 let msg: String
                 switch r.reason {
                 case "already_sent":  msg = "you've already left \(subject.displayName) a note today."
-                case "not_drifted":   msg = "your yolkling isn't there any more."
+                // Only reachable when re-landing also failed, which means the daily wander
+                // cap is used up rather than anything being wrong with this room.
+                case "not_drifted":   msg = "your yolkling has done its rounds for today. it will head out again tomorrow."
                 case "blocked":       msg = "you can't reach them."
                 case "invalid_token": msg = "that one didn't send. pick another?"
                 default:              msg = "couldn't send that just now. try again in a sec."

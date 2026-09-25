@@ -32,6 +32,11 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
     var discoveredSpeciesIDs: [String] = []
 
     var careStreak: Int = 0
+    /// Lifetime days cared for. Backed up because it is the number the bond card prints,
+    /// and it is a claim about the whole relationship: careStreak resets on a gap, this
+    /// never does. Left out of the snapshot, a new phone said "day 1" to someone who had
+    /// been here a month.
+    var totalCareDays: Int = 0
     var lastCareDate: Date?
     var restTokens: Int = 2
 
@@ -86,6 +91,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         activeFoundingID  = try? c.decodeIfPresent(String.self, forKey: .activeFoundingID)
         discoveredSpeciesIDs = get(.discoveredSpeciesIDs, d.discoveredSpeciesIDs)
         careStreak        = get(.careStreak, d.careStreak)
+        totalCareDays     = get(.totalCareDays, d.totalCareDays)
         lastCareDate      = try? c.decodeIfPresent(Date.self, forKey: .lastCareDate)
         restTokens        = get(.restTokens, d.restTokens)
         weekStart         = try? c.decodeIfPresent(Date.self, forKey: .weekStart)
@@ -116,6 +122,7 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         activeFoundingID = p.activeFoundingID
         discoveredSpeciesIDs = p.discoveredSpeciesIDs
         careStreak = p.careStreak
+        totalCareDays = p.totalCareDays
         lastCareDate = p.lastCareDate
         restTokens = p.restTokens
         weekStart = p.weekStart
@@ -147,6 +154,8 @@ struct PlayerSnapshot: Codable, Sendable, Equatable {
         p.activeFoundingID = activeFoundingID
         p.discoveredSpeciesIDs = discoveredSpeciesIDs
         p.careStreak = careStreak
+        // Monotonic: a lifetime count can only ever be the larger of the two.
+        p.totalCareDays = max(p.totalCareDays, totalCareDays)
         p.lastCareDate = lastCareDate
         p.restTokens = restTokens
         p.weekStart = weekStart
