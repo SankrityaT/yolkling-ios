@@ -249,3 +249,21 @@ validated vocabulary so a stranger cannot type something cruel at you.
 Catvertising, Best Game, Influencer (all five tracks), Ship Kotlin Everywhere, Most
 Viral (Noise), Best App for Galaxy, Idea to Income (Replit), Keep Them Coming Back
 (OneSignal), The Growth Loop (Layers), Funnel Vision (Stripe).
+
+## Demo video (built 2026-09-30)
+
+`AppStore/devpost/yolkling-demo.mp4` and `~/Downloads/yolkling-devpost/` — 1920x1080,
+67.6s, silent, captions burned in.
+
+Made with Fetch (screen recorder + editor, MCP). Two takes off the `Yolk-ProMax`
+simulator, split around the HealthKit and Screen Time system sheets: those alerts kill
+the window capture and the recording goes black from that point on. Take A is the hatch
+flow, take B the app itself; the permission prompts are cleared off camera between them.
+
+Look: `studio` preset, dusk gradient ground, drawn phone (`frame.chrome: clean`), 16:9,
+9:41 status bar. Captions are timed `label` texts at fx 0.20, in the gold column so they
+never sit over the phone. Opening and closing are `title` texts. Fetch's own `review`
+scored both takes "ready" (9.5 and 9.75). Joined with ffmpeg concat.
+
+Reproduce: `/tmp/drive.py` (idb, finds buttons by label), `/tmp/phaseA.py`,
+`/tmp/between.py`, `/tmp/phaseB.py`, `/tmp/twotakes.py`, `/tmp/finalA.py`, `/tmp/editB.py`.
