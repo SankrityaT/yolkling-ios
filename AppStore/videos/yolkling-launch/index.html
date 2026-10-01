@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Onest"; src: url("assets/fonts/Onest-VF.ttf") format("truetype"); font-weight: 100 900; font-display: block; }
+      @font-face { font-family: "DM Sans"; src: url("assets/fonts/DMSans-VF.ttf") format("truetype"); font-weight: 100 1000; font-display: block; }
+      @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Regular.ttf") format("truetype"); font-weight: 400; font-display: block; }
+      @font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Medium.ttf") format("truetype"); font-weight: 500; font-display: block; }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #fbf6ec; }
+
+      /* The set is the brand's own world: eggshell, ink, one yolk. A studio sweep, not a glow. */
+      #root {
+        width: 100%; height: 100%; position: relative; overflow: hidden;
+        color: #2c2118; font-family: "DM Sans", sans-serif;
+        background: linear-gradient(180deg, #fdf9f1 0%, #fbf4e7 52%, #f4e8d3 82%, #eddcc0 100%);
+      }
+      .floor {
+        position: absolute; left: 0; right: 0; top: 842px; height: 238px;
+        background: linear-gradient(180deg, rgba(120, 84, 40, 0.07) 0%, rgba(120, 84, 40, 0) 34%);
+      }
+
+      /* ---------- device rig: stage > cam > (yolk, shadow, float > phone) ---------- */
+      /* layers are flattened in DOM order (yolk < shadow < phone) so nothing can cut through the device;
+         each level carries its own perspective instead of sharing one 3D space */
+      .stage { position: absolute; inset: 0; }
+      .cam {
+        position: absolute; left: 1120px; top: 62px; width: 452px; height: 940px;
+        perspective: 1900px; will-change: transform;
+      }
+      .yolk {
+        position: absolute; left: -134px; top: 100px; width: 720px; height: 720px; border-radius: 50%;
+        background: radial-gradient(circle at 36% 30%, #ffdf80 0%, #ffd25a 46%, #ffc640 100%);
+        opacity: 0; will-change: transform;
+      }
+      .cshadow {
+        position: absolute; left: 26px; top: 948px; width: 400px; height: 44px; border-radius: 50%;
+        background: rgba(74, 48, 16, 0.36); filter: blur(22px); opacity: 0; will-change: transform;
+      }
+      .float { position: absolute; inset: 0; perspective: 1900px; will-change: transform; }
+      .phone { position: absolute; inset: 0; will-change: transform; }
+      .phone { opacity: 0; }
+      .flare {
+        position: absolute; left: -224px; top: 20px; width: 900px; height: 900px; border-radius: 50%; opacity: 0;
+        background: radial-gradient(closest-side, rgba(255, 244, 205, 0.95), rgba(255, 214, 110, 0.4) 52%, transparent);
+      }
+      .bezel {
+        position: absolute; inset: 0; border-radius: 62px; background: #1f1a14;
+        box-shadow:
+          0 0 0 1px rgba(44, 33, 24, 0.5),
+          0 1.5px 0 0 rgba(255, 245, 225, 0.16) inset,
+          0 60px 90px -30px rgba(84, 54, 16, 0.42),
+          0 26px 40px -18px rgba(84, 54, 16, 0.3);
+      }
+      .screen { position: absolute; inset: 11px; border-radius: 52px; overflow: hidden; background: #fbf6ec; }
+      .screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .burst { position: absolute; left: 226px; top: 430px; width: 0; height: 0; }
+      .p { position: absolute; left: -8px; top: -8px; width: 16px; height: 16px; border-radius: 50%; background: #ffb648; opacity: 0; }
+      .p.t { background: #ff8a5b; }
+
+      /* ---------- type ---------- */
+      .w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.06em 0 0.16em; margin: -0.06em 0 -0.16em; }
+      .wi { display: inline-block; will-change: transform; }
+      .gold { color: #f0742a; }
+
+      .col { position: absolute; left: 168px; width: 800px; }
+      .kicker {
+        display: flex; align-items: center; gap: 18px;
+        font-family: "DM Mono", monospace; font-size: 24px; font-weight: 500;
+        letter-spacing: 0.22em; text-transform: uppercase; color: #6e5c49;
+      }
+      .rule { width: 64px; height: 2px; background: #f0742a; transform-origin: 0 50%; }
+      .line { font-family: "Onest", sans-serif; font-size: 76px; line-height: 1.1; font-weight: 600; letter-spacing: -0.036em; margin-top: 22px; }
+      .sub { font-size: 34px; line-height: 1.42; font-weight: 400; color: #6e5c49; margin-top: 26px; max-width: 680px; }
+      .num {
+        font-family: "Onest", sans-serif; font-size: 250px; line-height: 0.95; font-weight: 600;
+        letter-spacing: -0.06em; color: #f0742a; transform-origin: 0 100%; display: inline-block;
+      }
+      .stack .line { margin-top: 6px; }
+
+      .card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+      .big { font-family: "Onest", sans-serif; font-size: 100px; line-height: 1.08; font-weight: 600; letter-spacing: -0.042em; max-width: 1400px; }
+      .six { font-family: "Onest", sans-serif; font-size: 300px; line-height: 1; font-weight: 600; letter-spacing: -0.06em; color: #f0742a; display: inline-block; }
+      .sixrow { display: flex; align-items: baseline; gap: 30px; margin-top: 30px; font-family: "Onest", sans-serif; font-size: 100px; font-weight: 600; letter-spacing: -0.042em; }
+
+      .pills { display: flex; gap: 24px; margin-top: 56px; }
+      .pill {
+        display: flex; align-items: center; gap: 16px; padding: 24px 36px; border-radius: 28px;
+        background: #fffaf0; border: 1px solid rgba(44, 33, 24, 0.07);
+        box-shadow: 0 22px 44px -18px rgba(84, 54, 16, 0.3), 0 4px 10px -4px rgba(84, 54, 16, 0.14);
+        font-size: 34px; font-weight: 500; color: #2c2118; opacity: 0;
+      }
+      .dot { width: 14px; height: 14px; border-radius: 50%; background: #ff5a4a; }
+
+      .sweep {
+        display: inline-block; color: transparent; -webkit-background-clip: text; background-clip: text;
+        background-image: linear-gradient(90deg, #f0742a 0%, #f0742a 44%, #2c2118 56%, #2c2118 100%);
+        background-size: 230% 100%; background-position: 100% 0;
+      }
+
+      .wordmark { display: flex; align-items: baseline; font-family: "Onest", sans-serif; font-size: 210px; font-weight: 700; letter-spacing: -0.055em; }
+      .wordmark .l { display: inline-block; opacity: 0; will-change: transform, filter; }
+      .wordmark .yd { width: 34px; height: 34px; border-radius: 50%; background: #ffc233; margin-left: 14px; opacity: 0; }
+      .tag { font-size: 44px; font-weight: 400; color: #6e5c49; margin-top: 30px; letter-spacing: -0.008em; }
+      .free { font-family: "DM Mono", monospace; font-size: 25px; font-weight: 500; color: #a8937d; margin-top: 28px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0; }
+
+      /* registry: grain-overlay — paper tooth over the whole frame */
+      @keyframes hf-grain-noise {
+        0%, 100% { transform: translate(0, 0); }
+        10% { transform: translate(-5%, -5%); }
+        20% { transform: translate(-10%, 5%); }
+        30% { transform: translate(5%, -10%); }
+        40% { transform: translate(-5%, 15%); }
+        50% { transform: translate(-10%, 5%); }
+        60% { transform: translate(15%, 0); }
+        70% { transform: translate(0, 10%); }
+        80% { transform: translate(-15%, 0); }
+        90% { transform: translate(10%, 5%); }
+      }
+      #grain-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; overflow: hidden; mix-blend-mode: multiply; }
+      #grain-overlay .grain-texture {
+        position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.11;
+        animation: hf-grain-noise 0.5s steps(1) infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="85" data-width="1920" data-height="1080">
+      <div class="floor"></div>
+
+      <!-- ================= TITLE ================= -->
+      <div id="t1" class="card clip" data-start="0.5" data-duration="4.5" data-track-index="2">
+        <div class="big" data-text="I checked my screen time|one morning."></div>
+        <div class="sixrow">
+          <span class="w" data-layout-allow-overflow><span class="wi said">It said</span></span>
+          <span class="six" id="six">0</span>
+          <span class="w" data-layout-allow-overflow><span class="wi hrs">hours.</span></span>
+        </div>
+      </div>
+
+      <div id="t2" class="card clip" data-start="5.0" data-duration="8.1" data-track-index="2">
+        <div class="big" data-text="Every app meant to help|was one more thing to open."></div>
+        <div class="pills">
+          <div class="pill p1"><span class="dot"></span>Streak · day 41</div>
+          <div class="pill p2"><span class="dot"></span>9:00 PM · Don't lose your streak</div>
+        </div>
+      </div>
+
+      <div id="t3" class="card clip" data-start="13.2" data-duration="2.7" data-track-index="2">
+        <div class="big">
+          <span class="w" data-layout-allow-overflow><span class="wi">So</span></span>
+          <span class="w" data-layout-allow-overflow><span class="wi">I</span></span>
+          <span class="w" data-layout-allow-overflow><span class="wi">built</span></span>
+          <span class="w" data-layout-allow-overflow><span class="wi"><span class="sweep">the opposite.</span></span></span>
+        </div>
+      </div>
+
+      <!-- ================= DEVICE ================= -->
+      <div class="stage">
+        <div class="cam">
+          <div class="yolk"></div>
+          <div class="cshadow"></div>
+          <div class="float">
+            <div class="flare"></div>
+            <div class="phone">
+              <div class="bezel"></div>
+              <div class="screen">
+                <video id="v-questions" class="clip" src="assets/questions.mp4" data-start="15.7" data-duration="9.9" data-track-index="0" muted playsinline></video>
+                <video id="v-colour" class="clip" src="assets/colour.mp4" data-start="25.1" data-duration="9.0" data-track-index="1" muted playsinline></video>
+                <video id="v-hatch" class="clip" src="assets/hatch.mp4" data-start="33.6" data-duration="7.0" data-track-index="0" muted playsinline></video>
+                <video id="v-naming" class="clip" src="assets/naming.mp4" data-start="40.1" data-duration="5.5" data-track-index="1" muted playsinline></video>
+                <video id="v-yolks" class="clip" src="assets/yolks.mp4" data-start="45.1" data-duration="3.9" data-track-index="0" muted playsinline></video>
+                <video id="v-home" class="clip" src="assets/home.mp4" data-start="48.5" data-duration="17.0" data-playback-rate="0.37" data-track-index="1" muted playsinline></video>
+                <video id="v-dex" class="clip" src="assets/dex.mp4" data-start="65.1" data-duration="12.4" data-track-index="0" muted playsinline></video>
+              </div>
+            </div>
+            <div class="burst" id="burst"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= CAPTIONS ================= -->
+      <div id="c1" class="col clip" data-start="17.2" data-duration="7.6" data-track-index="3" style="top: 420px">
+        <div class="kicker"><span class="rule"></span><span class="kt">01</span></div>
+        <div class="line" data-text="Three questions."></div>
+      </div>
+
+      <div id="c2" class="col clip" data-start="25.9" data-duration="7.6" data-track-index="3" style="top: 380px">
+        <div class="kicker"><span class="rule"></span><span class="kt">02</span></div>
+        <div class="line" data-text="A creature that|exists *exactly once.*"></div>
+      </div>
+
+      <div id="c3" class="col clip" data-start="36.2" data-duration="3.8" data-track-index="3" style="top: 440px">
+        <div class="line" data-text="It *hatches.*" style="font-size: 112px; margin-top: 0"></div>
+      </div>
+
+      <div id="c4" class="col clip" data-start="40.8" data-duration="4.4" data-track-index="3" style="top: 420px">
+        <div class="kicker"><span class="rule"></span><span class="kt">03</span></div>
+        <div class="line" data-text="You give it a name."></div>
+      </div>
+
+      <div id="c4b" class="col clip" data-start="45.3" data-duration="3.5" data-track-index="3" style="top: 318px">
+        <span class="num" id="n100">0</span>
+        <div class="line" data-text="Yolks to start." style="margin-top: 8px"></div>
+      </div>
+
+      <div id="c5" class="col clip stack" data-start="49.1" data-duration="6.9" data-track-index="3" style="top: 318px">
+        <div class="kicker"><span class="rule"></span><span class="kt">it runs on your real life</span></div>
+        <div class="line s1" data-text="Your steps." style="margin-top: 26px"></div>
+        <div class="line s2" data-text="Your sleep."></div>
+        <div class="line s3" data-text="Hours *off your phone.*"></div>
+      </div>
+
+      <div id="c6" class="col clip" data-start="56.0" data-duration="3.0" data-track-index="3" style="top: 420px">
+        <div class="line" data-text="Live well, and it's *bright.*"></div>
+      </div>
+
+      <div id="c7" class="col clip" data-start="59.2" data-duration="6.1" data-track-index="3" style="top: 366px">
+        <div class="line" data-text="A bad day makes it|*sleepy,* not sick."></div>
+        <div class="sub">It never scolds you. It never dies. It waits.</div>
+      </div>
+
+      <div id="c8" class="col clip" data-start="66.2" data-duration="10.6" data-track-index="3" style="top: 268px">
+        <span class="num" id="n203">0</span>
+        <div class="line" data-text="species, all|drawn in code." style="margin-top: 8px"></div>
+        <div class="sub">Not a single image file in the whole app.</div>
+      </div>
+
+      <!-- ================= END LOCKUP ================= -->
+      <div id="end" class="card clip" data-start="78.0" data-duration="7.0" data-track-index="4">
+        <div class="wordmark">
+          <span class="l">y</span><span class="l">o</span><span class="l">l</span><span class="l">k</span><span class="l">l</span><span class="l">i</span><span class="l">n</span><span class="l">g</span><span class="yd"></span>
+        </div>
+        <div class="tag" data-text="A pet that grows when you look after yourself."></div>
+        <div class="free">Free on iPhone</div>
+      </div>
+
+      <div id="grain-overlay"><div class="grain-texture"></div></div>
+
+      <!-- ================= NARRATION ================= -->
+      <audio id="a-t1" src="assets/vo/t1.mp3" data-start="1.0" data-duration="3.25" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-t2" src="assets/vo/t2.mp3" data-start="5.3" data-duration="7.43" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-t3" src="assets/vo/t3.mp3" data-start="13.5" data-duration="1.49" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-q" src="assets/vo/q.mp3" data-start="17.6" data-duration="1.53" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-c" src="assets/vo/c.mp3" data-start="26.2" data-duration="3.02" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-n" src="assets/vo/n.mp3" data-start="41.0" data-duration="1.25" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-y" src="assets/vo/y.mp3" data-start="45.5" data-duration="3.11" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-h1" src="assets/vo/h1.mp3" data-start="49.2" data-duration="6.32" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-h2" src="assets/vo/h2.mp3" data-start="56.0" data-duration="2.74" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-h3" src="assets/vo/h3.mp3" data-start="59.2" data-duration="5.94" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-d" src="assets/vo/d.mp3" data-start="66.4" data-duration="7.15" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-e" src="assets/vo/e.mp3" data-start="79.2" data-duration="3.25" data-track-index="10" data-volume="1"></audio>
+
+      <!-- ================= SCORE (generated locally, original) ================= -->
+      <audio id="a-score" src="assets/audio/score.wav" data-start="0" data-duration="85" data-track-index="12" data-volume="0.207"></audio>
+
+      <!-- ================= SOUND DESIGN ================= -->
+      <audio id="s-pop1" src="assets/audio/pop.mp3" data-start="8.9" data-duration="0.6" data-track-index="11" data-volume="0.4"></audio>
+      <audio id="s-pop2" src="assets/audio/pop.mp3" data-start="10.4" data-duration="0.6" data-track-index="11" data-volume="0.4"></audio>
+      <audio id="s-in" src="assets/audio/whoosh-in.mp3" data-start="15.6" data-duration="1.6" data-track-index="11" data-volume="0.4"></audio>
+      <audio id="s-hatch" src="assets/audio/hatch.mp3" data-start="36.45" data-duration="2.56" data-track-index="11" data-volume="0.55"></audio>
+      <audio id="s-tick1" src="assets/audio/tick-rise.mp3" data-start="45.4" data-duration="2.0" data-track-index="11" data-volume="0.26"></audio>
+      <audio id="s-tick2" src="assets/audio/tick-rise.mp3" data-start="66.5" data-duration="2.0" data-track-index="11" data-volume="0.3"></audio>
+      <audio id="s-out" src="assets/audio/whoosh-out.mp3" data-start="76.8" data-duration="1.36" data-track-index="11" data-volume="0.36"></audio>
+      <audio id="s-logo" src="assets/audio/logo.mp3" data-start="78.5" data-duration="3.0" data-track-index="11" data-volume="0.45"></audio>
+    </div>
+
+    <script>
+      // ---- build masked words from data-text: "|" breaks a line, *...* marks the accent ----
+      document.querySelectorAll("[data-text]").forEach((el) => {
+        const lines = el.dataset.text.split("|");
+        lines.forEach((ln, li) => {
+          let gold = false;
+          ln.split(" ").forEach((raw, wi, arr) => {
+            let word = raw;
+            const opens = word.startsWith("*");
+            if (opens) { gold = true; word = word.slice(1); }
+            const closes = word.endsWith("*");
+            if (closes) word = word.slice(0, -1);
+            const outer = document.createElement("span");
+            outer.className = "w";
+            outer.setAttribute("data-layout-allow-overflow", "");
+            const inner = document.createElement("span");
+            inner.className = gold ? "wi gold" : "wi";
+            inner.textContent = word;
+            outer.appendChild(inner);
+            el.appendChild(outer);
+            if (wi < arr.length - 1) el.appendChild(document.createTextNode(" "));
+            if (closes) gold = false;
+          });
+          if (li < lines.length - 1) el.appendChild(document.createElement("br"));
+        });
+      });
+
+      // ---- hatch particles: positions are a pure function of the index ----
+      const burst = document.getElementById("burst");
+      const frac = (x) => x - Math.floor(x);
+      const PARTS = [];
+      for (let i = 0; i < 24; i++) {
+        const d = document.createElement("div");
+        d.className = i % 3 === 0 ? "p t" : "p";
+        burst.appendChild(d);
+        const a = (i / 24) * Math.PI * 2 + 0.35 * Math.sin(i * 12.9898);
+        const r = 270 + 200 * frac(Math.sin(i * 78.233) * 43758.5453);
+        const s = 0.5 + 1.0 * frac(Math.sin(i * 39.425) * 24634.6345);
+        PARTS.push({ d, x: Math.cos(a) * r, y: Math.sin(a) * r * 0.92, s });
+      }
+
+      const tl = gsap.timeline({ paused: true });
+      const OUT = "power3.out";
+
+      // every later tween that re-owns a target states its from-values and defers rendering
+      const seg = (sel, at, d, from, to, ease = "power2.inOut") =>
+        tl.fromTo(sel, from, { ...to, duration: d, ease, immediateRender: false }, at);
+
+      function reveal(sel, at, d = 0.95) {
+        const n = document.querySelectorAll(sel + " .wi").length || 1;
+        tl.fromTo(sel + " .wi", { yPercent: 118, opacity: 0 },
+          { yPercent: 0, opacity: 1, duration: d, ease: OUT, stagger: Math.min(0.075, 0.5 / n) }, at);
+      }
+      function conceal(sel, at) {
+        seg(sel + " .wi", at, 0.5, { yPercent: 0, opacity: 1 }, { yPercent: -118, opacity: 0, stagger: 0.015 }, "power2.in");
+      }
+      function kicker(sel, at, outAt) {
+        tl.fromTo(sel + " .rule", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: OUT }, at);
+        tl.fromTo(sel + " .kt", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.6, ease: OUT }, at + 0.12);
+        seg(sel + " .kicker", outAt, 0.4, { opacity: 1 }, { opacity: 0 }, "power2.in");
+      }
+      function sub(sel, at, outAt) {
+        tl.fromTo(sel + " .sub", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.9, ease: OUT }, at);
+        seg(sel + " .sub", outAt, 0.45, { opacity: 1, y: 0 }, { opacity: 0, y: -12 }, "power2.in");
+      }
+      function countUp(id, to, at, d, scaleFrom) {
+        const el = document.getElementById(id);
+        const o = { v: 0 };
+        tl.fromTo(o, { v: 0 }, { v: to, duration: d, ease: "power2.out",
+          onUpdate: () => { el.textContent = Math.round(o.v); } }, at);
+        tl.fromTo(el, { opacity: 0, scale: scaleFrom, y: 30 },
+          { opacity: 1, scale: 1, y: 0, duration: d * 0.8, ease: OUT }, at);
+      }
+
+      // ================= TITLE =================
+      reveal("#t1 .big", 0.7, 1.05);
+      tl.fromTo("#t1 .said", { yPercent: 118, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.8, ease: OUT }, 2.7);
+      countUp("six", 6, 3.0, 0.9, 0.6);
+      tl.fromTo("#t1 .hrs", { yPercent: 118, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.8, ease: OUT }, 3.25);
+      conceal("#t1 .big", 4.4);
+      seg("#t1 .sixrow", 4.4, 0.5, { opacity: 1, y: 0 }, { opacity: 0, y: -40 }, "power2.in");
+
+      reveal("#t2 .big", 5.2, 1.05);
+      tl.fromTo("#t2 .p1", { opacity: 0, y: 50, scale: 0.84, rotation: -3 }, { opacity: 1, y: 0, scale: 1, rotation: -1.5, duration: 0.7, ease: "back.out(1.8)" }, 8.9);
+      tl.fromTo("#t2 .p2", { opacity: 0, y: 50, scale: 0.84, rotation: 3 }, { opacity: 1, y: 0, scale: 1, rotation: 1.2, duration: 0.7, ease: "back.out(1.8)" }, 10.4);
+      conceal("#t2 .big", 12.4);
+      seg("#t2 .pill", 12.35, 0.5, { opacity: 1, y: 0, scale: 1 }, { opacity: 0, y: 34, scale: 0.9, stagger: 0.06 }, "power2.in");
+
+      reveal("#t3 .big", 13.35, 0.95);
+      tl.fromTo("#t3 .sweep", { backgroundPosition: "100% 0" }, { backgroundPosition: "0% 0", duration: 1.0, ease: "power2.inOut" }, 13.9);
+      conceal("#t3 .big", 15.15);
+
+      // ================= DEVICE =================
+      // the yolk rises first, then the phone turns in from depth to face the lens
+      tl.fromTo(".yolk", { opacity: 0, scale: 0.3, y: 260 }, { opacity: 1, scale: 1, y: 0, duration: 1.5, ease: "back.out(1.25)" }, 15.5);
+      // opacity snaps on early so the device is solid while it turns: the disc never shows through the glass
+      tl.fromTo(".phone", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 15.75);
+      tl.fromTo(".phone",
+        { rotationY: -36, rotationX: 9, z: -340, x: 160, y: 46 },
+        { rotationY: 0, rotationX: 0, z: 0, x: 0, y: 0, duration: 1.8, ease: OUT }, 15.75);
+      tl.fromTo(".cshadow", { opacity: 0, scaleX: 0.5 }, { opacity: 1, scaleX: 1, duration: 1.4, ease: OUT }, 16.1);
+
+      // idle: it is held, not pinned; the contact shadow breathes against it
+      tl.fromTo(".float", { y: -7, rotationY: -1.6, rotationX: 0.6 },
+        { y: 7, rotationY: 1.6, rotationX: -0.6, duration: 3.4, ease: "sine.inOut", repeat: 17, yoyo: true }, 17.6);
+      seg(".cshadow", 17.6, 3.4, { scaleX: 0.93, opacity: 0.82 }, { scaleX: 1.05, opacity: 1, repeat: 16, yoyo: true }, "sine.inOut");
+
+      // screens dissolve into one another instead of cutting
+      for (const [id, at] of [["#v-colour", 25.1], ["#v-hatch", 33.6], ["#v-naming", 40.1], ["#v-yolks", 45.1], ["#v-home", 48.5], ["#v-dex", 65.1]]) {
+        tl.fromTo(id, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.inOut" }, at);
+      }
+
+      // camera: one wrapper, absolute poses, pushing in on what the voice is naming
+      tl.set(".cam", { scale: 1, x: 0, y: 0 }, 0);
+      seg(".cam", 25.6, 2.2, { scale: 1, x: 0, y: 0 }, { scale: 1.14, x: -26, y: -44 });
+      seg(".cam", 32.6, 1.3, { scale: 1.14, x: -26, y: -44 }, { scale: 1, x: 0, y: 0 });
+      seg(".cam", 35.3, 1.3, { scale: 1, x: 0, y: 0 }, { scale: 1.12, x: -22, y: 22 }, "power2.in");
+      seg(".cam", 37.4, 2.2, { scale: 1.12, x: -22, y: 22 }, { scale: 1, x: 0, y: 0 }, "power2.out");
+      seg(".cam", 49.0, 16.0, { scale: 1, x: 0, y: 0 }, { scale: 1.06, x: -10, y: 0 }, "none");
+      seg(".cam", 65.3, 2.0, { scale: 1.06, x: -10, y: 0 }, { scale: 1.15, x: -28, y: 78 });
+      seg(".cam", 74.6, 1.8, { scale: 1.15, x: -28, y: 78 }, { scale: 1, x: 0, y: 0 });
+
+      // the hatch: light blooms from behind, the yolk swells, and a burst is thrown
+      tl.fromTo(".flare", { opacity: 0, scale: 0.5 }, { opacity: 0.9, scale: 1.05, duration: 0.45, ease: "power2.out" }, 36.5);
+      seg(".flare", 36.95, 1.7, { opacity: 0.9, scale: 1.05 }, { opacity: 0, scale: 1.45 }, "power2.out");
+      PARTS.forEach((p, i) => {
+        const t = 36.55 + (i % 6) * 0.018;
+        tl.fromTo(p.d, { x: 0, y: 0, scale: 0.2, opacity: 0 },
+          { x: p.x, y: p.y, scale: p.s, opacity: 1, duration: 1.05, ease: "power3.out" }, t);
+        seg(p.d, t + 0.75, 0.75, { opacity: 1 }, { opacity: 0 }, "power1.in");
+      });
+      seg(".yolk", 36.5, 0.5, { scale: 1 }, { scale: 1.16 }, "power2.out");
+      seg(".yolk", 37.0, 1.7, { scale: 1.16 }, { scale: 1 }, "elastic.out(1, 0.5)");
+
+      // leaves the way it came
+      seg(".phone", 76.9, 1.0, { rotationY: 0, x: 0, z: 0 }, { rotationY: 26, x: 120, z: -220 }, "power2.in");
+      seg(".phone", 77.62, 0.28, { opacity: 1 }, { opacity: 0 }, "power1.in");
+      seg(".cshadow", 76.9, 0.6, { opacity: 1 }, { opacity: 0 }, "power2.in");
+      seg(".yolk", 77.0, 0.9, { opacity: 1, scale: 1, y: 0 }, { opacity: 0, scale: 0.4, y: 200 }, "power2.in");
+
+      // ================= CAPTIONS =================
+      kicker("#c1", 17.3, 24.2); reveal("#c1 .line", 17.5); conceal("#c1 .line", 24.2);
+      kicker("#c2", 26.0, 32.9); reveal("#c2 .line", 26.2); conceal("#c2 .line", 32.9);
+      reveal("#c3 .line", 36.6, 0.8); conceal("#c3 .line", 39.4);
+      kicker("#c4", 40.9, 44.6); reveal("#c4 .line", 41.1); conceal("#c4 .line", 44.6);
+
+      countUp("n100", 100, 45.5, 1.2, 0.7);
+      reveal("#c4b .line", 45.9, 0.8);
+      conceal("#c4b .line", 48.2);
+      seg("#n100", 48.2, 0.45, { opacity: 1, y: 0 }, { opacity: 0, y: -40 }, "power2.in");
+
+      kicker("#c5", 49.3, 55.4);
+      reveal("#c5 .s1", 52.0, 0.7); reveal("#c5 .s2", 52.9, 0.7); reveal("#c5 .s3", 53.8, 0.8);
+      conceal("#c5 .s1", 55.4); conceal("#c5 .s2", 55.44); conceal("#c5 .s3", 55.48);
+
+      reveal("#c6 .line", 56.2, 0.85); conceal("#c6 .line", 58.4);
+
+      reveal("#c7 .line", 59.4); sub("#c7", 61.6, 64.7); conceal("#c7 .line", 64.7);
+
+      countUp("n203", 203, 66.6, 2.0, 0.55);
+      reveal("#c8 .line", 67.3, 0.9); sub("#c8", 71.4, 76.2); conceal("#c8 .line", 76.2);
+      seg("#n203", 76.2, 0.45, { opacity: 1, y: 0 }, { opacity: 0, y: -40 }, "power2.in");
+
+      // ================= END LOCKUP =================
+      tl.fromTo("#end .l", { opacity: 0, y: 80, filter: "blur(14px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.15, ease: OUT, stagger: 0.058 }, 78.3);
+      tl.fromTo("#end .yd", { opacity: 0, y: -170, scale: 0.4 }, { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "bounce.out" }, 79.0);
+      reveal("#end .tag", 79.5, 0.9);
+      tl.fromTo("#end .free", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, ease: OUT }, 81.2);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

@@ -267,3 +267,19 @@ scored both takes "ready" (9.5 and 9.75). Joined with ffmpeg concat.
 
 Reproduce: `/tmp/drive.py` (idb, finds buttons by label), `/tmp/phaseA.py`,
 `/tmp/between.py`, `/tmp/phaseB.py`, `/tmp/twotakes.py`, `/tmp/finalA.py`, `/tmp/editB.py`.
+
+## Demo video, final (2026-09-30) — supersedes the note above
+
+`~/Downloads/yolkling-devpost/yolkling-demo.mp4` — 1920x1080, 1m25s, narrated, scored.
+Source: `AppStore/videos/yolkling-launch/` (HyperFrames, Apache-2.0). `npm run render`.
+
+- Footage: raw `xcrun simctl` capture of a fresh install, cut into seven beats. No dev seams.
+- Set: eggshell studio sweep, registry `grain-overlay`, one flat yolk disc, phone grounded
+  by a contact shadow. Type is the app's own: Onest, DM Sans, DM Mono.
+- Motion: 3D device entrance, camera push-ins on the picker / hatch / "3 of 203",
+  masked word reveals, count-ups (6, 100, 203), a particle burst on the hatch,
+  letter-assembled end lockup.
+- Narration: ElevenLabs, voice River, one line per beat (`assets/vo/`). Script in SCRIPT.md.
+- Sound design: ElevenLabs sound-generation. Score: MusicGen, generated locally. All
+  original, nothing licensed. ElevenLabs Music needs a paid plan and was not used.
+- The API key is in the project `.env`, gitignored. Rotate it: it was pasted in chat.
