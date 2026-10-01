@@ -131,7 +131,7 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="85" data-width="1920" data-height="1080">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="94" data-width="1920" data-height="1080">
       <div class="floor"></div>
 
       <!-- ================= TITLE ================= -->
@@ -178,6 +178,7 @@
                 <video id="v-yolks" class="clip" src="assets/yolks.mp4" data-start="45.1" data-duration="3.9" data-track-index="0" muted playsinline></video>
                 <video id="v-home" class="clip" src="assets/home.mp4" data-start="48.5" data-duration="17.0" data-playback-rate="0.37" data-track-index="1" muted playsinline></video>
                 <video id="v-dex" class="clip" src="assets/dex.mp4" data-start="65.1" data-duration="12.4" data-track-index="0" muted playsinline></video>
+                <video id="v-plus" class="clip" src="assets/plus.mp4" data-start="76.9" data-duration="10.0" data-track-index="1" muted playsinline></video>
               </div>
             </div>
             <div class="burst" id="burst"></div>
@@ -232,8 +233,14 @@
         <div class="sub">Not a single image file in the whole app.</div>
       </div>
 
+      <div id="c9" class="col clip" data-start="77.2" data-duration="8.6" data-track-index="3" style="top: 362px">
+        <div class="kicker"><span class="rule"></span><span class="kt">yolkling plus</span></div>
+        <div class="line" data-text="Support,|*not shortcuts.*"></div>
+        <div class="sub">A supporter glow. A monthly handful of Yolks. No ads, ever.</div>
+      </div>
+
       <!-- ================= END LOCKUP ================= -->
-      <div id="end" class="card clip" data-start="78.0" data-duration="7.0" data-track-index="4">
+      <div id="end" class="card clip" data-start="87.0" data-duration="7.0" data-track-index="4">
         <div class="wordmark">
           <span class="l">y</span><span class="l">o</span><span class="l">l</span><span class="l">k</span><span class="l">l</span><span class="l">i</span><span class="l">n</span><span class="l">g</span><span class="yd"></span>
         </div>
@@ -255,10 +262,11 @@
       <audio id="a-h2" src="assets/vo/h2.mp3" data-start="56.0" data-duration="2.74" data-track-index="10" data-volume="1"></audio>
       <audio id="a-h3" src="assets/vo/h3.mp3" data-start="59.2" data-duration="5.94" data-track-index="10" data-volume="1"></audio>
       <audio id="a-d" src="assets/vo/d.mp3" data-start="66.4" data-duration="7.15" data-track-index="10" data-volume="1"></audio>
-      <audio id="a-e" src="assets/vo/e.mp3" data-start="79.2" data-duration="3.25" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-p" src="assets/vo/p.mp3" data-start="77.9" data-duration="6.18" data-track-index="10" data-volume="1"></audio>
+      <audio id="a-e" src="assets/vo/e.mp3" data-start="88.2" data-duration="3.25" data-track-index="10" data-volume="1"></audio>
 
       <!-- ================= SCORE (generated locally, original) ================= -->
-      <audio id="a-score" src="assets/audio/score.wav" data-start="0" data-duration="85" data-track-index="12" data-volume="0.207"></audio>
+      <audio id="a-score" src="assets/audio/score.wav" data-start="0" data-duration="94" data-track-index="12" data-volume="0.207"></audio>
 
       <!-- ================= SOUND DESIGN ================= -->
       <audio id="s-pop1" src="assets/audio/pop.mp3" data-start="8.9" data-duration="0.6" data-track-index="11" data-volume="0.4"></audio>
@@ -267,8 +275,8 @@
       <audio id="s-hatch" src="assets/audio/hatch.mp3" data-start="36.45" data-duration="2.56" data-track-index="11" data-volume="0.55"></audio>
       <audio id="s-tick1" src="assets/audio/tick-rise.mp3" data-start="45.4" data-duration="2.0" data-track-index="11" data-volume="0.26"></audio>
       <audio id="s-tick2" src="assets/audio/tick-rise.mp3" data-start="66.5" data-duration="2.0" data-track-index="11" data-volume="0.3"></audio>
-      <audio id="s-out" src="assets/audio/whoosh-out.mp3" data-start="76.8" data-duration="1.36" data-track-index="11" data-volume="0.36"></audio>
-      <audio id="s-logo" src="assets/audio/logo.mp3" data-start="78.5" data-duration="3.0" data-track-index="11" data-volume="0.45"></audio>
+      <audio id="s-out" src="assets/audio/whoosh-out.mp3" data-start="85.8" data-duration="1.36" data-track-index="11" data-volume="0.36"></audio>
+      <audio id="s-logo" src="assets/audio/logo.mp3" data-start="87.5" data-duration="3.0" data-track-index="11" data-volume="0.45"></audio>
     </div>
 
     <script>
@@ -375,11 +383,11 @@
 
       // idle: it is held, not pinned; the contact shadow breathes against it
       tl.fromTo(".float", { y: -7, rotationY: -1.6, rotationX: 0.6 },
-        { y: 7, rotationY: 1.6, rotationX: -0.6, duration: 3.4, ease: "sine.inOut", repeat: 17, yoyo: true }, 17.6);
-      seg(".cshadow", 17.6, 3.4, { scaleX: 0.93, opacity: 0.82 }, { scaleX: 1.05, opacity: 1, repeat: 16, yoyo: true }, "sine.inOut");
+        { y: 7, rotationY: 1.6, rotationX: -0.6, duration: 3.4, ease: "sine.inOut", repeat: 20, yoyo: true }, 17.6);
+      seg(".cshadow", 17.6, 3.4, { scaleX: 0.93, opacity: 0.82 }, { scaleX: 1.05, opacity: 1, repeat: 18, yoyo: true }, "sine.inOut");
 
       // screens dissolve into one another instead of cutting
-      for (const [id, at] of [["#v-colour", 25.1], ["#v-hatch", 33.6], ["#v-naming", 40.1], ["#v-yolks", 45.1], ["#v-home", 48.5], ["#v-dex", 65.1]]) {
+      for (const [id, at] of [["#v-colour", 25.1], ["#v-hatch", 33.6], ["#v-naming", 40.1], ["#v-yolks", 45.1], ["#v-home", 48.5], ["#v-dex", 65.1], ["#v-plus", 76.9]]) {
         tl.fromTo(id, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.inOut" }, at);
       }
 
@@ -392,6 +400,9 @@
       seg(".cam", 49.0, 16.0, { scale: 1, x: 0, y: 0 }, { scale: 1.06, x: -10, y: 0 }, "none");
       seg(".cam", 65.3, 2.0, { scale: 1.06, x: -10, y: 0 }, { scale: 1.15, x: -28, y: 78 });
       seg(".cam", 74.6, 1.8, { scale: 1.15, x: -28, y: 78 }, { scale: 1, x: 0, y: 0 });
+      // the paywall is shown whole: a slow drift in, then square again before the exit
+      seg(".cam", 78.0, 6.9, { scale: 1, x: 0, y: 0 }, { scale: 1.06, x: -10, y: -12 }, "none");
+      seg(".cam", 84.9, 0.9, { scale: 1.06, x: -10, y: -12 }, { scale: 1, x: 0, y: 0 });
 
       // the hatch: light blooms from behind, the yolk swells, and a burst is thrown
       tl.fromTo(".flare", { opacity: 0, scale: 0.5 }, { opacity: 0.9, scale: 1.05, duration: 0.45, ease: "power2.out" }, 36.5);
@@ -406,10 +417,10 @@
       seg(".yolk", 37.0, 1.7, { scale: 1.16 }, { scale: 1 }, "elastic.out(1, 0.5)");
 
       // leaves the way it came
-      seg(".phone", 76.9, 1.0, { rotationY: 0, x: 0, z: 0 }, { rotationY: 26, x: 120, z: -220 }, "power2.in");
-      seg(".phone", 77.62, 0.28, { opacity: 1 }, { opacity: 0 }, "power1.in");
-      seg(".cshadow", 76.9, 0.6, { opacity: 1 }, { opacity: 0 }, "power2.in");
-      seg(".yolk", 77.0, 0.9, { opacity: 1, scale: 1, y: 0 }, { opacity: 0, scale: 0.4, y: 200 }, "power2.in");
+      seg(".phone", 85.9, 1.0, { rotationY: 0, x: 0, z: 0 }, { rotationY: 26, x: 120, z: -220 }, "power2.in");
+      seg(".phone", 86.62, 0.28, { opacity: 1 }, { opacity: 0 }, "power1.in");
+      seg(".cshadow", 85.9, 0.6, { opacity: 1 }, { opacity: 0 }, "power2.in");
+      seg(".yolk", 86.0, 0.9, { opacity: 1, scale: 1, y: 0 }, { opacity: 0, scale: 0.4, y: 200 }, "power2.in");
 
       // ================= CAPTIONS =================
       kicker("#c1", 17.3, 24.2); reveal("#c1 .line", 17.5); conceal("#c1 .line", 24.2);
@@ -434,12 +445,14 @@
       reveal("#c8 .line", 67.3, 0.9); sub("#c8", 71.4, 76.2); conceal("#c8 .line", 76.2);
       seg("#n203", 76.2, 0.45, { opacity: 1, y: 0 }, { opacity: 0, y: -40 }, "power2.in");
 
+      kicker("#c9", 77.3, 85.2); reveal("#c9 .line", 77.5); sub("#c9", 80.5, 85.2); conceal("#c9 .line", 85.2);
+
       // ================= END LOCKUP =================
       tl.fromTo("#end .l", { opacity: 0, y: 80, filter: "blur(14px)" },
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.15, ease: OUT, stagger: 0.058 }, 78.3);
-      tl.fromTo("#end .yd", { opacity: 0, y: -170, scale: 0.4 }, { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "bounce.out" }, 79.0);
-      reveal("#end .tag", 79.5, 0.9);
-      tl.fromTo("#end .free", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, ease: OUT }, 81.2);
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.15, ease: OUT, stagger: 0.058 }, 87.3);
+      tl.fromTo("#end .yd", { opacity: 0, y: -170, scale: 0.4 }, { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "bounce.out" }, 88.0);
+      reveal("#end .tag", 88.5, 0.9);
+      tl.fromTo("#end .free", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, ease: OUT }, 90.2);
 
       window.__timelines["main"] = tl;
       tl.seek(0);

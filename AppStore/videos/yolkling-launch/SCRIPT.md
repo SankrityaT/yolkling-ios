@@ -25,4 +25,7 @@ sleepy, and it waits for you.
 There are two hundred and three species to find, and every one of them is drawn
 in code. Not a single image file in the whole app.
 
+There is nothing here to buy your way ahead with. Yolkling Plus is one
+subscription, and all it does is keep this alive.
+
 Yolkling. A pet that grows when you look after yourself.
