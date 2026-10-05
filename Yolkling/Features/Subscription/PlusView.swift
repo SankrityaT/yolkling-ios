@@ -207,6 +207,10 @@ struct PlusView: View {
                 Link("Privacy Policy", destination: YolklingURLs.privacy)
             }
             .font(YolkType.bodySmall).foregroundStyle(YolkColor.inkSoft)
+            // One line each. "Terms of Use (EULA)" is the longest label and wrapped onto two
+            // lines on its own, which left the row lopsided; shrinking slightly keeps the
+            // guideline's wording intact.
+            .lineLimit(1).minimumScaleFactor(0.8)
         }
         .padding(.horizontal, YolkSpace.lg).padding(.vertical, YolkSpace.md)
         .background(YolkColor.shell)
