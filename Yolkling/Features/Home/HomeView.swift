@@ -1752,7 +1752,29 @@ struct HomeView: View {
 
     /// Re-read Screen Time status + the latest off-phone figure without prompting.
     private func restoreScreenTime() {
-        if player?.screenTimeConnected == true { screenTime.resume() }
+        adoptScreenTime()
+        // iOS can still report "not determined" in the first moments after a cold launch
+        // even though the person approved long ago, so ask once more shortly after.
+        guard screenTime.status != .approved else { return }
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            adoptScreenTime()
+        }
+    }
+
+    /// Start (or restart) measuring whenever iOS says this person has approved Screen Time.
+    ///
+    /// iOS is the authority, not `player.screenTimeConnected`. That flag lives only on this
+    /// install and is not part of the cloud backup, so a creature restored from the cloud,
+    /// or one hatched before the flag existed, arrived approved-but-unflagged. Gating on
+    /// the flag left those people with nothing measuring and a tile that read "counting"
+    /// for ever, with no button to press because there was nothing left to ask for.
+    private func adoptScreenTime() {
+        screenTime.resume()
+        if screenTime.status == .approved, player?.screenTimeConnected != true {
+            player?.screenTimeConnected = true
+            persist()
+        }
     }
 }
 
